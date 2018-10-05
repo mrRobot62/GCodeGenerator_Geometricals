@@ -21,7 +21,7 @@ Use `geometrical_ContourArc.py` as a starting point for your new shapes
 **Step 1:**
 Create a callback methode to call your new shape template (like DialogContourArc)
 
-`
+```
 #------ Menu callbacks ----------------
 def DialogContourArc(self):
     #print("call ContourArc")
@@ -34,7 +34,7 @@ def DialogContourArc(self):
 #--------- Menu callbacks ---------------------#
 
 #------------------------------------------------------#
-`
+```
 **Step 2:**
 Insert your callback method into menu (like DialogContourArc)
 
