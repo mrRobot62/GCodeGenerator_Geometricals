@@ -41,7 +41,7 @@ from math import *
 import tkMessageBox
 import os
 
-from geometric_CountourArc import *
+from geometric_ContourArc import *
 
 IN_AXIS = os.environ.has_key("AXIS_PROGRESS_BAR")
 CR = '\n'
