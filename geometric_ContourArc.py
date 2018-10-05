@@ -17,30 +17,41 @@ CR = "\n"
 
 class ClassContourArc(Dialog):
 
-    def body(self, master):
-        row = 0
-        path = "./img/contour/circle-pic1_5.gif"
-        #picFrame = Frame(bd=2).grid(row=0,column=0, columnspan=4)
-        self.img = Image.open(path)
+    def radioImageCallback(self):
+        p = self.path[int(self.__CC.get())-1]
+        self.img = Image.open(p)
         self.photo = ImageTk.PhotoImage(self.img)
-        Label(master, image=self.photo).grid(
+        Label(self.master, image=self.photo).grid(
             row=0, column=0, sticky=W+E+N+S, columnspan=2
         )
+
+    def body(self, master):
+        self.master = master
+        self.path = [
+            "./img/contour/circle-pic1_1.jpg",
+            "./img/contour/circle-pic1_2.jpg",
+            "./img/contour/circle-pic1_3.jpg",
+            "./img/contour/circle-pic1_4.jpg
+            ",
+            "./img/contour/circle-pic1_5.jpg"
+        ]
 
         row = 1
         self.__CC = StringVar()
         self.__CC.set("5")
+        self.radioImageCallback()
         Label(master, text='Coordinate Center').grid(row=row, column=0, sticky=W)
         Radiobutton(master, text="1", variable=self.__CC,
-                    value="1").grid(row=row, column=1, sticky=W)
+                    value="1", command=self.radioImageCallback).grid(row=row, column=1, sticky=W)
         Radiobutton(master, text="2", variable=self.__CC,
-                    value="2").grid(row=row, column=2, sticky=W)
+                    value="2", command=self.radioImageCallback).grid(row=row, column=2, sticky=W)
         Radiobutton(master, text="3", variable=self.__CC,
-                    value="3").grid(row=row, column=3, sticky=W)
+                    value="3", command=self.radioImageCallback).grid(row=row, column=3, sticky=W)
         Radiobutton(master, text="4", variable=self.__CC,
-                    value="4").grid(row=row, column=4, sticky=W)
+                    value="4", command=self.radioImageCallback).grid(row=row, column=4, sticky=W)
         Radiobutton(master, text="5", variable=self.__CC,
-                    value="5").grid(row=row, column=5, sticky=W)
+                    value="5", command=self.radioImageCallback).grid(row=row, column=5, sticky=W)
+
         row = row+1
         self.__unit = StringVar()
         self.__unit.set("G21")
