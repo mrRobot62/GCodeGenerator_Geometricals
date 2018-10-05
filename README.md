@@ -13,5 +13,5 @@ Version     Content
 ## Implementing new shapes
 Menu is prepared to handle different shapes. The only thing is to implement the corresponding shape python file and include this new file into the menu system.
 
-Take **geometrical_ContourArc.py** as a starting point for your new shapes
+Take `geometrical_ContourArc.py` as a starting point for your new shapes
 
