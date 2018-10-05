@@ -38,7 +38,7 @@ def DialogContourArc(self):
 **Step 2:**
 Insert your callback method into menu (like DialogContourArc)
 
-`
+```
 # Contour - Arc
 self.ContourMenu.add_command(label="Arc", command=self.DialogContourArc)
 #--------- Insert arc shapes here ---------------------#
@@ -51,8 +51,7 @@ self.FileMenu.add_cascade(label="Drilling", menu=self.DrillingMenu)
 #--------- Insert drilling shapes here ---------------------#
 
 #------------------------------------------------------#
-`
-
+```
 
 
 
