@@ -28,11 +28,15 @@ class ClassContourArc(Dialog):
     def body(self, master):
         self.master = master
         self.path = [
+            # left down
             "./img/contour/circle-pic1_1.jpg",
+            # left upper
             "./img/contour/circle-pic1_2.jpg",
+            # right upper
             "./img/contour/circle-pic1_3.jpg",
-            "./img/contour/circle-pic1_4.jpg
-            ",
+            # right down
+            "./img/contour/circle-pic1_4.jpg",
+            # center
             "./img/contour/circle-pic1_5.jpg"
         ]
 
@@ -42,15 +46,15 @@ class ClassContourArc(Dialog):
         self.radioImageCallback()
         Label(master, text='Coordinate Center').grid(row=row, column=0, sticky=W)
         Radiobutton(master, text="1", variable=self.__CC,
-                    value="1", command=self.radioImageCallback).grid(row=row, column=1, sticky=W)
+                    value=1, command=self.radioImageCallback).grid(row=row, column=1, sticky=W)
         Radiobutton(master, text="2", variable=self.__CC,
-                    value="2", command=self.radioImageCallback).grid(row=row, column=2, sticky=W)
+                    value=2, command=self.radioImageCallback).grid(row=row, column=2, sticky=W)
         Radiobutton(master, text="3", variable=self.__CC,
-                    value="3", command=self.radioImageCallback).grid(row=row, column=3, sticky=W)
+                    value=3, command=self.radioImageCallback).grid(row=row, column=3, sticky=W)
         Radiobutton(master, text="4", variable=self.__CC,
-                    value="4", command=self.radioImageCallback).grid(row=row, column=4, sticky=W)
+                    value=4, command=self.radioImageCallback).grid(row=row, column=4, sticky=W)
         Radiobutton(master, text="5", variable=self.__CC,
-                    value="5", command=self.radioImageCallback).grid(row=row, column=5, sticky=W)
+                    value=5, command=self.radioImageCallback).grid(row=row, column=5, sticky=W)
 
         row = row+1
         self.__unit = StringVar()
@@ -186,23 +190,29 @@ class ClassContourArc(Dialog):
         gc += "G00 Z{0:08.3f} F{1:05.1f} {2}".format(
             float(self.__safety_Z.get()),
             float(self.__speed_Z_G00.get()), CR)
-        # set start position for X/Y
-        # x to half of diameter and than include cutter compensation
-        gc += CR + "(calculate cutter compensation and set X/Y positions)" + CR
-        gc += self.__cuttercompensation.get() + CR
 
-        X = (float(self.__dia.get()) / 2.0)
-#        if (self.__cuttercompensation.get() != "G40"):
-#            # G41/G42
-#            if (self.__cuttercompensation.get() == "G41"):
-#                # left from contour - add half tool Diameter
-#                X += (float(self.__tooldia.get()) / 2.0)
-#            else:
-#                # right from contour - sub half tool diameter
-#                X -= (float(self.__tooldia.get()) / 2.0)
-#            pass
+        xoffset = 0.0
+        yoffset = 0.0
+        if (int(self.__CC.get()) == 1):
+            xoffset = float(self.__centerX.get())
+            yoffset = float(self.__centerY.get())
+        if (int(self.__CC.get()) == 2):
+            xoffset = float(self.__centerX.get())
+            yoffset = -float(self.__centerY.get())
+        if (int(self.__CC.get()) == 3):
+            xoffset = -float(self.__centerX.get())
+            yoffset = -float(self.__centerY.get())
+        if (int(self.__CC.get()) == 4):
+            xoffset = -float(self.__centerX.get())
+            yoffset = float(self.__centerY.get())
+        if (int(self.__CC.get()) == 5):
+            xoffset = 0 # ignore user input
+            yoffset = 0 # ignore user input
+        # X
+        X = (float(self.__dia.get()) / 2.0) + xoffset
+
         # y
-        Y = float(self.__centerY.get())
+        Y = float(self.__centerY.get()) + yoffset
 
         # I - this is the radius
         I = (float(self.__dia.get()) / 2.0) * -1.0
@@ -210,12 +220,23 @@ class ClassContourArc(Dialog):
         # J
         J = -0.0
 
+        # cutter compensation
+        if (self.__cuttercompensation.get() == "G40"):
+            gc += CR + "(-- Cutter compensation --){}".format(CR)
+            gc += "{} {}".format(self.__cuttercompensation.get(),CR)
+        if (self.__cuttercompensation.get() == "G41"):
+            gc += CR + "(-- Cutter compensation LEFT --){}".format(CR)
+            gc += "{} {}".format(self.__cuttercompensation.get(),CR)
+            X -= (float(self.__tooldia) / 2.0)
+        if (self.__cuttercompensation.get() == "G41"):
+            gc += CR + "(-- Cutter compensation RIGHT --){}".format(CR)
+            gc += "{} {}".format(self.__cuttercompensation.get(),CR)
+            X += (float(self.__tooldia) / 2.0)
+
         # set start postion X/Y
-        x1 = (float(self.__dia.get())/2.0) + float(self.__centerX.get())
-        X = x1
         gc += "G00 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
-            float(x1),
-            float(self.__centerY.get()),
+            float(X),
+            float(Y),
             float(self.__speed_XY_G00.get()),
             CR)
 
@@ -232,14 +253,18 @@ class ClassContourArc(Dialog):
         z = 0.0
         loop = ""
         gc += CR + "(------- start circel -------------)" + CR
-        gc += "(-- Dia {0:06.3f}, X {1:06.3f}, Y {2:06.3f}, Depth {3:06.3f}, Step X {4:06.3f} --){5}".format(
+        gc += "(-- Dia {0:06.3f}, Depth {1:06.3f}, Step Z {2:06.3f} --){3}".format(
             float(self.__dia.get()),
-            float(self.__centerX.get()),
-            float(self.__centerY.get()),
             depth,
             step,
             CR
         )
+        gc += "(-- X {0:06.3f}, Y {1:06.3f} --) {}".format(
+            float(X),
+            float(Y),
+            CR
+        )
+        gc += CR + "(-- loop --)" + CR
         while (abs(z) < abs(depth)):
             # set next Z depth
             if ((abs(depth) - abs(z)) < abs(step)):

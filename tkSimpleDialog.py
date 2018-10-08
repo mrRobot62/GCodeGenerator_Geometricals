@@ -7,20 +7,29 @@ import math
 
 
 class Dialog(Toplevel):
-
-    def __init__(self, parent, title = None):
+#
+    def __init__(self, parent, title = "??", xSize = 350, ySize = 250):
 
         Toplevel.__init__(self, parent)
         self.transient(parent)
-
+        self.sourceFont = Font(family="Courier", size=12)
         if title:
             self.title(title)
 
         self.parent = parent
+        self.protocol("WM_DELETE_WINDOW", self.cancel)
 
+        self.geometry("+%d+%d" % (parent.winfo_rootx()+xSize,
+                                  parent.winfo_rooty()+ySize))
+
+
+
+    def init(self, data):
         self.result = None
+        self.data = ""
 
         self.frmbody = Frame(self)
+        self.update(data)
         self.initial_focus = self.body(self.frmbody)
         self.frmbody.pack(padx=5, pady=5)
 
@@ -28,23 +37,13 @@ class Dialog(Toplevel):
 
         self.grab_set()
 
-        if not self.initial_focus:
+        if self.initial_focus == None:
             self.initial_focus = self
-
-        self.protocol("WM_DELETE_WINDOW", self.cancel)
-
-        self.geometry("+%d+%d" % (parent.winfo_rootx()+350,
-                                  parent.winfo_rooty()+50))
-
         self.initial_focus.focus_set()
-
         self.wait_window(self)
-        self.numberOfMandatoryFields = 0
-
-
+        pass
     #
     # construction hooks
-
     def body(self, master):
         # create dialog body.  return widget that should have
         # initial focus.  this method should be overridden
@@ -57,32 +56,32 @@ class Dialog(Toplevel):
 
         box = Frame(self)
 
-        btnOK = Button(box, text="OK", width=10, command=self.ok, default=ACTIVE)
+        btnOK = Button(box, text="OK", width=10,
+            command=self.ok, default=ACTIVE)
         btnOK.pack(side=LEFT, padx=5, pady=5)
-        btnCancel = Button(box, text="Cancel", width=10, command=self.cancel)
+
+        btnCancel = Button(box, text="Cancel", width=10,
+            command=self.cancel)
         btnCancel.pack(side=LEFT, padx=5, pady=5)
+
 
         self.bind("<Return>", self.ok)
         self.bind("<Escape>", self.cancel)
-
-        #btnOK.config(state=DISABLED)
         box.pack()
 
     #
     # standard button semantics
 
     def ok(self, event=None):
-
         if not self.validate():
             self.initial_focus.focus_set() # put focus back
             return
         #print "in OK"
-        self.withdraw()
-        self.update_idletasks()
-
-        self.apply()
-
+#        self.withdraw()
+#        self.update_idletasks()
+#        self.apply()
         self.cancel()
+
 
     def cancel(self, event=None):
         #print "in CANCEL"
@@ -101,6 +100,46 @@ class Dialog(Toplevel):
 
         pass # override
 
+    def update(self, data):
+        pass
+
+
+#----------------------------------------------------------------------------
+# new individual dialogs
+#----------------------------------------------------------------------------
+class GCodeDialog(Dialog):
+
+    def update(self, data):
+        print "setData len({})".format(len(self.data))
+        self.data = data
+        pass
+
+
+    def apply(self):
+        pass
+
+    def body(self, master):
+        # self.frmbody is a frame from superclass
+        self.frmbody.grid(row=0, column=0)
+
+        self.l01 = Label(self.frmbody, text="GCode")
+        self.l01.grid(row=0,column=0)
+
+        self.txtGCode = Text(self.frmbody, width=60, height=40, font=self.sourceFont)
+        self.txtGCode.config(
+            highlightbackground="darkgray",
+            highlightcolor="darkgray",
+            highlightthickness=1
+        )
+        self.txtGCode.grid(
+            row=1, column=0, rowspan=5)
+        self.txtGCode.insert(END, self.data)
+        #self.frmbody.pack(padx=5, pady=5)
+        pass
+
+#----------------------------------------------------------------------------
+# new Entry widgets
+#----------------------------------------------------------------------------
 class ValidatingEntry(Entry):
     def __init__(self, master, signed = "s", value="", mandatory=False, **kw):
         apply(Entry.__init__,(self, master), kw)

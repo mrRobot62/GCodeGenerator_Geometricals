@@ -30,11 +30,16 @@ class ClassShapeDefinition(Dialog):
     def body(self, master):
         self.master = master
         self.path = [
+            # left down
             "./img/contour/circle-pic1_1.jpg",
+            # left upper
             "./img/contour/circle-pic1_2.jpg",
+            # right upper
             "./img/contour/circle-pic1_3.jpg",
+            # right down
             "./img/contour/circle-pic1_4.jpg
             ",
+            # center
             "./img/contour/circle-pic1_5.jpg"
         ]
 

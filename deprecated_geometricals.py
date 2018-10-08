@@ -65,6 +65,7 @@ class Application(Frame):
         self.master.geometry("800x610")
         self.sourceFont = Font(family="Courier", size=12)
         self.grid()
+
         self.gcode_comment = """
 %% ---------------- LunaX -----------------------
 %% this gcode was generated from geometric.py
@@ -97,18 +98,30 @@ class Application(Frame):
 
         # Contour - Arc
         self.ContourMenu.add_command(label="Arc", command=self.DialogContourArc)
+        #--------- Insert arc shapes here ---------------------#
+
+        #------------------------------------------------------#
 
         # sub menu Drilling
         self.DrillingMenu = Menu(self.FileMenu)
         self.FileMenu.add_cascade(label="Drilling", menu=self.DrillingMenu)
+        #--------- Insert drilling shapes here ---------------------#
+
+        #------------------------------------------------------#
 
         # sub menu Pocketing
         self.PocketingMenu = Menu(self.FileMenu)
         self.FileMenu.add_cascade(label="Pocketing", menu=self.PocketingMenu)
+        #--------- Insert pocketing shapes here ---------------------#
+
+        #------------------------------------------------------#
 
         # sub menu Engraving
         self.EngravingMenu = Menu(self.FileMenu)
         self.FileMenu.add_cascade(label="Engraving", menu=self.EngravingMenu)
+        #--------- Insert engraving shapes here ---------------------#
+
+        #------------------------------------------------------#
 
         # Quit
         self.FileMenu.add_command(label="Quit", command=self.quit)
@@ -203,11 +216,18 @@ class Application(Frame):
     #------ Menu callbacks ----------------
     def DialogContourArc(self):
         #print("call ContourArc")
-        d = ClassContourArc(self.parent, "Arc/Circle contours")
+        d = ClassContourArc(
+                self.parent,
+                "Arc/Circle contours"
+            )
         gcode = d.result
         print "GCode: {}".format(gcode)
         if gcode != None:
             self.g_code.insert(END, gcode)
+
+    #--------- Menu callbacks ---------------------#
+
+    #------------------------------------------------------#
 
     #------ EXIT --------------------------
     def Quit():
