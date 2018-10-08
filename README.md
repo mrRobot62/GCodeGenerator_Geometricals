@@ -6,8 +6,7 @@ Primary this tool set is used for my LinuxCNC milling machine.
 ## History:
 | Version | Description |
 |---------|----------------------------------------------------|
-|0.1 | initial version with contour circel shape |
-| | unstable version |
+|0.1 | initial version with contour circel shape unstable version |
             
 
 
