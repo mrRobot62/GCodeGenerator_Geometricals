@@ -42,6 +42,7 @@ import tkMessageBox
 import os
 
 from contourArc import *
+from contourRectangle import *
 
 IN_AXIS = os.environ.has_key("AXIS_PROGRESS_BAR")
 CR = '\n'
@@ -90,9 +91,11 @@ class GCodeGenerator(Frame):
         self.ContourMenu = Menu(self.FileMenu)
         self.FileMenu.add_cascade(label="Contour", menu=self.ContourMenu)
 
+        #--------- Insert contour shapes here ---------------------#
         # Contour - Arc
         self.ContourMenu.add_command(label="Arc", command=self.DialogContourArc)
-        #--------- Insert arc shapes here ---------------------#
+        # Contour - Arc
+        self.ContourMenu.add_command(label="Rec", command=self.DialogContourRec)
 
         #------------------------------------------------------#
 
@@ -130,6 +133,15 @@ class GCodeGenerator(Frame):
         self.myApp.init()
         self.myApp.show()
         pass
+
+    def DialogContourRec(self):
+        print "DialogContourRec"
+        title = "Contour Rectangle"
+        self.myApp = ContourRectangle(self.app, self.master, self.frame, title)
+        self.myApp.init()
+        self.myApp.show()
+        pass
+
 #--------- Menu callbacks ---------------------#
 
 #------------------------------------------------------#

@@ -45,18 +45,20 @@ class GeometricalFrame(Frame):
             highlightcolor="darkgray",
             highlightthickness=1)
         row = 0
-        self.__preamble = StringVar()
-        self.__preamble.set("G21 G90 G64 G17 G40 G49")
+        self._preamble = StringVar()
+        self._preamble.set("G21 G90 G64 G17 G40 G49")
         Label(self.frmStandardContent, text="PreGCode").grid(row=row, column=0, sticky=W)
-        FloatEntry(self.frmStandardContent, width=70, mandatory=False, value=self.__preamble.get(),
-            textvariable=self.__preamble).grid(row=row, column=1, sticky=W)
+        FloatEntry(self.frmStandardContent, width=70, mandatory=False,
+            textvariable=self._preamble).grid(row=row, column=1, sticky=W)
 
         row += 1
-        self.__postamble = StringVar()
-        self.__postamble.set("M2")
+        self._postamble = StringVar()
+        post = "G00 Z10 F100 \n"
+        post+= "M2"
+        self._postamble.set(post)
         Label(self.frmStandardContent, text="PostGCode").grid(row=row, column=0, sticky=W)
-        FloatEntry(self.frmStandardContent, width=70, mandatory=False, value=self.__postamble.get(),
-            textvariable=self.__postamble).grid(row=row, column=1, sticky=W)
+        FloatEntry(self.frmStandardContent, width=70, mandatory=False,
+            textvariable=self._postamble).grid(row=row, column=1, sticky=W)
 
         self.frmStandardContent.pack(expand=True, fill=BOTH)
         pass

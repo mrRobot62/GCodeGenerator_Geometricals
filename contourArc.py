@@ -178,7 +178,7 @@ class ContourArc(GeometricalFrame):
         gc = ""
         # Preamble
         gc += CR + "(set countour arc preamble)" + CR
-        #gc += self.__preamble.get() + CR
+        gc += self._preamble.get() + CR
         # set Unit
         gc += self.__unit.get() + CR
         # set Z axis
@@ -289,7 +289,7 @@ class ContourArc(GeometricalFrame):
         gc += loop
         #----------------------------
         gc += "(----------------------------------)" + CR
-        gc += "M02 (program end)" + CR
+        gc += self._postamble.get() + CR
         gc += CR
         print gc
         return  gc

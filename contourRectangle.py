@@ -26,7 +26,7 @@ CR = "\n"
 #
 #
 #----------------------------------------------------------------------------
-class shapeTemplate(GeometricalFrame):
+class ContourRectangle(GeometricalFrame):
 
     #
     # define your own images to describe your GCode-Generator
@@ -69,12 +69,13 @@ class shapeTemplate(GeometricalFrame):
         choices = [1,2,3,4,5,6,7,8,9]
 
         self.__CC = StringVar()
-        self.__CC.set(choices[8])
+        self.__CC.set(choices[4])
         self._changeImage(self.__CC.get())
         Label(self.frmButtonsIndividualContent, text='Coordinate Center').grid(row=row, column=0, sticky=W)
         OptionMenu(self.frmButtonsIndividualContent,
             self.__CC, *choices, command=self._changeImage).grid(
             row=row, column=1)
+
 
         row += 1
         self.__unit = StringVar()
@@ -123,22 +124,15 @@ class shapeTemplate(GeometricalFrame):
             textvariable=self.__centerY).grid(row=row, column=3, sticky=W)
 
         row += 1
-        self.__dia = StringVar()
-        Label(self.frmButtonsIndividualContent, text="Arc diameter:*").grid(row=row, column=0, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=10, value = "", mandatory=True,
-            textvariable=self.__dia,
-            background="Red").grid(row=row, column=1, sticky=W)
-
-        row += 1
-        self.__arcstart = StringVar()
-        self.__arcend = StringVar()
-        Label(self.frmButtonsIndividualContent, text="Start arc(0-360):").grid(row=row, column=0, sticky=W)
-        Label(self.frmButtonsIndividualContent, text="End arc (0-360):").grid(row=row, column=2, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5, value="0.0",
-            textvariable=self.__arcstart).grid(
+        self.__heightA = StringVar()
+        self.__widthB = StringVar()
+        Label(self.frmButtonsIndividualContent, text="Height A").grid(row=row, column=0, sticky=W)
+        Label(self.frmButtonsIndividualContent, text="Width B").grid(row=row, column=2, sticky=W)
+        FloatEntry(self.frmButtonsIndividualContent, width=5, value="20.0",
+            textvariable=self.__heightA).grid(
             row=row, column=1, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5, value="0.0",
-            textvariable=self.__arcend).grid(row=row, column=3, sticky=W)
+        FloatEntry(self.frmButtonsIndividualContent, width=5, value="30.0",
+            textvariable=self.__widthB).grid(row=row, column=3, sticky=W)
 
         row += 1
         self.__depthtotal = StringVar()
@@ -167,12 +161,12 @@ class shapeTemplate(GeometricalFrame):
         row += 1
         self.__speed_XY_G02G03 = StringVar()
         self.__speed_Z_G01 = StringVar()
-        Label(self.frmButtonsIndividualContent, text="Feed (G02/G03 X/Y):").grid(row=row, column=0, sticky=W)
+        Label(self.frmButtonsIndividualContent, text="Feed (G01 X/Y):").grid(row=row, column=0, sticky=W)
         Label(self.frmButtonsIndividualContent, text="Feed (G01 Z):").grid(row=row, column=2, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5, value="100.0",
+        FloatEntry(self.frmButtonsIndividualContent, width=5, value="80.0",
             textvariable=self.__speed_XY_G02G03, mandatory=False).grid(
             row=row, column=1, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5, value="80.0",
+        FloatEntry(self.frmButtonsIndividualContent, width=5, value="50.0",
             textvariable=self.__speed_Z_G01, mandatory=False).grid(
             row=row, column=3, sticky=W)
 
@@ -202,7 +196,7 @@ class shapeTemplate(GeometricalFrame):
     def generateGCode(self):
         gc = ""
         # Preamble
-        gc += CR + "(set contour arc preamble)" + CR
+        gc += CR + "(set countour rectangle preamble)" + CR
         gc += self._preamble.get() + CR
         # set Unit
         gc += self.__unit.get() + CR
@@ -229,17 +223,19 @@ class shapeTemplate(GeometricalFrame):
         if (int(self.__CC.get()) == 5):
             xoffset = float(0.0) # ignore user input
             yoffset = float(0.0) # ignore user input
+
+        #
+        # <todo> restlichen Moeglichkeiten ausprogrammieren
+
+        a = float(self.__heightA.get())
+        b = float(self.__widthB.get())
+
+
         # X
-        X = (float(self.__dia.get()) / 2.0) + xoffset
+        X = 0.0 + xoffset
 
         # Y
-        Y = float(self.__centerY.get()) + yoffset
-
-        # I - this is the radius
-        I = (float(self.__dia.get()) / 2.0) * -1.0
-
-        # J
-        J = -0.0
+        Y = 0.0 + yoffset
 
         # cutter compensation
         if (self.__cuttercompensation.get() == "G40"):
@@ -253,6 +249,10 @@ class shapeTemplate(GeometricalFrame):
             gc += CR + "(-- Cutter compensation RIGHT --){}".format(CR)
             gc += "{} {}".format(self.__cuttercompensation.get(),CR)
             X += (float(self.__tooldia) / 2.0)
+
+        # <todo> pruefen ob cuttercompensation tatsaechlich stimmt
+        # wenn start X0 Y0 und cuttercompensation = G41, dann muesste eigentlich
+        # Y0+(ToolDia/2)
 
         # set start postion X/Y
         gc += "G00 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
@@ -274,8 +274,9 @@ class shapeTemplate(GeometricalFrame):
         z = 0.0
         loop = ""
         gc += CR + "(------- start shape -------------)" + CR
-        gc += "(-- Dia {0:06.3f}, Depth {1:06.3f}, Step Z {2:06.3f} --){3}".format(
-            float(self.__dia.get()),
+        gc += "(-- A {0:06.3f}, B {1:06.3f}, Depth {2:06.3f}, Step {3:06.3f} --){4}".format(
+            float(a),
+            float(b),
             depth,
             step,
             CR
@@ -302,17 +303,40 @@ class shapeTemplate(GeometricalFrame):
                 print "new Z: {}".format(z)
 
             loop += CR + "(set new Z {0:05.2f} position)".format(z) + CR
+
+
             loop += "G01 Z{0:08.3f} F{1:05.1f} {2}".format(
                 float(z),
                 float(self.__speed_Z_G01.get()), CR)
-            # set direction G02/G03
-            #
-            loop += self.__dir.get()
 
             #---------------------------------------------------
             # typical position for your own Gcode
             # indiviual GCode - START
             #---------------------------------------------------
+
+            gc += "G01 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
+                float(X + 0.0),
+                float(Y + b),
+                float(self.__speed_XY_G02G03.get()),
+                CR)
+
+            gc += "G01 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
+                float(X + a),
+                float(Y + b),
+                float(self.__speed_XY_G02G03.get()),
+                CR)
+
+            gc += "G01 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
+                float(X + a),
+                float(Y + 0.0),
+                float(self.__speed_XY_G02G03.get()),
+                CR)
+
+            gc += "G01 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
+                float(X + 0.0),
+                float(Y + 0.0),
+                float(self.__speed_XY_G02G03.get()),
+                CR)
 
             #---------------------------------------------------
             # indiviual GCode - END
