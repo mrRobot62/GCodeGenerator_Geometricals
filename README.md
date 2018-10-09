@@ -28,12 +28,14 @@ self.ContourMenu = Menu(self.FileMenu)
 self.FileMenu.add_cascade(label="Contour", menu=self.ContourMenu)
 
 # Contour - Arc
+```
 self.ContourMenu.add_command(label="Arc", command=self.DialogContourArc)
 #--------- Insert arc shapes here ---------------------#
 
 #------------------------------------------------------#
-
+```
 # sub menu Drilling
+```
 self.DrillingMenu = Menu(self.FileMenu)
 self.FileMenu.add_cascade(label="Drilling", menu=self.DrillingMenu)
 #--------- Insert drilling shapes here ---------------------#
