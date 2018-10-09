@@ -22,30 +22,32 @@ To extend functionality of this tool, there are two things to do
 To include your new functionality you have to extend the menu.
 Open `main.py` and include your stuff here:
 
-...
+
+```
+<snip>
 # sub menu Contour
 self.ContourMenu = Menu(self.FileMenu)
 self.FileMenu.add_cascade(label="Contour", menu=self.ContourMenu)
 
 # Contour - Arc
-```
 self.ContourMenu.add_command(label="Arc", command=self.DialogContourArc)
 #--------- Insert arc shapes here ---------------------#
 
 #------------------------------------------------------#
-```
+
 # sub menu Drilling
-```
 self.DrillingMenu = Menu(self.FileMenu)
 self.FileMenu.add_cascade(label="Drilling", menu=self.DrillingMenu)
 #--------- Insert drilling shapes here ---------------------#
 
 #------------------------------------------------------#
-...
+<snap>
+```
 
 Implement a callback function like this:
 
 ```
+<snip>
 #------ Menu callbacks ----------------
     def DialogContourArc(self):
         print "DialogContourArc"
@@ -57,6 +59,7 @@ Implement a callback function like this:
 #--------- Menu callbacks ---------------------#
 
 #------------------------------------------------------#
+<snap>
 ```
 
 Do not forget to import your new python module like This `from contourArc import *` at beginning of `main.py`
