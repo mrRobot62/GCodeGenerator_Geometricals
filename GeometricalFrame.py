@@ -6,6 +6,7 @@ from tkFont import Font
 from math import *
 from tkSimpleDialog import *
 
+CR = '\n'
 
 class GeometricalFrame(Frame):
     def __init__(self, app, master, frame, title):
@@ -108,7 +109,7 @@ class GeometricalFrame(Frame):
     def copyClipboard(self, event=None):
         print "copyClipboard"
         self.app.clipboard_clear()
-        self.app.clipboard_append(self.generateGCode())
+        self.app.clipboard_append(self.getGCode())
         pass
 
     def saveFile(self, event=None):
@@ -116,18 +117,37 @@ class GeometricalFrame(Frame):
         pass
 
     def copyAXIS(self, event=None):
-        gc = self.generateGCode()
+        gc = self.getGCode()
         print "copyAXIS ({})".format(gc)
-        sys.stdout.write(self.generateGCode())
+        sys.stdout.write(self.getGCode())
         self.quit()
 
     def showGCode(self, event=None):
-        gc = self.generateGCode()
+        gc = self.getGCode()
         print ">> call d.setData({})".format(gc)
         d = GCodeDialog(self.app, title="generated GCode")
         d.init(gc)
         d.update(gc)
         pass
+
+    def getGCode(self):
+        gc = "%"
+        gc += '''
+         __
+ _(\    |@@|
+(__/\__ \--/ __
+   \___|----|  |   __
+       \ }{ /\ )_ / _\\
+       /\__/\ \__O (__
+      (--/\--)    \__/
+      _)(  )(_
+     `---''---`
+   (c) by LunaX 2018
+        '''
+        gc += CR
+        gc += self.generateGCode()
+        gc += "%" + CR
+        return gc
 
     #------ EXIT --------------------------
     def cancel(self, event=None):
