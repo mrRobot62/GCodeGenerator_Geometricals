@@ -1,15 +1,9 @@
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-# GCode generator
-=======
->>>>>>> 69e0d65d37b6368885c9d51ec6eb47030d0487c7
 # GCode - Generator - Python
 
 With this python collection it is possible to create simple geometrical shapes and generate gcode.
 Primary this tool set is used for my LinuxCNC milling machine.
 
-** Tested with Python 2.7 **
+**Tested with Python 2.7**
 
 ## History:
 | Version | Description |
@@ -19,6 +13,8 @@ Primary this tool set is used for my LinuxCNC milling machine.
 ## Starting from console
 python main.py
 
+
+
 # Implement new shapes, pockets, surfaces, ...
 To extend functionality of this tool, there are two things to do
 
@@ -26,26 +22,24 @@ To extend functionality of this tool, there are two things to do
 To include your new functionality you have to extend the menu.
 Open `main.py` and include your stuff here:
 
-```
-        ...
-        # sub menu Contour
-        self.ContourMenu = Menu(self.FileMenu)
-        self.FileMenu.add_cascade(label="Contour", menu=self.ContourMenu)
+...
+# sub menu Contour
+self.ContourMenu = Menu(self.FileMenu)
+self.FileMenu.add_cascade(label="Contour", menu=self.ContourMenu)
 
-        # Contour - Arc
-        self.ContourMenu.add_command(label="Arc", command=self.DialogContourArc)
-        #--------- Insert arc shapes here ---------------------#
+# Contour - Arc
+self.ContourMenu.add_command(label="Arc", command=self.DialogContourArc)
+#--------- Insert arc shapes here ---------------------#
 
-        #------------------------------------------------------#
+#------------------------------------------------------#
 
-        # sub menu Drilling
-        self.DrillingMenu = Menu(self.FileMenu)
-        self.FileMenu.add_cascade(label="Drilling", menu=self.DrillingMenu)
-        #--------- Insert drilling shapes here ---------------------#
+# sub menu Drilling
+self.DrillingMenu = Menu(self.FileMenu)
+self.FileMenu.add_cascade(label="Drilling", menu=self.DrillingMenu)
+#--------- Insert drilling shapes here ---------------------#
 
-        #------------------------------------------------------#
-        ...
-```
+#------------------------------------------------------#
+...
 
 Implement a callback function like this:
 
@@ -63,13 +57,10 @@ Implement a callback function like this:
 #------------------------------------------------------#
 ```
 
-Do not forget to import your new python module like This
-`from contourArc import *`
-at beginning of `main.py`
+Do not forget to import your new python module like This `from contourArc import *` at beginning of `main.py`
 
 ## Implement your new functions
-Use `shapeTemplate.py`and make a copy of this file. Rename the copy to a
-approperiate filename like `contourArc.py`
+Use `shapeTemplate.py`and make a copy of this file. Rename the copy to a approperiate filename like `contourArc.py`
 
 Start with implementing of your code.
 
@@ -79,14 +70,9 @@ Start with implementing of your code.
 4. Insert your widgets in `def _frmIndividualContent(self)`
 5. Insert your gcode generator functionality in `def generateGCode(self):`
 
-Testing:
+**Testing:**
 start main.py, if implemenation in menu.py was correct, you should see, your new
 function inside menu.
 
-<<<<<<< HEAD
 Use your new function. A new window appears. Check your functionality.
-With button "GCode" you can check your generated GCODE before your do it on
-your CNC
-=======
->>>>>>> 36b5687fb9ec585b72f3e6a8abac769f75b8c184
->>>>>>> 69e0d65d37b6368885c9d51ec6eb47030d0487c7
+With button "GCode" you can check your generated GCODE **before** you do it on your CNC
