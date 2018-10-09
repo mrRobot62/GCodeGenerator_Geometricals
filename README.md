@@ -1,3 +1,9 @@
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+# GCode generator
+=======
+>>>>>>> 69e0d65d37b6368885c9d51ec6eb47030d0487c7
 # GCode - Generator - Python
 
 With this python collection it is possible to create simple geometrical shapes and generate gcode.
@@ -77,6 +83,10 @@ Testing:
 start main.py, if implemenation in menu.py was correct, you should see, your new
 function inside menu.
 
+<<<<<<< HEAD
 Use your new function. A new window appears. Check your functionality.
 With button "GCode" you can check your generated GCODE before your do it on
 your CNC
+=======
+>>>>>>> 36b5687fb9ec585b72f3e6a8abac769f75b8c184
+>>>>>>> 69e0d65d37b6368885c9d51ec6eb47030d0487c7
