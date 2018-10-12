@@ -1,10 +1,11 @@
 from Tkinter import *
 from tkFont import Font
 from math import *
-from Tkinter import *
 from tkFont import Font
 from math import *
 from tkSimpleDialog import *
+import tkMessageBox
+
 
 CR = '\n'
 
@@ -156,3 +157,13 @@ class GeometricalFrame(Frame):
         print "cancel"
         self.master.quit()
         pass
+
+    def MessageBox(self, state="INFO", title = "", text=""):
+        if state == "INFO":
+            tkMessageBox.showinfo(title, text)
+        elif state == "WARN":
+            tkMessageBox.showinfo(title, text)
+        elif state == "ERROR":
+            tkMessageBox.showerror(title, text)
+        else:
+            tkMessageBox.showtitle("!!!unknown - State !!!", text)
