@@ -43,6 +43,7 @@ import os
 
 from contourArc import *
 from contourRectangle import *
+from contourHoles import *
 
 IN_AXIS = os.environ.has_key("AXIS_PROGRESS_BAR")
 CR = '\n'
@@ -93,9 +94,11 @@ class GCodeGenerator(Frame):
 
         #--------- Insert contour shapes here ---------------------#
         # Contour - Arc
-        self.ContourMenu.add_command(label="Arc", command=self.DialogContourArc)
+        self.ContourMenu.add_command(label="Circle or Arc", command=self.DialogContourArc)
         # Contour - Arc
-        self.ContourMenu.add_command(label="Rec", command=self.DialogContourRec)
+        self.ContourMenu.add_command(label="Rectangle", command=self.DialogContourRec)
+        # Contour - Holes
+        self.ContourMenu.add_command(label="Holes on circle", command=self.DialogContourHoles)
 
         #------------------------------------------------------#
 
@@ -138,6 +141,14 @@ class GCodeGenerator(Frame):
         print "DialogContourRec"
         title = "Contour Rectangle"
         self.myApp = ContourRectangle(self.app, self.master, self.frame, title)
+        self.myApp.init()
+        self.myApp.show()
+        pass
+
+    def DialogContourHoles(self):
+        print "DialogContourHoles"
+        title = "Contour Holes on a circle"
+        self.myApp = ContourHoles(self.app, self.master, self.frame, title)
         self.myApp.init()
         self.myApp.show()
         pass
