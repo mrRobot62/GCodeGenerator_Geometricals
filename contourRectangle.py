@@ -69,7 +69,7 @@ class ContourRectangle(GeometricalFrame):
         choices = [1,2,3,4,5,6,7,8,9]
 
         self.__CC = StringVar()
-        self.__CC.set(choices[4])
+        self.__CC.set(choices[8])
         self._changeImage(self.__CC.get())
         Label(self.frmButtonsIndividualContent, text='Coordinate Center').grid(row=row, column=0, sticky=W)
         OptionMenu(self.frmButtonsIndividualContent,
@@ -116,8 +116,8 @@ class ContourRectangle(GeometricalFrame):
         row += 1
         self.__centerX = StringVar()
         self.__centerY = StringVar()
-        Label(self.frmButtonsIndividualContent, text='Center X:*').grid(row=row, column=0, sticky=W)
-        Label(self.frmButtonsIndividualContent, text="Center Y:*").grid(row=row, column=2, sticky=W)
+        Label(self.frmButtonsIndividualContent, text='Center X (only for 1,2,3,4)').grid(row=row, column=0, sticky=W)
+        Label(self.frmButtonsIndividualContent, text='Center Y (only for 1,2,3,4)').grid(row=row, column=2, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=10, value="0.0", mandatory=True,
             textvariable=self.__centerX).grid(row=row, column=1, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=10, value="0.0", mandatory=True,
@@ -194,6 +194,15 @@ class ContourRectangle(GeometricalFrame):
     # insert your code bettween marked rows
     #-------------------------------------------------------------
     def generateGCode(self):
+        X = float(0.0)
+        Y = float(0.0)
+        Z = float(0.0)
+
+        xoffset = float(0.0)
+        yoffset = float(0.0)
+        a = float(self.__heightA.get())
+        b = float(self.__widthB.get())
+
         gc = ""
         # Preamble
         gc += CR + "(set countour rectangle preamble)" + CR
@@ -206,72 +215,80 @@ class ContourRectangle(GeometricalFrame):
             float(self.__safety_Z.get()),
             float(self.__speed_Z_G00.get()), CR)
 
-        xoffset = float(0.0)
-        yoffset = float(0.0)
-        if (int(self.__CC.get()) == 1):
-            xoffset = float(self.__centerX.get())
-            yoffset = float(self.__centerY.get())
-        if (int(self.__CC.get()) == 2):
-            xoffset = float(self.__centerX.get())
-            yoffset = -float(self.__centerY.get())
-        if (int(self.__CC.get()) == 3):
-            xoffset = -float(self.__centerX.get())
-            yoffset = -float(self.__centerY.get())
-        if (int(self.__CC.get()) == 4):
-            xoffset = -float(self.__centerX.get())
-            yoffset = float(self.__centerY.get())
-        if (int(self.__CC.get()) == 5):
-            xoffset = float(0.0) # ignore user input
-            yoffset = float(0.0) # ignore user input
-
         #
-        # <todo> restlichen Moeglichkeiten ausprogrammieren
+        # even which center point user choosed, we start on
+        # center point object - left down (5)
 
-        a = float(self.__heightA.get())
-        b = float(self.__widthB.get())
+        # mill left down
+        if (int(self.__CC.get()) == 1):
+            X = float(self.__centerX.get())
+            Y = float(self.__centerY.get())
+        # mill left upper
+        if (int(self.__CC.get()) == 2):
+            X = float(self.__centerX.get())
+            Y = -float(self.__centerY.get())
+        # mill right upper
+        if (int(self.__CC.get()) == 3):
+            X = -float(self.__centerX.get())
+            Y = -float(self.__centerY.get())
+        # mill right down
+        if (int(self.__CC.get()) == 4):
+            X = -float(self.__centerX.get())
+            Y = float(self.__centerY.get())
 
-
-        # X
-        X = 0.0 + xoffset
-
-        # Y
-        Y = 0.0 + yoffset
+        # object left down - this is our real center point
+        if (int(self.__CC.get()) == 5):
+            X = float(0.0)
+            Y = float(0.0)
+        # object left upper
+        if (int(self.__CC.get()) == 6):
+            X = float(0.0)
+            Y = float(0.0) - a
+        # object right upper
+        if (int(self.__CC.get()) == 7):
+            X = float(0.0) - b
+            Y = float(0.0) - a
+        # object right down
+        if (int(self.__CC.get()) == 8):
+            X = float(0.0) - b
+            Y = float(0.0)
+        # object center
+        if (int(self.__CC.get()) == 9):
+            print "cc 9"
+            X += float(0.0) - (b/2.0)
+            Y = float(0.0) - (a/2.0)
 
         # cutter compensation
+        ccX = 0.0
+        ccY = 0.0
         if (self.__cuttercompensation.get() == "G40"):
             gc += CR + "(-- Cutter compensation --){}".format(CR)
             gc += "{} {}".format(self.__cuttercompensation.get(),CR)
         if (self.__cuttercompensation.get() == "G41"):
             gc += CR + "(-- Cutter compensation LEFT --){}".format(CR)
             gc += "{} {}".format(self.__cuttercompensation.get(),CR)
-            X -= (float(self.__tooldia) / 2.0)
-        if (self.__cuttercompensation.get() == "G41"):
+            ccX = -(float(self.__tooldia) / 2.0)
+            ccY = -(float(self.__tooldia) / 2.0)
+        if (self.__cuttercompensation.get() == "G42"):
             gc += CR + "(-- Cutter compensation RIGHT --){}".format(CR)
             gc += "{} {}".format(self.__cuttercompensation.get(),CR)
-            X += (float(self.__tooldia) / 2.0)
+            ccX = (float(self.__tooldia) / 2.0)
+            ccY = (float(self.__tooldia) / 2.0)
 
-        # <todo> pruefen ob cuttercompensation tatsaechlich stimmt
-        # wenn start X0 Y0 und cuttercompensation = G41, dann muesste eigentlich
-        # Y0+(ToolDia/2)
+        if (self.__dir.get() == "G03"):
+            # mill run CCW
+            ccX *= -1
+            ccY *= -1
 
-        # set start postion X/Y
-        gc += "G00 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
-            float(X),
-            float(Y),
-            float(self.__speed_XY_G00.get()),
-            CR)
+        X += ccX
+        Y += ccY
 
-        # start with shape
-        gc += CR + "(move Z-axis to start postion near surface)" + CR
-        gc += "G00 Z{0:08.3f} F{1:05.1f} {2}".format(
-            float(self.__start_Z.get()),
-            float(self.__speed_Z_G00.get()), CR)
         #
         # generate as many shape steps are needed until depthtotal is reached
         # cut an Arc
         step = float(self.__depthstep.get())
         depth = float(self.__depthtotal.get())
-        z = 0.0
+        z = step
         loop = ""
         gc += CR + "(------- start shape -------------)" + CR
         gc += "(-- A {0:06.3f}, B {1:06.3f}, Depth {2:06.3f}, Step {3:06.3f} --){4}".format(
@@ -286,12 +303,29 @@ class ContourRectangle(GeometricalFrame):
             float(Y),
             CR
         )
+        # start with shape
+        gc += CR + "(move Z-axis to start postion near surface)" + CR
+        gc += "G00 Z{0:08.3f} F{1:05.1f} {2}".format(
+            float(self.__start_Z.get()),
+            float(self.__speed_Z_G00.get()), CR)
+
+        # set start postion X/Y
+        gc += "G00 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
+            float(X),
+            float(Y),
+            float(self.__speed_XY_G00.get()),
+            CR)
+
+
         #----------------------------------------------------------------------
         # This loop asume, that you try to mill into your object.
         # if not needed for your shape, remove this part and rewrite
         #----------------------------------------------------------------------
         #
         gc += CR + "(-- loop --)" + CR
+        # start with shape
+
+        # set start postion X/Y
         while (abs(z) < abs(depth)):
             # set next Z depth
             if ((abs(depth) - abs(z)) < abs(step)):
@@ -302,41 +336,9 @@ class ContourRectangle(GeometricalFrame):
                 z -= abs(step)
                 print "new Z: {}".format(z)
 
-            loop += CR + "(set new Z {0:05.2f} position)".format(z) + CR
-
-
-            loop += "G01 Z{0:08.3f} F{1:05.1f} {2}".format(
-                float(z),
-                float(self.__speed_Z_G01.get()), CR)
-
-            #---------------------------------------------------
-            # typical position for your own Gcode
-            # indiviual GCode - START
-            #---------------------------------------------------
-
-            gc += "G01 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
-                float(X + 0.0),
-                float(Y + b),
-                float(self.__speed_XY_G02G03.get()),
-                CR)
-
-            gc += "G01 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
-                float(X + a),
-                float(Y + b),
-                float(self.__speed_XY_G02G03.get()),
-                CR)
-
-            gc += "G01 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
-                float(X + a),
-                float(Y + 0.0),
-                float(self.__speed_XY_G02G03.get()),
-                CR)
-
-            gc += "G01 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
-                float(X + 0.0),
-                float(Y + 0.0),
-                float(self.__speed_XY_G02G03.get()),
-                CR)
+            #
+            # start with this start position
+            loop += self.__createGCodeRect(X,Y,Z,a,b)
 
             #---------------------------------------------------
             # indiviual GCode - END
@@ -351,5 +353,42 @@ class ContourRectangle(GeometricalFrame):
         gc += "(----------------------------------)" + CR
         gc += self._postamble.get() + CR
         gc += CR
-        print gc
+        #print gc
         return  gc
+
+    def __createGCodeRect(self, x,y,z,a,b):
+        gc = ""
+        gc += CR + "(set new Z {0:05.2f} position)".format(z) + CR
+        gc += "G00 Z{0:08.3f} F{1:05.1f} {2}".format(
+            float(z),
+            float(self.__speed_Z_G00.get()), CR)
+
+        # go to left up
+        gc += "G01 X{0:08.3f} Y{1:08.3f} Z{2:08.3f} F{3:05.1f} {4}".format(
+                float(x),
+                float(y + a),
+                float(z),
+                float(self.__speed_XY_G02G03.get()),
+                CR)
+        # go right up
+        gc += "G01 X{0:08.3f} Y{1:08.3f} Z{2:08.3f} F{3:05.1f} {4}".format(
+                float(x + b),
+                float(y + a),
+                float(z),
+                float(self.__speed_XY_G02G03.get()),
+                CR)
+        # go right down
+        gc += "G01 X{0:08.3f} Y{1:08.3f} Z{2:08.3f} F{3:05.1f} {4}".format(
+                float(x),
+                float(y-b),
+                float(z),
+                float(self.__speed_XY_G02G03.get()),
+                CR)
+        # back to start (left down)
+        gc += "G01 X{0:08.3f} Y{1:08.3f} Z{2:08.3f} F{3:05.1f} {4}".format(
+                float(x),
+                float(y),
+                float(z),
+                float(self.__speed_XY_G02G03.get()),
+                CR)
+        return gc
