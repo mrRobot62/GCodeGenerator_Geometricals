@@ -68,6 +68,10 @@ class shapeTemplate(GeometricalFrame):
         row = 0
         choices = [1,2,3,4,5,6,7,8,9]
 
+        #------------------------------------------------------------------
+        # Standard widgets for every classes
+        #------------------------------------------------------------------
+
         self.__CC = StringVar()
         self.__CC.set(choices[8])
         self._changeImage(self.__CC.get())
@@ -122,23 +126,15 @@ class shapeTemplate(GeometricalFrame):
         FloatEntry(self.frmButtonsIndividualContent, width=10, value="0.0", mandatory=True,
             textvariable=self.__centerY).grid(row=row, column=3, sticky=W)
 
-        row += 1
-        self.__dia = StringVar()
-        Label(self.frmButtonsIndividualContent, text="Arc diameter").grid(row=row, column=0, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=10, value = "", mandatory=True,
-            textvariable=self.__dia,
-            background="Red").grid(row=row, column=1, sticky=W)
+        #------------------------------------------------------------------
+        # include your specific widgets from here
+        #------------------------------------------------------------------
 
-        row += 1
-        self.__arcstart = StringVar()
-        self.__arcend = StringVar()
-        Label(self.frmButtonsIndividualContent, text="Start arc(0-360)").grid(row=row, column=0, sticky=W)
-        Label(self.frmButtonsIndividualContent, text="End arc (0-360)").grid(row=row, column=2, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5, value="0.0",
-            textvariable=self.__arcstart).grid(
-            row=row, column=1, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5, value="0.0",
-            textvariable=self.__arcend).grid(row=row, column=3, sticky=W)
+
+
+        #------------------------------------------------------------------
+        # Standard widgets for every classes
+        #------------------------------------------------------------------
 
         row += 1
         self.__depthtotal = StringVar()
@@ -178,17 +174,15 @@ class shapeTemplate(GeometricalFrame):
 
         row += 1
         self.__start_Z = StringVar()
+        self.__safety_Z = StringVar()
         Label(self.frmButtonsIndividualContent, text="Start Z").grid(row=row, column=0, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=10, value="3.0",
             textvariable=self.__start_Z, mandatory=False).grid(
             row=row, column=1, sticky=W)
-
-        row += 1
-        self.__safety_Z = StringVar()
-        Label(self.frmButtonsIndividualContent, text="Safety Z").grid(row=row, column=0, sticky=W)
+        Label(self.frmButtonsIndividualContent, text="Safety Z").grid(row=row, column=2, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=10, value="10.0",
             textvariable=self.__safety_Z, mandatory=False).grid(
-            row=row, column=1, sticky=W)
+            row=row, column=3, sticky=W)
 
         #-----------------------------------------------------
         self.frmButtonsIndividualContent.pack(expand=True, fill=BOTH)
@@ -200,6 +194,9 @@ class shapeTemplate(GeometricalFrame):
     # insert your code bettween marked rows
     #-------------------------------------------------------------
     def generateGCode(self):
+        #------------------------------------------------------------------
+        # Standard gcode generation
+        #------------------------------------------------------------------
         gc = ""
         # Preamble
         gc += CR + "(set contour arc preamble)" + CR
@@ -211,6 +208,13 @@ class shapeTemplate(GeometricalFrame):
         gc += "G00 Z{0:08.3f} F{1:05.1f} {2}".format(
             float(self.__safety_Z.get()),
             float(self.__speed_Z_G00.get()), CR)
+
+        #------------------------------------------------------------------
+        # x/y offset is used to compensate mill center point and
+        # object center point.
+        # Better: due to self_CC, we have to move X/Y point.
+        # you have to review below lines and adapt them to your behaviour
+        #------------------------------------------------------------------
 
         xoffset = float(0.0)
         yoffset = float(0.0)
@@ -229,18 +233,14 @@ class shapeTemplate(GeometricalFrame):
         if (int(self.__CC.get()) == 5):
             xoffset = float(0.0) # ignore user input
             yoffset = float(0.0) # ignore user input
-        # X
-        X = (float(self.__dia.get()) / 2.0) + xoffset
 
-        # Y
-        Y = float(self.__centerY.get()) + yoffset
-
-        # I - this is the radius
-        I = (float(self.__dia.get()) / 2.0) * -1.0
-
-        # J
-        J = -0.0
-
+        #------------------------------------------------------------------
+        # cutter __cuttercompensation
+        # depending on your shape, you have to reimplement below Code
+        #
+        # e.G. if you mill a shape like an rectangle, triangle, ... you
+        # have to use X/Y for cutter compensation
+        #------------------------------------------------------------------
         # cutter compensation
         if (self.__cuttercompensation.get() == "G40"):
             gc += CR + "(-- Cutter compensation --){}".format(CR)
@@ -286,7 +286,7 @@ class shapeTemplate(GeometricalFrame):
             CR
         )
         #----------------------------------------------------------------------
-        # This loop asume, that you try to mill into your object.
+        # This loop assume, that you try to mill into your object.
         # if not needed for your shape, remove this part and rewrite
         #----------------------------------------------------------------------
         #
@@ -312,6 +312,10 @@ class shapeTemplate(GeometricalFrame):
             #---------------------------------------------------
             # typical position for your own Gcode
             # indiviual GCode - START
+            #
+            # maybe due to your implementation, you have to recreate
+            # this complete gcode generation method
+            #
             #---------------------------------------------------
 
             #---------------------------------------------------
