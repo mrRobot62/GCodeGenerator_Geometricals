@@ -27,7 +27,7 @@ class ContourHoles(GeometricalFrame):
     def init(self):
         self.__imageNames = [
             # center
-            "./img/contour/mill-circle-points.jpg",
+            "./img/contour/mill-circle-points.png",
         ]
 
     #-------------------------------------------------------------
@@ -36,9 +36,8 @@ class ContourHoles(GeometricalFrame):
     def _changeImage(self, value):
         print len(self.__imageNames)
         i = int(value) - 1
-        if (i >= 5): i = 4
-        if (i >= 5): i = 4
-
+        if (len(self.__imageNames) < i):
+            i = len(self.__imageNames) - 1
         p = self.__imageNames[i]
         self.img = PIL.Image.open(p)
         self.photo = PIL.ImageTk.PhotoImage(self.img)
@@ -95,15 +94,13 @@ class ContourHoles(GeometricalFrame):
 
         row += 1
         self.__tooldia = StringVar()
+        self.__numberOfHoles = StringVar()
         Label(self.frmButtonsIndividualContent, text="Tool diameter").grid(row=row, column=0, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=10, value="3.0", mandatory=False,
             textvariable=self.__tooldia).grid(row=row, column=1, sticky=W)
-
-        row += 1
-        self.__numberOfHoles = StringVar()
-        Label(self.frmButtonsIndividualContent, text="Number of Holes").grid(row=row, column=0, sticky=W)
+        Label(self.frmButtonsIndividualContent, text="Number of Holes").grid(row=row, column=2, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=10, value="4", mandatory=False,
-            textvariable=self.__numberOfHoles).grid(row=row, column=1, sticky=W)
+            textvariable=self.__numberOfHoles).grid(row=row, column=3, sticky=W)
 
         row += 1
         self.__centerX = StringVar()
@@ -116,11 +113,16 @@ class ContourHoles(GeometricalFrame):
             textvariable=self.__centerY).grid(row=row, column=3, sticky=W)
 
         row += 1
+        self.__holeRadius = StringVar()
         self.__circleRadius = StringVar()
-        Label(self.frmButtonsIndividualContent, text="Circle radius").grid(row=row, column=0, sticky=W)
+        Label(self.frmButtonsIndividualContent, text="Hole radius (R1)").grid(row=row, column=0, sticky=W)
+        FloatEntry(self.frmButtonsIndividualContent, width=10, value = self.__tooldia.get(), mandatory=True,
+            textvariable=self.__holeRadius,
+            background="Red").grid(row=row, column=1, sticky=W)
+        Label(self.frmButtonsIndividualContent, text="Circle radius (R)").grid(row=row, column=2, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=10, value = "", mandatory=True,
             textvariable=self.__circleRadius,
-            background="Red").grid(row=row, column=1, sticky=W)
+            background="Red").grid(row=row, column=3, sticky=W)
 
         row += 1
         self.__initialStartAngle = StringVar()
@@ -172,12 +174,12 @@ class ContourHoles(GeometricalFrame):
             textvariable=self.__start_Z, mandatory=False).grid(
             row=row, column=1, sticky=W)
 
-        row += 1
+        #row += 1
         self.__safety_Z = StringVar()
-        Label(self.frmButtonsIndividualContent, text="Safety Z:").grid(row=row, column=0, sticky=W)
+        Label(self.frmButtonsIndividualContent, text="Safety Z:").grid(row=row, column=2, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=10, value="10.0",
             textvariable=self.__safety_Z, mandatory=False).grid(
-            row=row, column=1, sticky=W)
+            row=row, column=3, sticky=W)
 
         #-----------------------------------------------------
         self.frmButtonsIndividualContent.pack(expand=True, fill=BOTH)
