@@ -11,6 +11,7 @@ Primary this tool set is used for my LinuxCNC milling machines.
 | Version | Description |
 |---------|----------------------------------------------------|
 |0.1 | initial version with contour circel shape unstable version |
+|0.2 | save to file implemented |
 
 ## Starting from console
 python main.py
