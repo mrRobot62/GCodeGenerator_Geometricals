@@ -225,3 +225,21 @@ class FloatEntry(ValidatingEntry):
         except ValueError:
             #print "FloatError"
             return float('nan')
+
+class FloatEntry2(ValidatingEntry):
+    def __init__(self, master, min=None, max=None, value="", mandatory=False, **kw):
+        ValidatingEntry.__init__(master, value, mandatory, **kw)
+        self.__min = min
+        self.__max = max
+
+
+    def validate(self, value):
+        #print "call me from super class"
+        try:
+            if value:
+                v = float(value)
+                
+            return v
+        except ValueError:
+            #print "FloatError"
+            return float('nan')

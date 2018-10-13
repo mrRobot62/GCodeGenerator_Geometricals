@@ -333,3 +333,12 @@ class shapeTemplate(GeometricalFrame):
         gc += CR
         print gc
         return  gc
+
+    def validate(self):
+        # override in your child class
+        #
+        # useful to validate user input from widgets
+        # return False if an error occured
+        # return True if everything is ok
+
+        pass 

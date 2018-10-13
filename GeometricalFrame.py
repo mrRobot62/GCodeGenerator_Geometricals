@@ -5,7 +5,7 @@ from tkFont import Font
 from math import *
 from tkSimpleDialog import *
 import tkMessageBox
-
+import tkFileDialog
 
 CR = '\n'
 
@@ -86,14 +86,19 @@ class GeometricalFrame(Frame):
                 row=0, column=1
             )
 
+        btnSave = Button(self.frmButtons, text="Save as", width=10,
+            command=self.saveFile).grid(
+                row=0, column=2
+            )
+
         btnOK = Button(self.frmButtons, text="Gcode", width=10,
             command=self.showGCode).grid(
-                row=0, column=2
+                row=0, column=3
             )
 
         btnCancel = Button(self.frmButtons, text="Cancel", width=10,
             command=self.cancel).grid(
-                row=0, column=3
+                row=0, column=4
             )
 
 
@@ -115,6 +120,20 @@ class GeometricalFrame(Frame):
 
     def saveFile(self, event=None):
         print "saveFile"
+        gc = self.getGCode()
+        fname = tkFileDialog.asksaveasfilename(
+            initialdir = "./",
+            title = "Save file",
+            defaultextension = "*.ngc",
+            filetypes = (("Axis ","*.ngc"),("Gcode ","*.gc"),("all files","*.*"))
+            )
+        if (fname == None):
+            # cancle button
+            return None
+        print ("Save gcode to '{}'".format(fname))
+        f = open(fname,"w")
+        f.write(fname)
+        f.close()
         pass
 
     def copyAXIS(self, event=None):
