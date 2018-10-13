@@ -32,6 +32,7 @@
     https://github.com/linuxcnc/simple-gcode-generators
 
     0.1 intial with ARCGEN function
+    0.2 file save implemented
 
 """
 
