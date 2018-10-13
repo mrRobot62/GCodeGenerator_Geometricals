@@ -3,9 +3,8 @@
 With this python collection it is possible to create simple geometrical shapes and generate gcode.
 Primary this tool set is used for my LinuxCNC milling machines.
 
-**Tested with Python 2.7 **
-
-**Status October 2018 - under development - currently contourARC is finished **
+**Tested with Python 2.7
+Status October 2018 - under development - currently contourARC is finished **
 
 
 ## History:
