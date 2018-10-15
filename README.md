@@ -15,7 +15,7 @@ Status October 2018 - under development - currently contourARC is finished **
 |0.3 | contourRectange & contourHoles |
 
 ## Example screenshot (more details inside WIKI)
-(https://github.com/mrRobot62/GCodeGenerator_Geometricals/blob/master/img/screenshots/screen_cCircle.png)
+![](https://github.com/mrRobot62/GCodeGenerator_Geometricals/blob/master/img/screenshots/screen_cCircle.png)
 
 
 ## Starting from console
