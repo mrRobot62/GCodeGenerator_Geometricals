@@ -79,7 +79,7 @@ class ContourHoles(GeometricalFrame):
         Radiobutton(self.frmButtonsIndividualContent, text="CW (G02)", variable=self.__dir,
                     value="G02").grid(row=row, column=1, sticky=W)
         Radiobutton(self.frmButtonsIndividualContent, text="CCW (G03)", variable=self.__dir,
-                    value=1).grid(row=row, column=2, sticky=W)
+                    value="G03").grid(row=row, column=2, sticky=W)
 
         row += 1
         self.__cuttercompensation = StringVar()
@@ -93,91 +93,102 @@ class ContourHoles(GeometricalFrame):
             value="G42").grid(row=row, column=3, sticky=W)
 
         row += 1
-        self.__tooldia = StringVar()
-        self.__numberOfHoles = StringVar()
+        self.__tooldia = StringVar(value="3.0")
+        self.__numberOfHoles = StringVar(value="4")
+        #vcmd = (self.frmButtonsIndividualContent.register(self._updateAngle), '%s', '%S')
+
         Label(self.frmButtonsIndividualContent, text="Tool diameter").grid(row=row, column=0, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=10, value="3.0", mandatory=False,
+        FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=False,
             textvariable=self.__tooldia).grid(row=row, column=1, sticky=W)
         Label(self.frmButtonsIndividualContent, text="Number of Holes").grid(row=row, column=2, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=10, value="4", mandatory=False,
+        IntegerEntry(self.frmButtonsIndividualContent, width=10,
+            mandatory=True, validate="focusout",
+            vcmd=self._updateAngle,
             textvariable=self.__numberOfHoles).grid(row=row, column=3, sticky=W)
 
         row += 1
-        self.__centerX = StringVar()
-        self.__centerY = StringVar()
+        self.__centerX = StringVar(value="0.0")
+        self.__centerY = StringVar(value="0.0")
         Label(self.frmButtonsIndividualContent, text='Center X').grid(row=row, column=0, sticky=W)
         Label(self.frmButtonsIndividualContent, text="Center Y").grid(row=row, column=2, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=10, value="0.0", mandatory=True,
+        FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=True,
             textvariable=self.__centerX).grid(row=row, column=1, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=10, value="0.0", mandatory=True,
+        FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=True,
             textvariable=self.__centerY).grid(row=row, column=3, sticky=W)
 
         row += 1
-        self.__holeRadius = StringVar()
-        self.__circleRadius = StringVar()
+        self.__holeRadius = StringVar(value = "10.0")
+        self.__circleRadius = StringVar(value = "")
         Label(self.frmButtonsIndividualContent, text="Hole radius (R1)").grid(row=row, column=0, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=10, value = self.__tooldia.get(), mandatory=True,
+        FloatEntry(self.frmButtonsIndividualContent, width=10,  mandatory=True,
             textvariable=self.__holeRadius,
             background="Red").grid(row=row, column=1, sticky=W)
         Label(self.frmButtonsIndividualContent, text="Circle radius (R)").grid(row=row, column=2, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=10, value = "", mandatory=True,
+        FloatEntry(self.frmButtonsIndividualContent, width=10,  mandatory=True,
             textvariable=self.__circleRadius,
             background="Red").grid(row=row, column=3, sticky=W)
 
         row += 1
-        self.__initialStartAngle = StringVar()
-        Label(self.frmButtonsIndividualContent, text="Initial start angle").grid(row=row, column=0, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5, value="0.0",
+        self.__angle = 0
+        self.__initialStartAngle = StringVar(value=self.__angle)
+        self.__holeAngle = StringVar(value = "45.0")
+        Label(self.frmButtonsIndividualContent, text="Initial start angle").grid(
+            row=row, column=0, sticky=W)
+        self.__w5 = FloatEntry(self.frmButtonsIndividualContent, width=5,
             textvariable=self.__initialStartAngle).grid(
             row=row, column=1, sticky=W)
+        Label(self.frmButtonsIndividualContent, text="Angle between holes").grid(
+            row=row, column=2, sticky=W)
+        Label(self.frmButtonsIndividualContent, textvariable=self.__holeAngle).grid(
+            row=row, column=3, sticky=W)
 
         row += 1
-        self.__depthtotal = StringVar()
-        self.__depthstep = StringVar()
+        self.__depthtotal = StringVar(value="-0.5")
+        self.__depthstep = StringVar(value="-0.5")
         Label(self.frmButtonsIndividualContent, text="Total depth").grid(row=row, column=0, sticky=W)
         Label(self.frmButtonsIndividualContent, text="depth cutting per step").grid(
             row=row, column=2, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5, value="0.5",
+        FloatEntry(self.frmButtonsIndividualContent, width=5,
             textvariable=self.__depthtotal, mandatory=True).grid(
             row=row, column=1, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5, value="0.5",
+        FloatEntry(self.frmButtonsIndividualContent, width=5,
             textvariable=self.__depthstep, mandatory=True).grid(
             row=row, column=3, sticky=W)
 
         row += 1
-        self.__speed_XY_G00 = StringVar()
-        self.__speed_Z_G00 = StringVar()
+        self.__speed_XY_G00 = StringVar(value="200.0")
+        self.__speed_Z_G00 = StringVar(value="100.0")
         Label(self.frmButtonsIndividualContent, text="Feed (G00 X/Y)").grid(row=row, column=0, sticky=W)
         Label(self.frmButtonsIndividualContent, text="Feed (G00 Z)").grid(row=row, column=2, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5, value="200.0",
+        FloatEntry(self.frmButtonsIndividualContent, width=5,
             textvariable=self.__speed_XY_G00, mandatory=False).grid(
             row=row, column=1, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5, value="200.0",
+        FloatEntry(self.frmButtonsIndividualContent, width=5,
             textvariable=self.__speed_Z_G00, mandatory=False).grid(row=row, column=3, sticky=W)
 
         row += 1
-        self.__speed_XY_G02G03 = StringVar()
-        self.__speed_Z_G01 = StringVar()
+        self.__speed_XY_G02G03 = StringVar(value="100.0")
+        self.__speed_Z_G01 = StringVar(value="80.0")
         Label(self.frmButtonsIndividualContent, text="Feed (G02/G03 X/Y)").grid(row=row, column=0, sticky=W)
         Label(self.frmButtonsIndividualContent, text="Feed (G01 Z)").grid(row=row, column=2, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5, value="100.0",
+        FloatEntry(self.frmButtonsIndividualContent, width=5,
             textvariable=self.__speed_XY_G02G03, mandatory=False).grid(
             row=row, column=1, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5, value="80.0",
+        FloatEntry(self.frmButtonsIndividualContent, width=5,
             textvariable=self.__speed_Z_G01, mandatory=False).grid(
             row=row, column=3, sticky=W)
 
         row += 1
-        self.__start_Z = StringVar()
+        self.__start_Z = StringVar(value="3.0")
         Label(self.frmButtonsIndividualContent, text="Start Z").grid(row=row, column=0, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=10, value="3.0",
+        FloatEntry(self.frmButtonsIndividualContent, width=10,
             textvariable=self.__start_Z, mandatory=False).grid(
             row=row, column=1, sticky=W)
 
         #row += 1
-        self.__safety_Z = StringVar()
+        self.__safety_Z = StringVar(value="10.0")
         Label(self.frmButtonsIndividualContent, text="Safety Z:").grid(row=row, column=2, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=10, value="10.0",
+        FloatEntry(self.frmButtonsIndividualContent, width=10,
             textvariable=self.__safety_Z, mandatory=False).grid(
             row=row, column=3, sticky=W)
 
@@ -185,15 +196,52 @@ class ContourHoles(GeometricalFrame):
         self.frmButtonsIndividualContent.pack(expand=True, fill=BOTH)
         pass
 
+    '''
+        used to update angle if number of holes changed
+    '''
+    def _updateAngle(self, nV, **kv):
+        print ("update hole angle")
+        self.__angle = round(45.0,1)
+        if (self.__numberOfHoles.get() > 0):
+            # pre set of
+            self.__angle = round(360.0 / float(nV),1)
+            print ("update angle between holes {0:5.2f} Holes {1}".format(
+                self.__angle, nV
+            ))
+            self.__holeAngle.set(str(self.__angle))
+        return True
+
+
     #-------------------------------------------------------------
     # here you generate your GCode.
     # some of this code should be used every time.
     # insert your code bettween marked rows
     #-------------------------------------------------------------
     def generateGCode(self):
+
+        # x/y position for circle
+        cPoint = (0.0, 0.0) # X/Y entire circle
+        hCPoint = (0.0, 0.0) # center hole X/Y
+
+
+        # radius r = entire Circle, r1= radius per hole
+        r1 = float(self.__holeRadius.get())
+        r = float(self.__circleRadius.get())
+        # tool diameter
+        tD = float(self.__tooldia.get())
+
+        # angles
+        startAngle = float(self.__initialStartAngle.get())
+        holeAngle = float(self.__holeAngle.get())
+
+        if (self.validate() == False):
+            # an error occured
+            return None
+
         gc = ""
+        loop = ""
         # Preamble
-        gc += CR + "(set contour holes preamble)" + CR
+        gc += CR + "(set ContourHoles preamble)" + CR
         gc += self._preamble.get() + CR
         # set Unit
         gc += self.__unit.get() + CR
@@ -203,143 +251,186 @@ class ContourHoles(GeometricalFrame):
             float(self.__safety_Z.get()),
             float(self.__speed_Z_G00.get()), CR)
 
-        xoffset = float(0.0)
-        yoffset = float(0.0)
+        #
+        # to make it easier, we calculate everything on center of
+        # entiere circle (CC=5) = X/Y = 0.0 + CenterPositions
+        cOffset = (0.0, 0.0) # Offset for entire circle X/Y
+        hOffset = (0.0, 0.0) # start position including cutter compensation
+
         if (int(self.__CC.get()) == 1):
-            xoffset = float(self.__centerX.get())
-            yoffset = float(self.__centerY.get())
-        if (int(self.__CC.get()) == 2):
-            xoffset = float(self.__centerX.get())
-            yoffset = -float(self.__centerY.get())
-        if (int(self.__CC.get()) == 3):
-            xoffset = -float(self.__centerX.get())
-            yoffset = -float(self.__centerY.get())
-        if (int(self.__CC.get()) == 4):
-            xoffset = -float(self.__centerX.get())
-            yoffset = float(self.__centerY.get())
-        if (int(self.__CC.get()) == 5):
-            xoffset = float(0.0) # ignore user input
-            yoffset = float(0.0) # ignore user input
-        # X
-        X = (float(self.__circleRadius.get()) / 2.0) + xoffset
+            cOffset = (float(self.__centerX.get()), float(self.__centerY.get()))
+        elif (int(self.__CC.get()) == 2):
+            cOffset = (float(self.__centerX.get()), -float(self.__centerY.get()))
+        elif (int(self.__CC.get()) == 3):
+            cOffset = (-float(self.__centerX.get()), -float(self.__centerY.get()))
+        elif (int(self.__CC.get()) == 4):
+            cOffset = (-float(self.__centerX.get()), float(self.__centerY.get()))
+        elif (int(self.__CC.get()) == 5):
+            cOffset = (float(0.0),float(0.0)) # ignore user input
+        else:
+            print ("unknown center point choose ({})".format(self.__CC.get()))
+            cOffset = (0.0, 0.0)
 
-        # Y
-        Y = float(self.__centerY.get()) + yoffset
+        # X/Y entire circle
+        cPoint = (cOffset[0], cOffset[1])
 
-        # I - this is the radius
-        I = (float(self.__circleRadius.get()) / 2.0) * -1.0
-
-        # J
-        J = -0.0
-
-        # cutter compensation
-        if (self.__cuttercompensation.get() == "G40"):
-            gc += CR + "(-- Cutter compensation --){}".format(CR)
-            gc += "{} {}".format(self.__cuttercompensation.get(),CR)
-        if (self.__cuttercompensation.get() == "G41"):
-            gc += CR + "(-- Cutter compensation LEFT --){}".format(CR)
-            gc += "{} {}".format(self.__cuttercompensation.get(),CR)
-            self.__cutterCompX -= (float(self.__tooldia) / 2.0)
-        if (self.__cuttercompensation.get() == "G41"):
-            gc += CR + "(-- Cutter compensation RIGHT --){}".format(CR)
-            gc += "{} {}".format(self.__cuttercompensation.get(),CR)
-            self.__cutterCompX += (float(self.__tooldia) / 2.0)
-
-        # set start postion X/Y
-        gc += "G00 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
-            float(X),
-            float(Y),
-            float(self.__speed_XY_G00.get()),
-            CR)
-
-        # start with shape
-        gc += CR + "(move Z-axis to start postion near surface)" + CR
-        gc += "G00 Z{0:08.3f} F{1:05.1f} {2}".format(
-            float(self.__start_Z.get()),
-            float(self.__speed_Z_G00.get()), CR)
-        #
-        # generate as many shape steps are needed until depthtotal is reached
-        # cut an Arc
-        step = float(self.__depthstep.get())
-        depth = float(self.__depthtotal.get())
-        z = 0.0
-        loop = ""
-        gc += CR + "(------- start shape -------------)" + CR
-        gc += "(-- Dia {0:06.3f}, Depth {1:06.3f}, Step Z {2:06.3f} --){3}".format(
-            float(self.__circleRadius.get()),
-            depth,
-            step,
-            CR
-        )
-        gc += "(-- X {0:06.3f}, Y {1:06.3f} --) {2}".format(
-            float(X),
-            float(Y),
-            CR
-        )
-        #----------------------------------------------------------------------
-        # This loop asume, that you try to mill into your object.
-        # if not needed for your shape, remove this part and rewrite
-        #----------------------------------------------------------------------
-        #
-        gc += CR + "(-- loop --)" + CR
-        while (abs(z) < abs(depth)):
-            # set next Z depth
-            if ((abs(depth) - abs(z)) < abs(step)):
-                # this happens, if a small amount is the rest
-                z -= (abs(depth) - abs(z))
-                print "rest Z: {}".format(z)
-            else:
-                z -= abs(step)
-                print "new Z: {}".format(z)
-
-            loop += CR + "(set new Z {0:05.2f} position)".format(z) + CR
-            loop += "G01 Z{0:08.3f} F{1:05.1f} {2}".format(
-                float(z),
-                float(self.__speed_Z_G01.get()), CR)
-            # set direction G02/G03
+        # hole X/Y center point
+        gc += CR + "(--- START HOLES ---)" + CR
+        nHoles = int(self.__numberOfHoles.get())
+        sAngle = float(self.__initialStartAngle.get())
+        hAngle = float(self.__holeAngle.get())
+        for h in range(nHoles):
             #
-            loop += self.__dir.get()
+            # calculate first hole x/y center point
+            # based on cPoint
+            rad = math.radians(sAngle)
+            #hX = math.cos(rad) * cPoint[0] +
+            hCPoint = (round(math.cos(rad) * r + cPoint[0], 3),
+                      round(math.sin(rad) * r + cPoint[1], 3))
+            print ("cP {0}, hP {1}".format(cPoint, hCPoint))
 
-            #---------------------------------------------------
-            # typical position for your own Gcode
-            # indiviual GCode - START
-            #---------------------------------------------------
+            hCPoint = self.__calcCutterComp(r1, tD, hCPoint)
+            print ("incl CutterComp cP {0}, hP {1}".format(cPoint, hCPoint))
 
-            #---------------------------------------------------
-            # indiviual GCode - END
-            #---------------------------------------------------
+            hgc = self.generateSubHole(h, sAngle, hCPoint, self.__dir.get())
+            gc += hgc + CR
             #
-            # for saftey issues.
-            if (abs(step) == 0.0):
-                break
+            # next hole angle
+            sAngle += hAngle
+            pass
 
-        gc += loop
-        #----------------------------
-        gc += "(----------------------------------)" + CR
-        gc += self._postamble.get() + CR
-        gc += CR
-        print gc
+        gc += "(--- END HOLES ---)" + CR
         return  gc
 
-    def generateSubHole(self, holeX, holeY):
+    def generateSubHole(self, nr, angle, hCPoint, cDir, retraction="0.5"):
+        '''
+            create gCode for hole "nr" at point "hCPoint"
+            direction of cut is set in "cDir"
+
+        '''
+        # gc is local !
+        gc = " (--Hole #{0:02d} at angle {1:05.1f}deg {2}".format(
+            int(nr),angle, CR)
+        dT = float(self.__depthtotal.get())
+        dS = float(self.__depthstep.get())
+        dZ = 0.0
+        startZ = float(self.__start_Z.get())
+        FZ0 = float(self.__speed_Z_G00.get())
+        FZ1 = float(self.__speed_Z_G01.get())
+        FXY0 = float(self.__speed_XY_G00.get())
+        FXY1 = float(self.__speed_XY_G02G03.get())
+        X = hCPoint[0]
+        Y = hCPoint[1]
+        I = float(self.__holeRadius.get()) * -1.0 # X-Offset (radius)
+        J = 0.0 # Y-offset
+        gc += " " + cDir
         #
-        # <todo> calculate X/Y I+J start position for this holes
-        # use cutter compensation due to mill direction (CW/CCW)
-        #
+        # set start X/Y position
+        gc += " X{0:08.3f} Y{1:08.3f} Z{2:08.3f} F{3:05.1f} {4}".format(
+            X,Y, startZ, FXY0,CR)
+        gc += "  (-- start loop --)" + CR
+        lgc = ""
+        while (abs(dZ) < abs(dT)):
+            #
+            # calculate next Z
+            if ((abs(dT) - abs(dZ)) < abs(dS)):
+                # this happens, if a small amount is the rest
+                dZ -= (abs(dT) - abs(dZ))
+                print "rest Z: {}".format(dZ)
+            else:
+                # substract next depthStep
+                dZ -= abs(dS)
+                print "new Z: {}".format(dZ)
 
-
-        gc = "(-- mill a hole with depthsteps to depthtotal --)"
-        gc = "#1 = " + float(self.__depthstep)
-        gc = "#2 = " + float(sefl.__depthtotal)
-        gc = "G53 X{0:08.4f} Y{1:08.4f} Z{2:08.3f} F{3:08.1f}".format(
-            float(holeX),
-            float(holeY),
-            float(self.__start_Z.get()),
-            float(self.__speed_XY_G02G03.get())
-        )
-        gc += "o100 do"
-
-
-        gc += "o100 while [#1 lt #2]"
-        gc += "(----------------------------------------------)"
+            #
+            # before we start next depthstep, we move 0.5 upwards for
+            # retraction
+            lgc += "  (-- new Z {0:08.3f} --) {1}".format(dZ, CR)
+            lgc += "  (retraction)" + CR
+            lgc += "  G01 Z{0:08.3f} F{1:04.0f} {2}".format(
+                dZ + float(retraction),
+                FZ0,
+                CR
+            )
+            #
+            # set new Z
+            lgc += "  G01 Z{0:08.3f} F{1:04.0f} {2}".format(
+                dZ, FZ1, CR)
+            # set XZ
+            lgc += "  " + cDir
+            lgc += " X{0:08.3f} Y{1:08.3f} I{2:08.3f} J{3:08.3f} F{4:05.1f} {5}".format(
+                X, Y, I, J, FXY1, CR)
+            #
+            # for saftey issues.
+            if (abs(dZ) == 0.0):
+                break
+            lgc += CR
+            pass
+        gc += lgc
+        gc += "  (-- end loop --)" + CR + CR
         return gc
+
+    def __calcCutterComp(self, hR, tD, hCPoint):
+        '''
+        if cutter compensation is used, than X/Y position for milling
+        should be recalculated.
+        This method return a vector for (x/y) which should be added to
+        current X/Y position
+
+        hR      = hole Radius
+        tD      = tool diameter
+        hCPoint = center point of hole
+
+        Example: hCPoint X/Y = (0.0, 0.0)
+            Cutter Dia: 8mm, mill Dir = CW
+
+            Example CW
+
+
+        '''
+        # we assume, that every time, we have to set the mill to a 45deg
+        # angle from center point
+        rad = math.radians(45.0)
+        tR = tD / 2.0
+        r = hR - tR
+        hCPointNew = (round(math.cos(rad) * r + hCPoint[0], 3),
+                  round(math.sin(rad) * r + hCPoint[1], 3))
+        print ("tR {2} hCP {0}, hCPn {1}".format(hCPoint, hCPointNew, hR))
+
+        tR = round((float(self.__tooldia.get()) / 2.0 ),1)
+
+        if (self.__cuttercompensation.get() == "G40"):
+            v = (0.0, 0.0)
+        if (self.__cuttercompensation.get() == "G41"):
+            v = (tR, tR)
+        if (self.__cuttercompensation.get() == "G42"):
+            v = (-tR, -tR)
+        if (self.__dir.get() == "G03"):
+            #CW
+            v = (v[0] * 1.0, v[1] * 1.0)
+        else:
+            # G03 = CCW
+            v = (v[0] * -1.0, v[1] * -1.0)
+
+        v = (hCPoint[0] + v[0],
+             hCPoint[1] + v[1])
+
+        print ("Cutter compensation vector ({})".format(v))
+        return v
+
+    def validate(self):
+        r1 = float(self.__holeRadius.get())
+        r = float(self.__circleRadius.get())
+
+        tool = float(self.__tooldia.get())
+        print ("validate")
+        if (r1 > r):
+            self.MessageBox("ERROR", "Radius error", "Hole diameter bigger than circle diameter")
+            return False
+
+        if (r1 < tool):
+            self.MessageBox("ERROR", "Radius error", "Hole diameter smaller than tool diameter")
+            return False
+
+        # nothing happens
+        return True
