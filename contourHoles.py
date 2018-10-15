@@ -309,7 +309,7 @@ class ContourHoles(GeometricalFrame):
 
         '''
         # gc is local !
-        gc = " (--Hole #{0:02d} at angle {1:05.1f}deg {2}".format(
+        gc = " (--Hole #{0:02d} at angle {1:05.1f}deg --){2}".format(
             int(nr),angle, CR)
         dT = float(self.__depthtotal.get())
         dS = float(self.__depthstep.get())
