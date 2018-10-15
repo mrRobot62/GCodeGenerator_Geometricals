@@ -141,18 +141,20 @@ class GCodeDialog(Dialog):
 # new Entry widgets
 #----------------------------------------------------------------------------
 class ValidatingEntry(Entry):
-    def __init__(self, master, signed = "s", value="", mandatory=False, **kw):
+    def __init__(self, master, validate="", vcmd=None, signed = "s", mandatory=False, **kw):
         apply(Entry.__init__,(self, master), kw)
         self.__mandatory = mandatory
         if signed != "s":   # signed
             signed = "u"    # unsigned
         self.__signed = signed
+        self.tempVCMD = vcmd
         vcmd = (self.register(self.__isValid), '%P')
         self.config(validate='focusout', vcmd=vcmd)
         vcmd = (self.register(self.__isInvalid), '%W')
         self.config(invalidcommand=vcmd)
         self.isValueAvailable = True,
-        self.insert(0,value)
+        #self.insert(0,value)
+
 
     def __isValid(self, value):
         # value contains %P
@@ -180,29 +182,34 @@ class ValidatingEntry(Entry):
 
         # valid value
         self.config({"background": "White"})
+
+        #
+        #
+        if (self.tempVCMD != None):
+            self.tempVCMD(value)
         return True
 
     def __isInvalid(self, widgetName):
-            # called automatically when the
-            # validation command returns 'False'
-            #print "__isInvalid {}:{}".format(widgetName, self.get())
-            # get entry widget
-            self.delete(0,END)
+        # called automatically when the
+        # validation command returns 'False'
+        #print "__isInvalid {}:{}".format(widgetName, self.get())
+        # get entry widget
+        self.delete(0,END)
 
-            # return focus to integer entry
-            self.focus_set()
-            self.bell()
+        # return focus to integer entry
+        self.focus_set()
+        self.bell()
 
-            # set background color to red
-            if self.__mandatory:
-                if self.get() == None or len(self.get()) == 0:
-                    self.config({"background": "Red"})
-
+        # set background color to red
+        if self.__mandatory:
+            if self.get() == None or len(self.get()) == 0:
+                self.config({"background": "Red"})
+        return False
 
     def validate(self, value):
         # override
-
         return value
+
 
 class IntegerEntry(ValidatingEntry):
 
@@ -227,8 +234,8 @@ class FloatEntry(ValidatingEntry):
             return float('nan')
 
 class FloatEntry2(ValidatingEntry):
-    def __init__(self, master, min=None, max=None, value="", mandatory=False, **kw):
-        ValidatingEntry.__init__(master, value, mandatory, **kw)
+    def __init__(self, master, vcmd=None, validate=None, min=None, max=None, mandatory=False, **kw):
+        ValidatingEntry.__init__(master, mandatory, vcmd, validate,**kw)
         self.__min = min
         self.__max = max
 
@@ -238,7 +245,7 @@ class FloatEntry2(ValidatingEntry):
         try:
             if value:
                 v = float(value)
-                
+
             return v
         except ValueError:
             #print "FloatError"

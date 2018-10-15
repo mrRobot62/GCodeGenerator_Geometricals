@@ -97,11 +97,11 @@ class shapeTemplate(GeometricalFrame):
         Radiobutton(self.frmButtonsIndividualContent, text="CW (G02)", variable=self.__dir,
                     value="G02").grid(row=row, column=1, sticky=W)
         Radiobutton(self.frmButtonsIndividualContent, text="CCW (G03)", variable=self.__dir,
-                    value=1).grid(row=row, column=2, sticky=W)
+                    value="G03").grid(row=row, column=2, sticky=W)
 
         row += 1
         self.__cuttercompensation = StringVar()
-        self.__cuttercompensation.set("G40")
+        self.__cuttercompensation.set("G42")
         Label(self.frmButtonsIndividualContent, text='Tool movement').grid(row=row, column=0, sticky=W)
         Radiobutton(self.frmButtonsIndividualContent, text="on contour", variable=self.__cuttercompensation,
             value="G40").grid(row=row, column=1, sticky=W)
@@ -111,20 +111,23 @@ class shapeTemplate(GeometricalFrame):
             value="G42").grid(row=row, column=3, sticky=W)
 
         row += 1
-        self.__tooldia = StringVar()
+        self.__tooldia = StringVar(value="3.0")
+        #vcmd = (self.frmButtonsIndividualContent.register(self._updateAngle), '%s', '%S')
+
         Label(self.frmButtonsIndividualContent, text="Tool diameter").grid(row=row, column=0, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=10, value="3.0", mandatory=False,
+        FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=False,
             textvariable=self.__tooldia).grid(row=row, column=1, sticky=W)
 
         row += 1
-        self.__centerX = StringVar()
-        self.__centerY = StringVar()
+        self.__centerX = StringVar(value="0.0")
+        self.__centerY = StringVar(value="0.0")
         Label(self.frmButtonsIndividualContent, text='Center X').grid(row=row, column=0, sticky=W)
         Label(self.frmButtonsIndividualContent, text="Center Y").grid(row=row, column=2, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=10, value="0.0", mandatory=True,
+        FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=True,
             textvariable=self.__centerX).grid(row=row, column=1, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=10, value="0.0", mandatory=True,
+        FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=True,
             textvariable=self.__centerY).grid(row=row, column=3, sticky=W)
+
 
         #------------------------------------------------------------------
         # include your specific widgets from here
@@ -137,50 +140,52 @@ class shapeTemplate(GeometricalFrame):
         #------------------------------------------------------------------
 
         row += 1
-        self.__depthtotal = StringVar()
-        self.__depthstep = StringVar()
+        self.__depthtotal = StringVar(value="-0.5")
+        self.__depthstep = StringVar(value="-0.5")
         Label(self.frmButtonsIndividualContent, text="Total depth").grid(row=row, column=0, sticky=W)
         Label(self.frmButtonsIndividualContent, text="depth cutting per step").grid(
             row=row, column=2, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5, value="0.5",
+        FloatEntry(self.frmButtonsIndividualContent, width=5,
             textvariable=self.__depthtotal, mandatory=True).grid(
             row=row, column=1, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5, value="0.5",
+        FloatEntry(self.frmButtonsIndividualContent, width=5,
             textvariable=self.__depthstep, mandatory=True).grid(
             row=row, column=3, sticky=W)
 
         row += 1
-        self.__speed_XY_G00 = StringVar()
-        self.__speed_Z_G00 = StringVar()
+        self.__speed_XY_G00 = StringVar(value="200.0")
+        self.__speed_Z_G00 = StringVar(value="100.0")
         Label(self.frmButtonsIndividualContent, text="Feed (G00 X/Y)").grid(row=row, column=0, sticky=W)
         Label(self.frmButtonsIndividualContent, text="Feed (G00 Z)").grid(row=row, column=2, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5, value="200.0",
+        FloatEntry(self.frmButtonsIndividualContent, width=5,
             textvariable=self.__speed_XY_G00, mandatory=False).grid(
             row=row, column=1, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5, value="200.0",
+        FloatEntry(self.frmButtonsIndividualContent, width=5,
             textvariable=self.__speed_Z_G00, mandatory=False).grid(row=row, column=3, sticky=W)
 
         row += 1
-        self.__speed_XY_G02G03 = StringVar()
-        self.__speed_Z_G01 = StringVar()
+        self.__speed_XY_G02G03 = StringVar(value="100.0")
+        self.__speed_Z_G01 = StringVar(value="80.0")
         Label(self.frmButtonsIndividualContent, text="Feed (G02/G03 X/Y)").grid(row=row, column=0, sticky=W)
         Label(self.frmButtonsIndividualContent, text="Feed (G01 Z)").grid(row=row, column=2, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5, value="100.0",
+        FloatEntry(self.frmButtonsIndividualContent, width=5,
             textvariable=self.__speed_XY_G02G03, mandatory=False).grid(
             row=row, column=1, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5, value="80.0",
+        FloatEntry(self.frmButtonsIndividualContent, width=5,
             textvariable=self.__speed_Z_G01, mandatory=False).grid(
             row=row, column=3, sticky=W)
 
         row += 1
-        self.__start_Z = StringVar()
-        self.__safety_Z = StringVar()
+        self.__start_Z = StringVar(value="3.0")
         Label(self.frmButtonsIndividualContent, text="Start Z").grid(row=row, column=0, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=10, value="3.0",
+        FloatEntry(self.frmButtonsIndividualContent, width=10,
             textvariable=self.__start_Z, mandatory=False).grid(
             row=row, column=1, sticky=W)
-        Label(self.frmButtonsIndividualContent, text="Safety Z").grid(row=row, column=2, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=10, value="10.0",
+
+        #row += 1
+        self.__safety_Z = StringVar(value="10.0")
+        Label(self.frmButtonsIndividualContent, text="Safety Z:").grid(row=row, column=2, sticky=W)
+        FloatEntry(self.frmButtonsIndividualContent, width=10,
             textvariable=self.__safety_Z, mandatory=False).grid(
             row=row, column=3, sticky=W)
 
@@ -210,29 +215,22 @@ class shapeTemplate(GeometricalFrame):
             float(self.__speed_Z_G00.get()), CR)
 
         #------------------------------------------------------------------
-        # x/y offset is used to compensate mill center point and
-        # object center point.
-        # Better: due to self_CC, we have to move X/Y point.
-        # you have to review below lines and adapt them to your behaviour
+        # we assume, that we start at center point of centet point (5)
+        # To do this, we calculate all values to this point
         #------------------------------------------------------------------
-
-        xoffset = float(0.0)
-        yoffset = float(0.0)
+        cPoint = (0.0, 0.0)
         if (int(self.__CC.get()) == 1):
-            xoffset = float(self.__centerX.get())
-            yoffset = float(self.__centerY.get())
+            # down left to CP
+            cPoint = (float(self.__centerX.get()),float(self.__centerY.get()))
         if (int(self.__CC.get()) == 2):
-            xoffset = float(self.__centerX.get())
-            yoffset = -float(self.__centerY.get())
+            # upper left to CP
+            cPoint  = (float(self.__centerX.get()),-float(self.__centerY.get()))
         if (int(self.__CC.get()) == 3):
-            xoffset = -float(self.__centerX.get())
-            yoffset = -float(self.__centerY.get())
+            # upper right to CP
+            cPoint  = (-float(self.__centerX.get()),-float(self.__centerY.get()))
         if (int(self.__CC.get()) == 4):
-            xoffset = -float(self.__centerX.get())
-            yoffset = float(self.__centerY.get())
-        if (int(self.__CC.get()) == 5):
-            xoffset = float(0.0) # ignore user input
-            yoffset = float(0.0) # ignore user input
+            # down right to CP
+            cPoint  = (-float(self.__centerX.get()),float(self.__centerY.get()))
 
         #------------------------------------------------------------------
         # cutter __cuttercompensation
@@ -341,4 +339,4 @@ class shapeTemplate(GeometricalFrame):
         # return False if an error occured
         # return True if everything is ok
 
-        pass 
+        pass
