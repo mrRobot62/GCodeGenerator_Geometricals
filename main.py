@@ -73,10 +73,6 @@ class GCodeGenerator(Frame):
     def init(self, app):
         self.app = app
         self.__createMenu()
-        #self.frmImage()
-        #self.frmStandardContent()
-        #self.frmIndividualContent()
-        #self.buttonBox()
         pass
 
     def __createMenu(self):
