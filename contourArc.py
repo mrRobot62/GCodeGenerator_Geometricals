@@ -87,92 +87,108 @@ class ContourArc(GeometricalFrame):
             value="G42").grid(row=row, column=3, sticky=W)
 
         row += 1
-        self.__tooldia = StringVar()
-        Label(self.frmButtonsIndividualContent, text="Tool diameter:").grid(row=row, column=0, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=10, value="3.0", mandatory=False,
+        self.__tooldia = StringVar(value="3.0")
+        Label(self.frmButtonsIndividualContent, text="Tool diameter").grid(row=row, column=0, sticky=W)
+        FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=False,
             textvariable=self.__tooldia).grid(row=row, column=1, sticky=W)
 
         row += 1
-        self.__centerX = StringVar()
-        self.__centerY = StringVar()
-        Label(self.frmButtonsIndividualContent, text='Center X:*').grid(row=row, column=0, sticky=W)
-        Label(self.frmButtonsIndividualContent, text="Center Y:*").grid(row=row, column=2, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=10, value="0.0", mandatory=True,
+        self.__centerX = StringVar(value="0.0")
+        self.__centerY = StringVar(value="0.0")
+        Label(self.frmButtonsIndividualContent, text='Center X').grid(row=row, column=0, sticky=W)
+        Label(self.frmButtonsIndividualContent, text="Center Y").grid(row=row, column=2, sticky=W)
+        FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=True,
             textvariable=self.__centerX).grid(row=row, column=1, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=10, value="0.0", mandatory=True,
+        FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=True,
             textvariable=self.__centerY).grid(row=row, column=3, sticky=W)
 
         row += 1
         self.__dia = StringVar()
-        Label(self.frmButtonsIndividualContent, text="Arc diameter:*").grid(row=row, column=0, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=10, value = "", mandatory=True,
+        Label(self.frmButtonsIndividualContent, text="Arc diameter").grid(row=row, column=0, sticky=W)
+        FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=True,
             textvariable=self.__dia,
+            vcmd=self.__validation,
             background="Red").grid(row=row, column=1, sticky=W)
 
         row += 1
-        self.__arcstart = StringVar()
+        self.__arcstart = StringVar(value="0.0")
         self.__arcend = StringVar()
-        Label(self.frmButtonsIndividualContent, text="Start arc(0-360):").grid(row=row, column=0, sticky=W)
-        Label(self.frmButtonsIndividualContent, text="End arc (0-360):").grid(row=row, column=2, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5, value="0.0",
+        Label(self.frmButtonsIndividualContent, text="Start arc(0-360)").grid(row=row, column=0, sticky=W)
+        Label(self.frmButtonsIndividualContent, text="End arc (0-360)").grid(row=row, column=2, sticky=W)
+        FloatEntry(self.frmButtonsIndividualContent, width=5,
             textvariable=self.__arcstart).grid(
             row=row, column=1, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5, value="0.0",
+        FloatEntry(self.frmButtonsIndividualContent, width=5,
             textvariable=self.__arcend).grid(row=row, column=3, sticky=W)
 
         row += 1
-        self.__depthtotal = StringVar()
-        self.__depthstep = StringVar()
-        Label(self.frmButtonsIndividualContent, text="Total depth:*").grid(row=row, column=0, sticky=W)
-        Label(self.frmButtonsIndividualContent, text="depth cutting per step:*").grid(
+        self.__depthtotal = StringVar(value="-0.5")
+        self.__depthstep = StringVar(value="-0.5")
+        Label(self.frmButtonsIndividualContent, text="Total depth").grid(row=row, column=0, sticky=W)
+        Label(self.frmButtonsIndividualContent, text="depth cutting per step").grid(
             row=row, column=2, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5, value="0.5",
+        FloatEntry(self.frmButtonsIndividualContent, width=5,
             textvariable=self.__depthtotal, mandatory=True).grid(
             row=row, column=1, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5, value="0.5",
+        FloatEntry(self.frmButtonsIndividualContent, width=5,
             textvariable=self.__depthstep, mandatory=True).grid(
             row=row, column=3, sticky=W)
 
         row += 1
-        self.__speed_XY_G00 = StringVar()
-        self.__speed_Z_G00 = StringVar()
-        Label(self.frmButtonsIndividualContent, text="Feed (G00 X/Y):").grid(row=row, column=0, sticky=W)
-        Label(self.frmButtonsIndividualContent, text="Feed (G00 Z):").grid(row=row, column=2, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5, value="0.0",
+        self.__speed_XY_G00 = StringVar(value="0.0")
+        self.__speed_Z_G00 = StringVar(value="0.0")
+        Label(self.frmButtonsIndividualContent, text="Feed (G00 X/Y)").grid(row=row, column=0, sticky=W)
+        Label(self.frmButtonsIndividualContent, text="Feed (G00 Z)").grid(row=row, column=2, sticky=W)
+        FloatEntry(self.frmButtonsIndividualContent, width=5,
             textvariable=self.__speed_XY_G00, mandatory=False).grid(
             row=row, column=1, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5, value="0.0",
+        FloatEntry(self.frmButtonsIndividualContent, width=5,
             textvariable=self.__speed_Z_G00, mandatory=False).grid(row=row, column=3, sticky=W)
 
         row += 1
-        self.__speed_XY_G02G03 = StringVar()
-        self.__speed_Z_G01 = StringVar()
-        Label(self.frmButtonsIndividualContent, text="Feed (G02/G03 X/Y):").grid(row=row, column=0, sticky=W)
-        Label(self.frmButtonsIndividualContent, text="Feed (G01 Z):").grid(row=row, column=2, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5, value="0.0",
+        self.__speed_XY_G02G03 = StringVar(value="0.0")
+        self.__speed_Z_G01 = StringVar(value="0.0")
+        Label(self.frmButtonsIndividualContent, text="Feed (G02/G03 X/Y)").grid(row=row, column=0, sticky=W)
+        Label(self.frmButtonsIndividualContent, text="Feed (G01 Z)").grid(row=row, column=2, sticky=W)
+        FloatEntry(self.frmButtonsIndividualContent, width=5,
             textvariable=self.__speed_XY_G02G03, mandatory=False).grid(
             row=row, column=1, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5, value="0.0",
+        FloatEntry(self.frmButtonsIndividualContent, width=5,
             textvariable=self.__speed_Z_G01, mandatory=False).grid(
             row=row, column=3, sticky=W)
 
         row += 1
-        self.__start_Z = StringVar()
-        Label(self.frmButtonsIndividualContent, text="Start Z:").grid(row=row, column=0, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=10, value="3.0",
+        self.__start_Z = StringVar(value="3.0")
+        Label(self.frmButtonsIndividualContent, text="Start Z").grid(row=row, column=0, sticky=W)
+        FloatEntry(self.frmButtonsIndividualContent, width=10,
             textvariable=self.__start_Z, mandatory=False).grid(
             row=row, column=1, sticky=W)
 
         row += 1
-        self.__safety_Z = StringVar()
-        Label(self.frmButtonsIndividualContent, text="Safety Z:").grid(row=row, column=0, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=10, value="10.0",
+        self.__safety_Z = StringVar(value="10.0")
+        Label(self.frmButtonsIndividualContent, text="Safety Z").grid(row=row, column=0, sticky=W)
+        FloatEntry(self.frmButtonsIndividualContent, width=10,
             textvariable=self.__safety_Z, mandatory=False).grid(
             row=row, column=1, sticky=W)
 
         #-----------------------------------------------------
         self.frmButtonsIndividualContent.pack(expand=True, fill=BOTH)
         pass
+
+    def __validation(self, nV, **kv):
+        print ("__validation '{}  {}'".format(nV,float(self.__dia.get())))
+        print (kv)
+        if (float(self.__dia.get()) > 0.0):
+            self.setBtnStates(state=NORMAL)
+            return True
+        else:
+            self.setBtnStates(state=DISABLED)
+            self.MessageBox(state="ERROR",
+                title="Error",
+                text="wrong input value")
+            self.__dia.set(value="")
+
+        return False
 
     def generateGCode(self):
         gc = ""
