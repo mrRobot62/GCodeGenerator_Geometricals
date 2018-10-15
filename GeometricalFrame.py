@@ -28,7 +28,13 @@ class GeometricalFrame(Frame):
         self.__frmStandardContent()
         self._frmIndividualContent()
         self.__buttonBox()
+        self.setBtnStates(state=NORMAL)
         pass
+
+    def onClose(self):
+        """ """
+        self.destroy()
+        self.original_frame.show()
 
     def __frmImage(self):
         print "__frmImage"
@@ -76,28 +82,33 @@ class GeometricalFrame(Frame):
             highlightcolor="darkgray",
             highlightthickness=1)
 
-        btnAxis = Button(self.frmButtons, text="To AXIS", width=10,
-            command=self.copyAXIS, default=ACTIVE).grid(
+        self.btnAxis = Button(self.frmButtons, text="To AXIS", width=10,
+            command=self.copyAXIS, state=DISABLED)
+        self.btnAxis.grid(
                 row=0, column=0
             )
 
-        btnClip = Button(self.frmButtons, text="To Clipboard", width=10,
-            command=self.copyClipboard).grid(
+        self.btnClip = Button(self.frmButtons, text="To Clipboard", width=10,
+            command=self.copyClipboard, state=DISABLED)
+        self.btnClip.grid(
                 row=0, column=1
             )
 
-        btnSave = Button(self.frmButtons, text="Save as", width=10,
-            command=self.saveFile).grid(
+        self.btnSave = Button(self.frmButtons, text="Save as", width=10,
+            command=self.saveFile, state=DISABLED)
+        self.btnSave.grid(
                 row=0, column=2
             )
 
-        btnOK = Button(self.frmButtons, text="Gcode", width=10,
-            command=self.showGCode).grid(
+        self.btnGCode = Button(self.frmButtons, text="Gcode", width=10,
+            command=self.showGCode, state=DISABLED)
+        self.btnGCode.grid(
                 row=0, column=3
             )
 
-        btnCancel = Button(self.frmButtons, text="Cancel", width=10,
-            command=self.cancel).grid(
+        self.btnCancel = Button(self.frmButtons, text="Cancel", width=10,
+            command=self.cancel, state=NORMAL)
+        self.btnCancel.grid(
                 row=0, column=4
             )
 
@@ -150,6 +161,12 @@ class GeometricalFrame(Frame):
         d.update(gc)
         pass
 
+    def setBtnStates(self, state):
+        self.btnClip.config(state=state)
+        self.btnSave.config(state=state)
+        self.btnAxis.config(state=state, default=ACTIVE)
+        self.btnGCode.config(state=state)
+
     def getGCode(self):
         gc = "%"
         gc += '''
@@ -175,6 +192,7 @@ class GeometricalFrame(Frame):
     def cancel(self, event=None):
         print "cancel"
         self.master.quit()
+        self.destroy()
         pass
 
     def MessageBox(self, state="INFO", title = "", text=""):
