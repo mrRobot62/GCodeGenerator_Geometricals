@@ -112,7 +112,7 @@ class ContourArc(GeometricalFrame):
 
         row += 1
         self.__arcstart = StringVar(value="0.0")
-        self.__arcend = StringVar()
+        self.__arcend = StringVar(value="0.0")
         Label(self.frmButtonsIndividualContent, text="Start arc(0-360)").grid(row=row, column=0, sticky=W)
         Label(self.frmButtonsIndividualContent, text="End arc (0-360)").grid(row=row, column=2, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=5,
@@ -176,19 +176,56 @@ class ContourArc(GeometricalFrame):
         pass
 
     def __validation(self, nV, **kv):
-        print ("__validation '{}  {}'".format(nV,float(self.__dia.get())))
-        print (kv)
-        if (float(self.__dia.get()) > 0.0):
-            self.setBtnStates(state=NORMAL)
-            return True
-        else:
-            self.setBtnStates(state=DISABLED)
-            self.MessageBox(state="ERROR",
-                title="Error",
-                text="wrong input value")
-            self.__dia.set(value="")
+        # print ("__validation '{}  {}'".format(nV,float(self.__dia.get())))
+        # print (kv)
+        # if (float(self.__dia.get()) > 0.0):
+        #     self.setBtnStates(state=NORMAL)
+        #     return True
+        # else:
+        #     self.setBtnStates(state=DISABLED)
+        #     self.MessageBox(state="ERROR",
+        #         title="Error",
+        #         text="wrong input value")
+        #     self.__dia.set(value="")
 
-        return False
+        return True
+
+    def subClassValidation(self):
+        if (float(self.__tooldia.get()) >= float(self.__dia.get())):
+            self.MessageBox(state="ERROR",
+                title="ERROR",
+                text="Tooldiamter should be less than arc diameter")
+            return False
+
+        if (float(self.__centerX.get()) < 0.0 or float(self.__centerY.get()) < 0.0):
+            self.MessageBox(state="ERROR",
+                title="ERROR",
+                text="Values for CenterX/Y should be positive")
+            return False
+
+        if (float(self.__arcstart.get()) > float(self.__arcend.get())):
+            self.MessageBox(state="ERROR",
+                title="ERROR",
+                text="Arc-Start should be less than Arc-End")
+            return False
+
+        if (abs(float(self.__depthtotal.get())) < abs(float(self.__depthstep.get()))):
+            self.MessageBox(state="ERROR",
+                title="ERROR",
+                text="Tooldiamter should be less than arc diameter")
+            return False
+
+        if (float(self.__start_Z.get()) <= 0.0 or float(self.__safety_Z.get())<= 0.0):
+            self.MessageBox(state="ERROR",
+                title="ERROR",
+                text="Z parameter values should be greater than 0.0")
+            return False
+        if (float(self.__tooldia.get()) <= 0.0):
+            self.MessageBox(state="ERROR",
+                title="ERROR",
+                text="Tooldiamter should greater than 0.0")
+            return False
+        return True
 
     def generateGCode(self):
         gc = ""

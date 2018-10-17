@@ -125,13 +125,17 @@ class GeometricalFrame(Frame):
 
     def copyClipboard(self, event=None):
         print "copyClipboard"
+        gc = self.getGCode()
+        if gc is None:
+            return None
         self.app.clipboard_clear()
-        self.app.clipboard_append(self.getGCode())
+        self.app.clipboard_append(gc)
         pass
 
     def saveFile(self, event=None):
-        print "saveFile"
         gc = self.getGCode()
+        if gc is None:
+            return None
         fname = tkFileDialog.asksaveasfilename(
             initialdir = "./",
             title = "Save file",
@@ -148,14 +152,17 @@ class GeometricalFrame(Frame):
         pass
 
     def copyAXIS(self, event=None):
+        print ("copyAXIS")
         gc = self.getGCode()
-        print "copyAXIS ({})".format(gc)
+        if gc is None:
+            return None
         sys.stdout.write(self.getGCode())
         self.quit()
 
     def showGCode(self, event=None):
         gc = self.getGCode()
-        print ">> call d.setData({})".format(gc)
+        if gc is None:
+            return None
         d = GCodeDialog(self.app, title="generated GCode")
         d.init(gc)
         d.update(gc)
@@ -167,7 +174,22 @@ class GeometricalFrame(Frame):
         self.btnAxis.config(state=state, default=ACTIVE)
         self.btnGCode.config(state=state)
 
+    def subClassValidation(self):
+        # override in subclass
+        '''
+        This function is called from getGCode() and validate all important
+        input fields for the current dialog.
+        Implementation should be done inside subclass
+
+        This method should return True or False
+            True if everything is ok
+            False something is wrong - no GCode generation
+        '''
+        pass
+
     def getGCode(self):
+        if self.subClassValidation() == False:
+            return None
         gc = "%"
         gc += '''
 (--------------------------)
