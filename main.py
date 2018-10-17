@@ -45,9 +45,12 @@ import os
 from contourArc import *
 from contourRectangle import *
 from contourHoles import *
+from contourMillHolesGrid import *
 
 IN_AXIS = os.environ.has_key("AXIS_PROGRESS_BAR")
 CR = '\n'
+
+VERSION = "0.3 (2018-10-16)"
 
 '''
     Geometrical Main-Application
@@ -96,6 +99,8 @@ class GCodeGenerator(Frame):
         self.ContourMenu.add_command(label="Rectangle", command=self.DialogContourRec)
         # Contour - Holes
         self.ContourMenu.add_command(label="Holes on circle", command=self.DialogContourHoles)
+        # Contour - Holes on a grid
+        self.ContourMenu.add_command(label="Holes on grid", command=self.DialogContourHolesGrid)
 
         #------------------------------------------------------#
 
@@ -150,13 +155,22 @@ class GCodeGenerator(Frame):
         self.myApp.show()
         pass
 
+    def DialogContourHolesGrid(self):
+        print "DialogContourHolesGrid"
+        title = "Mill holes on a grid"
+        self.myApp = ContourMillHolesGrid(self.app, self.master, self.frame, title)
+        self.myApp.init()
+        self.myApp.show()
+        pass
+
+
 #--------- Menu callbacks ---------------------#
 
 #------------------------------------------------------#
 
 app = GCodeGenerator()
 app.init(app)
-app.master.title("Geometricals 0.1 - ")
+app.master.title("Geometricals {}".format(VERSION))
 app.mainloop()
 
 #-----------------------------------------------------------
