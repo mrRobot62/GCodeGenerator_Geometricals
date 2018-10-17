@@ -14,15 +14,19 @@ Status October 2018 - under development - currently contourARC is finished **
 |0.2 | save to file implemented |
 |0.3 | contourRectange & contourHoles |
 
+## Example screenshot (more details inside WIKI)
+![](https://github.com/mrRobot62/GCodeGenerator_Geometricals/blob/master/img/screenshots/screen_cCircle.png)
+
+
 ## Starting from console
 python main.py
 
 
 
-# Implement new shapes, pockets, surfaces, ...
-To extend functionality of this tool, there are two things to do
+# You want to implement new shapes, pockets, surfaces, ... ?
+To extend functionality of this tool, there are three things to do
 
-## Extend Menu
+## (1) Extend Menu
 To include your new functionality you have to extend the menu.
 Open `main.py` and include your stuff here:
 
@@ -68,7 +72,7 @@ Implement a callback function like this:
 
 Do not forget to import your new python module like This `from contourArc import *` at beginning of `main.py`
 
-## Implement your new functions
+## (2) Implement your new functions
 Use `shapeTemplate.py`and make a copy of this file. Rename the copy to a approperiate filename like `contourArc.py`
 
 Start with implementing of your code.
@@ -85,3 +89,8 @@ function inside menu.
 
 Use your new function. A new window appears. Check your functionality.
 With button "GCode" you can check your generated GCODE **before** you do it on your CNC
+
+## (3) give the community the chance to participate on your new implementation
+upload you implementation to this github repository.
+**THANKS**
+
