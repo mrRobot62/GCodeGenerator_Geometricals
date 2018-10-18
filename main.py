@@ -50,7 +50,7 @@ from contourMillHolesGrid import *
 IN_AXIS = os.environ.has_key("AXIS_PROGRESS_BAR")
 CR = '\n'
 
-VERSION = "0.3 (2018-10-16)"
+VERSION = "0.4 (2018-10-18)"
 
 '''
     Geometrical Main-Application
@@ -63,6 +63,12 @@ VERSION = "0.3 (2018-10-16)"
     Inside Main-Application this GCode is displayed in a text box and can
     * clipboard
     * file
+
+    History
+    0.1 initial with ContourArc
+    0.2 ContourRectangle
+    0.3 contourHoles
+    0.4 contourMillHolesGrid 
 
 '''
 class GCodeGenerator(Frame):
