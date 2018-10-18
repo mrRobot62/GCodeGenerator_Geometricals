@@ -174,11 +174,11 @@ class GeometricalFrame(Frame):
         self.btnAxis.config(state=state, default=ACTIVE)
         self.btnGCode.config(state=state)
 
-    def subClassValidation(self):
+    def userInputValidation(self):
         # override in subclass
         '''
         This function is called from getGCode() and validate all important
-        input fields for the current dialog.
+        input fields in the current dialog.
         Implementation should be done inside subclass
 
         This method should return True or False
@@ -188,7 +188,7 @@ class GeometricalFrame(Frame):
         pass
 
     def getGCode(self):
-        if self.subClassValidation() == False:
+        if self.userInputValidation() == False:
             return None
         gc = "%"
         gc += '''
