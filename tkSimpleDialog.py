@@ -135,6 +135,8 @@ class GCodeDialog(Dialog):
             row=1, column=0, rowspan=5)
         self.txtGCode.insert(END, self.data)
         self.txtGCode.bind("<Control-KeyRelease-a>", self.__cbSelectAll)
+        self.txtGCode.bind("<Command-KeyRelease-a>", self.__cbSelectAll)
+        self.txtGCode.bind("<Command-a>", self.__cbSelectAll)
         pass
 
     def __cbSelectAll(self, event):
