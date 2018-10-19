@@ -134,8 +134,15 @@ class GCodeDialog(Dialog):
         self.txtGCode.grid(
             row=1, column=0, rowspan=5)
         self.txtGCode.insert(END, self.data)
-        #self.frmbody.pack(padx=5, pady=5)
+        self.txtGCode.bind("<Control-KeyRelease-a>", self.__cbSelectAll)
         pass
+
+    def __cbSelectAll(self, event):
+        print ("__cbSelectAll(self, event ({})".format(event))
+        event.widget.tag_add(SEL, "1.0", END)
+        event.widget.mark_set(INSERT, "1.0")
+        event.widget.see(INSERT)
+        return 'break'
 
 #----------------------------------------------------------------------------
 # new Entry widgets
