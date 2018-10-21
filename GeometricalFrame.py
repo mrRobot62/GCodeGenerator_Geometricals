@@ -147,7 +147,7 @@ class GeometricalFrame(Frame):
             return None
         print ("Save gcode to '{}'".format(fname))
         f = open(fname,"w")
-        f.write(fname)
+        f.write(gc)
         f.close()
         pass
 
@@ -197,7 +197,7 @@ class GeometricalFrame(Frame):
 (  _(\    |@@|             )
 ( (__/\__ \--/ __          )
 (    \___|----|  |   __    )
-(        \ }{ /\ )_ / _\\  )
+(        \ }{ /\ )_ / _\   )
 (        /\__/\ \__O (__   )
 (       (--/\--)    \__/   )
 (       _)(  )(_           )
