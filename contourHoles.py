@@ -118,7 +118,7 @@ class ContourHoles(GeometricalFrame):
 
         row += 1
         self.__holeRadius = StringVar(value = "10.0")
-        self.__circleRadius = StringVar(value = "")
+        self.__circleRadius = StringVar(value = "100.0")
         Label(self.frmButtonsIndividualContent, text="Hole radius (R1)").grid(row=row, column=0, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=10,  mandatory=True,
             textvariable=self.__holeRadius,
@@ -131,7 +131,8 @@ class ContourHoles(GeometricalFrame):
         row += 1
         self.__angle = 0
         self.__initialStartAngle = StringVar(value=self.__angle)
-        self.__holeAngle = StringVar(value = "45.0")
+        # this field is self calculated
+        self.__holeAngle = StringVar(value = self.__initialStartAngle.get())
         Label(self.frmButtonsIndividualContent, text="Initial start angle").grid(
             row=row, column=0, sticky=W)
         self.__w5 = FloatEntry(self.frmButtonsIndividualContent, width=5,
@@ -193,22 +194,22 @@ class ContourHoles(GeometricalFrame):
             row=row, column=3, sticky=W)
 
         #-----------------------------------------------------
+        self._updateAngle(self.__numberOfHoles.get())
         self.frmButtonsIndividualContent.pack(expand=True, fill=BOTH)
         pass
 
-    '''
-        used to update angle if number of holes changed
-    '''
-    def _updateAngle(self, nV, **kv):
-        print ("update hole angle")
-        self.__angle = round(45.0,1)
+    def _updateAngle(self, numberOfHoles, **kv):
+        '''
+            used to update angle if number of holes changed
+        '''
         if (self.__numberOfHoles.get() > 0):
             # pre set of
-            self.__angle = round(360.0 / float(nV),1)
+            holeAngle = round(360.0 / float(numberOfHoles),1)
             print ("update angle between holes {0:5.2f} Holes {1}".format(
-                self.__angle, nV
+                holeAngle, numberOfHoles
             ))
-            self.__holeAngle.set(str(self.__angle))
+            self.__holeAngle.set(str(holeAngle))
+
         return True
 
 
@@ -221,12 +222,12 @@ class ContourHoles(GeometricalFrame):
 
         # x/y position for circle
         cPoint = (0.0, 0.0) # X/Y entire circle
-        hCPoint = (0.0, 0.0) # center hole X/Y
-
+        numberOfHoles = int(self.__numberOfHoles.get())
 
         # radius r = entire Circle, r1= radius per hole
-        r1 = float(self.__holeRadius.get())
-        r = float(self.__circleRadius.get())
+        radii = (float(self.__circleRadius.get()),
+                float(self.__holeRadius.get()))
+
         # tool diameter
         tD = float(self.__tooldia.get())
 
@@ -234,9 +235,49 @@ class ContourHoles(GeometricalFrame):
         startAngle = float(self.__initialStartAngle.get())
         holeAngle = float(self.__holeAngle.get())
 
-        if (self.validate() == False):
-            # an error occured
-            return None
+        feeds = {
+            "XYG0" : float(self.__speed_XY_G00.get()),
+            "XYGn" : float(self.__speed_Z_G01.get()),
+            "ZG0" : float(self.__speed_Z_G00.get()),
+            "ZGn" : float(self.__speed_Z_G01.get())
+        }
+
+        # dir
+        if (self.__dir.get() == "G02"):
+            dir = 0 #CW G02
+        else :
+            dir = 1 #CCW G03
+
+        #
+        # to make it easier, we calculate everything on center of
+        # entiere circle (CC=5) = X/Y = 0.0 + CenterPositions
+
+        if (int(self.__CC.get()) == 1):
+            cPoint = (float(self.__centerX.get()), float(self.__centerY.get()))
+        elif (int(self.__CC.get()) == 2):
+            cPoint = (float(self.__centerX.get()), -float(self.__centerY.get()))
+        elif (int(self.__CC.get()) == 3):
+            cPoint = (-float(self.__centerX.get()), -float(self.__centerY.get()))
+        elif (int(self.__CC.get()) == 4):
+            cPoint = (-float(self.__centerX.get()), float(self.__centerY.get()))
+        elif (int(self.__CC.get()) == 5):
+            cPoint = (float(0.0),float(0.0)) # ignore user input
+        else:
+            print ("unknown center point choose ({})".format(self.__CC.get()))
+            cPoint = (0.0, 0.0)
+
+
+        hCPoint = self.__calculateHoleCPoints(
+            numberOfHoles,
+            cPoint,
+            radii,
+            startAngle,
+            holeAngle
+        )
+
+        hCPoint = self.__addCutterCompensation(
+            hCPoint, radii, tD, dir
+        )
 
         gc = ""
         loop = ""
@@ -248,118 +289,161 @@ class ContourHoles(GeometricalFrame):
         # set Z axis
         gc += CR + "(set Z saftey position)" + CR
         gc += "G00 Z{0:08.3f} F{1:05.1f} {2}".format(
-            float(self.__safety_Z.get()),
-            float(self.__speed_Z_G00.get()), CR)
+             float(self.__safety_Z.get()),
+             float(self.__speed_Z_G00.get()), CR)
+        gc += "(--- START HOLES ---)" + CR
+        intend = "".ljust(2)
+        dir = self.__dir.get()
+        h = 0
+        for v in hCPoint:
+            loop += self.__generateSubHole(h, v, radii, feeds, dir, intend, retraction="0.0" )
+            h += 1
 
-        #
-        # to make it easier, we calculate everything on center of
-        # entiere circle (CC=5) = X/Y = 0.0 + CenterPositions
-        cOffset = (0.0, 0.0) # Offset for entire circle X/Y
-        hOffset = (0.0, 0.0) # start position including cutter compensation
-
-        if (int(self.__CC.get()) == 1):
-            cOffset = (float(self.__centerX.get()), float(self.__centerY.get()))
-        elif (int(self.__CC.get()) == 2):
-            cOffset = (float(self.__centerX.get()), -float(self.__centerY.get()))
-        elif (int(self.__CC.get()) == 3):
-            cOffset = (-float(self.__centerX.get()), -float(self.__centerY.get()))
-        elif (int(self.__CC.get()) == 4):
-            cOffset = (-float(self.__centerX.get()), float(self.__centerY.get()))
-        elif (int(self.__CC.get()) == 5):
-            cOffset = (float(0.0),float(0.0)) # ignore user input
-        else:
-            print ("unknown center point choose ({})".format(self.__CC.get()))
-            cOffset = (0.0, 0.0)
-
-        # X/Y entire circle
-        cPoint = (cOffset[0], cOffset[1])
-
-        # hole X/Y center point
-        gc += CR + "(--- START HOLES ---)" + CR
-        nHoles = int(self.__numberOfHoles.get())
-        sAngle = float(self.__initialStartAngle.get())
-        hAngle = float(self.__holeAngle.get())
-        for h in range(nHoles):
-            #
-            # calculate first hole x/y center point
-            # based on cPoint
-            rad = math.radians(sAngle)
-            #hX = math.cos(rad) * cPoint[0] +
-            hCPoint = (round(math.cos(rad) * r + cPoint[0], 3),
-                      round(math.sin(rad) * r + cPoint[1], 3))
-            print ("cP {0}, hP {1}".format(cPoint, hCPoint))
-
-            hCPoint = self.__calcCutterComp(r1, tD, hCPoint)
-            print ("incl CutterComp cP {0}, hP {1}".format(cPoint, hCPoint))
-
-            hgc = self.generateSubHole(h, sAngle, hCPoint, self.__dir.get())
-            gc += hgc + CR
-            #
-            # next hole angle
-            sAngle += hAngle
-            pass
-
+        gc += loop
         gc += "(--- END HOLES ---)" + CR
+        gc += self._postamble.get() + CR
+        gc += "G00 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
+            cPoint[0], cPoint[1], feeds["XYG0"], CR
+        )
         return  gc
 
-    def generateSubHole(self, nr, angle, hCPoint, cDir, retraction="0.5"):
+    def __calculateHoleCPoints(self, numberOfHoles, cPoint, radii, angle, deg):
+        '''
+        This method calculate for all holes the center point due to
+        starting angle. First Circle is from right the first in +y
+
+         /--2--\
+        /       \
+        3       1       0 degrees
+        \       /
+         \--4--/
+
+        radii[0] = radius center Circle
+        radii[1] = radius per hole
+        cPoint[0] = center X point of center Circle
+        cPoint[1] = center Y point of center Circle
+        angle = angle of first hole
+        deg = degrees to next hole
+
+        '''
+        hcp = []
+        r = radii[0]
+        for x in range (numberOfHoles):
+            rad = math.radians(angle)
+            # set X point
+            v = (round(math.cos(rad) * r + cPoint[0], 3),
+                round(math.sin(rad) * r + cPoint[1], 3))
+            hcp.append(v)
+            print "Hole center points {0} on radius {1:05.1f} angle {2:05.1f}".format(
+                v, r, angle)
+            angle += deg
+
+        return hcp
+
+    def __addCutterCompensation(self, hCPoint, radii, toolDia, dir):
+        '''
+            this method add the cutter compensation to hole center points
+            due to tool diameter and G40 / G41 / G42
+
+            hCPoint vector list contain for all holes the center points
+            For every hole we go the the most left contour and calculated
+            cutter compensation
+
+            G41 is left from this contour. If used, we set the tool outside
+            G42 is right from this contour. If used, we set the tool inside
+        '''
+        hcp = []
+        tR = (toolDia / 2.0 )
+        hR = radii[1]
+        cutterComp = 0
+        if (self.__cuttercompensation.get() == "G41"):
+            # left from contour
+            cutterComp = 1
+        elif (self.__cuttercompensation.get() == "G42"):
+            # right from contour
+            cutterComp = 2
+        else:
+            # no cutter compensation, mill on contour e.g G40
+            return hCPoint
+        h = 0
+        for v in hCPoint:
+            if cutterComp == 1:
+                # left from contour (outside of contour)
+                v = (v[0] - hR - tR, v[1])
+            else:
+                # right from contour (inside hole)
+                v = (v[0] - hR + tR, v[1])
+
+            hcp.append(v)
+            print "Set cutter compensation #{0} XY{1}".format(h,v)
+            h += 1
+        return hcp
+
+    def __generateSubHole(self, nr, vec, radii, feeds, dir, intend = "", retraction="0.5"):
         '''
             create gCode for hole "nr" at point "hCPoint"
             direction of cut is set in "cDir"
 
         '''
         # gc is local !
-        gc = " (--Hole #{0:02d} at angle {1:05.1f}deg --){2}".format(
-            int(nr),angle, CR)
-        dT = float(self.__depthtotal.get())
-        dS = float(self.__depthstep.get())
+        gc = intend + "(--Hole #{0:02d} at pos {1} --){2}".format(
+            nr, vec, CR)
+
+        depthZ = (float(self.__depthtotal.get()), float(self.__depthstep.get()))
         dZ = 0.0
-        startZ = float(self.__start_Z.get())
-        FZ0 = float(self.__speed_Z_G00.get())
-        FZ1 = float(self.__speed_Z_G01.get())
-        FXY0 = float(self.__speed_XY_G00.get())
-        FXY1 = float(self.__speed_XY_G02G03.get())
-        X = hCPoint[0]
-        Y = hCPoint[1]
-        I = float(self.__holeRadius.get()) * -1.0 # X-Offset (radius)
+
+        zPos = {
+            "safetyZ"   : float(self.__safety_Z.get()),
+            "startZ"    : float(self.__start_Z.get())
+        }
+
+
+        # radii[0] = center radius
+        # radii[1] = hole radius
+        I = radii[1] * -1.0 # X-Offset (radius)
         J = 0.0 # Y-offset
-        gc += " " + cDir
+
         #
         # set start X/Y position
-        gc += " X{0:08.3f} Y{1:08.3f} Z{2:08.3f} F{3:05.1f} {4}".format(
-            X,Y, startZ, FXY0,CR)
-        gc += "  (-- start loop --)" + CR
+        gc += intend + "G01 X{0:08.3f} Y{1:08.3f} Z{2:08.3f} F{3:05.1f} {4}".format(
+            vec[0], vec[1], zPos["startZ"], feeds["XYGn"],CR)
+        gc += intend + "(-- start Z loop total {0} step {1}--) {2}".format(
+            depthZ[0], depthZ[1], CR
+        )
         lgc = ""
-        while (abs(dZ) < abs(dT)):
+        intend2 = intend.ljust(2)
+        if (retraction == ""):
+            retraction = "0.0"
+        while (abs(dZ) < abs(depthZ[0])):
             #
             # calculate next Z
-            if ((abs(dT) - abs(dZ)) < abs(dS)):
+            if ((abs(depthZ[0]) - abs(dZ)) < abs(depthZ[1])):
                 # this happens, if a small amount is the rest
-                dZ -= (abs(dT) - abs(dZ))
-                print "rest Z: {}".format(dZ)
+                dZ -= (abs(depthZ[0]) - abs(dZ))
+                print "#{0} rest Z: {1}".format(nr, dZ)
             else:
                 # substract next depthStep
-                dZ -= abs(dS)
-                print "new Z: {}".format(dZ)
+                dZ -= abs(depthZ[1])
+                print "#{0} new Z: {1}".format(nr, dZ)
 
             #
             # before we start next depthstep, we move 0.5 upwards for
             # retraction
-            lgc += "  (-- new Z {0:08.3f} --) {1}".format(dZ, CR)
-            lgc += "  (retraction)" + CR
-            lgc += "  G01 Z{0:08.3f} F{1:04.0f} {2}".format(
+            lgc += intend2 + "(-- new Z {0:08.3f} --) {1}".format(dZ, CR)
+            lgc += intend2 + "(retraction)" + CR
+            lgc += intend2 + "G01 Z{0:08.3f} F{1:04.0f} {2}".format(
                 dZ + float(retraction),
-                FZ0,
+                feeds["ZG0"],
                 CR
             )
             #
             # set new Z
-            lgc += "  G01 Z{0:08.3f} F{1:04.0f} {2}".format(
-                dZ, FZ1, CR)
+            lgc += intend2 + "G01 Z{0:08.3f} F{1:04.0f} {2}".format(
+                dZ, feeds["ZGn"], CR)
             # set XZ
-            lgc += "  " + cDir
+            lgc += intend2 + dir
             lgc += " X{0:08.3f} Y{1:08.3f} I{2:08.3f} J{3:08.3f} F{4:05.1f} {5}".format(
-                X, Y, I, J, FXY1, CR)
+                vec[0], vec[1], I, J, feeds["XYGn"], CR)
             #
             # for saftey issues.
             if (abs(dZ) == 0.0):
@@ -367,7 +451,8 @@ class ContourHoles(GeometricalFrame):
             lgc += CR
             pass
         gc += lgc
-        gc += "  (-- end loop --)" + CR + CR
+        gc += intend + "(-- end loop --)" + CR + CR
+        gc += CR
         return gc
 
     def __calcCutterComp(self, hR, tD, hCPoint):
@@ -418,18 +503,44 @@ class ContourHoles(GeometricalFrame):
         print ("Cutter compensation vector ({})".format(v))
         return v
 
-    def validate(self):
+    def userInputValidation(self):
         r1 = float(self.__holeRadius.get())
         r = float(self.__circleRadius.get())
 
+        tD = float(self.__depthtotal.get())
+        sD = float(self.__depthstep.get())
+
         tool = float(self.__tooldia.get())
-        print ("validate")
+        print ("userInputValidation")
+
+        if (r <= 0.0 or r1 <= 0.0):
+            self.MessageBox("ERROR", "Radius error",
+                "radius hove to be greater than 0.0")
+            return False
+
         if (r1 > r):
-            self.MessageBox("ERROR", "Radius error", "Hole diameter bigger than circle diameter")
+            self.MessageBox("ERROR", "Radius error",
+                "Hole diameter bigger than circle diameter")
             return False
 
         if (r1 < tool):
-            self.MessageBox("ERROR", "Radius error", "Hole diameter smaller than tool diameter")
+            self.MessageBox("ERROR", "Radius error",
+            "Hole diameter smaller than tool diameter")
+            return False
+
+        if (tool <= 1.0):
+            self.MessageBox("ERROR", "Tool error",
+            "Too diamater have to be greater as 1.0")
+            return False
+
+        if (tD >= 0.0 or sD > 0.0):
+            self.MessageBox("ERROR", "Depth error",
+            "Total depth and depth step should be a negative value")
+            return False
+
+        if (abs(tD) < abs(sD)):
+            self.MessageBox("ERROR", "Depth error",
+            "Total depth should be greater than depth step")
             return False
 
         # nothing happens
