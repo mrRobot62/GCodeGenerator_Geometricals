@@ -142,8 +142,8 @@ class ContourMillHolesGrid(GeometricalFrame):
 
         row += 1
         self.__angle = 0
-        self.__distanceA = StringVar(value="20.0")
-        self.__distanceB = StringVar(value = "10.0")
+        self.__distanceA = StringVar(value="30.0")
+        self.__distanceB = StringVar(value = "20.0")
         Label(self.frmButtonsIndividualContent, text="Distance between holes (a)").grid(
             row=row, column=0, sticky=W)
         self.__w5 = FloatEntry(self.frmButtonsIndividualContent, width=5,
@@ -209,7 +209,7 @@ class ContourMillHolesGrid(GeometricalFrame):
         self.frmButtonsIndividualContent.pack(expand=True, fill=BOTH)
         pass
 
-        
+
     #-------------------------------------------------------------
     # here you generate your GCode.
     # some of this code should be used every time.
@@ -271,10 +271,11 @@ class ContourMillHolesGrid(GeometricalFrame):
         # hole X/Y center point
         gc += CR + "(--- START HOLES ---)" + CR
         nr = 0
+        intend = "".ljust(2)
         for vc in hCPoints:
             nr += 1
             gc += self.generateSubHole(
-                nr, gridAngle, vc, self.__dir.get())
+                nr, gridAngle, vc, self.__dir.get(), intend)
             pass
 
         gc += "(--- END HOLES ---)" + CR
@@ -296,6 +297,7 @@ class ContourMillHolesGrid(GeometricalFrame):
         #
         # initialize point vector list
         dA = dB = 0.0
+        intend = "".ljust(2)
         for y in range(numberOfHolesY):
             print (CR + "Row #{0} Angle {1:5.1f}".format((y+1), angle))
             # calculate triangle sides a + b. Both are equal, because
@@ -359,7 +361,7 @@ class ContourMillHolesGrid(GeometricalFrame):
                 hcp.append((v[0] + r,v[1]) )
         return hcp
 
-    def generateSubHole(self, nr, angle, hCPoint, cDir, retraction=0.0):
+    def generateSubHole(self, nr, angle, hCPoint, cDir, intend="", retraction=0.0):
         '''
             create gCode for hole "nr" at point "hCPoint"
             direction of cut is set in "cDir"
@@ -381,13 +383,17 @@ class ContourMillHolesGrid(GeometricalFrame):
         Y = hCPoint[1]
         I = float(self.__holeRadius.get()) * -1.0 # X-Offset (radius)
         J = 0.0 # Y-offset
-        gc += "  " + cDir
+        gc += intend
         #
         # set start X/Y position
-        gc += " X{0:08.3f} Y{1:08.3f} Z{2:08.3f} F{3:05.1f} {4}".format(
-            X,Y, startZ, FXY0,CR)
-        gc += "  (-- start loop --)" + CR
+        gc += intend + "G01 Z{0:08.3f} F{1:05.1f} {2}".format(
+            startZ, FZ1,CR
+        )
+        gc += intend + "G01 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
+            X, Y, FXY1, CR)
+        gc += intend + "(-- start loop --)" + CR
         lgc = ""
+        intend2 = intend.ljust(2)
         while (abs(dZ) < abs(dT)):
             #
             # calculate next Z
@@ -404,19 +410,19 @@ class ContourMillHolesGrid(GeometricalFrame):
             # before we start next depthstep, we move 0.5 upwards for
             # retraction
             if retraction > 0.0:
-                lgc += "  (-- new Z {0:08.3f} --) {1}".format(dZ, CR)
-                lgc += "  (retraction)" + CR
-                lgc += "  G01 Z{0:08.3f} F{1:04.0f} {2}".format(
+                lgc += intend2 + "(-- new Z {0:08.3f} --) {1}".format(dZ, CR)
+                lgc += intend2 + "(retraction)" + CR
+                lgc += intend2 + "G01 Z{0:08.3f} F{1:04.0f} {2}".format(
                     dZ + retraction,
                     FZ0,
                     CR
                 )
             #
             # set new Z
-            lgc += "  G01 Z{0:08.3f} F{1:04.0f} {2}".format(
+            lgc += intend2 + "G01 Z{0:08.3f} F{1:04.0f} {2}".format(
                 dZ, FZ1, CR)
             # set XZ
-            lgc += "  " + cDir
+            lgc += intend2 + cDir
             lgc += " X{0:08.3f} Y{1:08.3f} I{2:08.3f} J{3:08.3f} F{4:05.1f} {5}".format(
                 X, Y, I, J, FXY1, CR)
             #
@@ -427,9 +433,9 @@ class ContourMillHolesGrid(GeometricalFrame):
             pass
         gc += lgc
         # start Z
-        gc += "  G00 Z{0:08.3f} F{1:04.0f} {2}".format(
+        gc += intend + "G00 Z{0:08.3f} F{1:04.0f} {2}".format(
             startZ, FZ0, CR)
-        gc += "  (-- end loop --)" + CR + CR
+        gc += intend + "(-- end loop --)" + CR + CR
         return gc
 
     def userInputValidation(self):
@@ -469,10 +475,22 @@ class ContourMillHolesGrid(GeometricalFrame):
                 text="hole radius greater than tool diameter and 0.0")
             return False
 
-        if (hR > a or hR > b):
+        if ((hR*2) >= a or (hR*2) >= b):
             self.MessageBox(state="ERROR",
                 title="WARN",
-                text="hole radius greater than distance a or b")
+                text="hole diameter is greater than distance a or b")
+            return False
+
+        if (a <= 0.0 or b <= 0.0):
+            self.MessageBox(state="ERROR",
+                title="WARN",
+                text="distances A and B should be greater than 0.0")
+            return False
+
+        if (a <= (hR*2) or b <= (hR*2)):
+            self.MessageBox(state="ERROR",
+                title="WARN",
+                text="distance A or B is less than hole diameter")
             return False
 
         if (float(self.__centerX.get()) < 0.0 or float(self.__centerY.get()) < 0.0):

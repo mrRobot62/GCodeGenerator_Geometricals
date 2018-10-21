@@ -286,9 +286,6 @@ class PocketRoundRectangleGroove(GeometricalFrame):
         saftyZ = float(self.__safety_Z.get())
         startZ = float(self.__start_Z.get())
 
-        feedXYG0 = float(self.__speed_XY_G00.get())
-        feedXYGn= float(self.__speed_XY_G02G03.get())
-
         dir = self.__dir.get()
 
         feeds = {
@@ -363,10 +360,7 @@ class PocketRoundRectangleGroove(GeometricalFrame):
 
         # outer loop is responsible for pocket width
         gc += CR + "(-- outer loop --)"
-
         for pCP in pocketCCP:
-            # start with shape
-
             # inner loop mill pocket depth
             gc += CR + spaces + "(-- inner loop {}--)".format(pCP)
             # set start postion X/Y
