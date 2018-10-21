@@ -46,6 +46,7 @@ from contourArc import *
 from contourRectangle import *
 from contourHoles import *
 from contourMillHolesGrid import *
+from pocketRoundRectangleGroove import *
 
 IN_AXIS = os.environ.has_key("AXIS_PROGRESS_BAR")
 CR = '\n'
@@ -68,7 +69,7 @@ VERSION = "0.4 (2018-10-18)"
     0.1 initial with ContourArc
     0.2 ContourRectangle
     0.3 contourHoles
-    0.4 contourMillHolesGrid 
+    0.4 contourMillHolesGrid
 
 '''
 class GCodeGenerator(Frame):
@@ -121,6 +122,7 @@ class GCodeGenerator(Frame):
         self.PocketingMenu = Menu(self.FileMenu)
         self.FileMenu.add_cascade(label="Pocketing", menu=self.PocketingMenu)
         #--------- Insert pocketing shapes here ---------------------#
+        self.PocketingMenu.add_command(label="Mill a groove as round rect", command=self.DialogPocketRoundRectGroove)
 
         #------------------------------------------------------#
 
@@ -165,6 +167,14 @@ class GCodeGenerator(Frame):
         print "DialogContourHolesGrid"
         title = "Mill holes on a grid"
         self.myApp = ContourMillHolesGrid(self.app, self.master, self.frame, title)
+        self.myApp.init()
+        self.myApp.show()
+        pass
+
+    def DialogPocketRoundRectGroove(self):
+        print "DialogPocketRoundRectGroove"
+        title = "Mill groove as rounded rectangle"
+        self.myApp = PocketRoundRectangleGroove(self.app, self.master, self.frame, title)
         self.myApp.init()
         self.myApp.show()
         pass
