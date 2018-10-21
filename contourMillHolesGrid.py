@@ -107,14 +107,12 @@ class ContourMillHolesGrid(GeometricalFrame):
             row=row, column=0, sticky=W)
         IntegerEntry(self.frmButtonsIndividualContent, width=10,
             mandatory=True, validate="focusout", background="Red",
-            #vcmd=self._updateAngle,
             textvariable=self.__numberOfHolesX).grid(
                 row=row, column=1, sticky=W)
         Label(self.frmButtonsIndividualContent, text="Number of Holes Y").grid(
             row=row, column=2, sticky=W)
         IntegerEntry(self.frmButtonsIndividualContent, width=10,
             mandatory=True, validate="focusout", background="Red",
-            #vcmd=self._updateAngle,
             textvariable=self.__numberOfHolesY).grid(
                 row=row, column=3, sticky=W)
 
@@ -211,22 +209,7 @@ class ContourMillHolesGrid(GeometricalFrame):
         self.frmButtonsIndividualContent.pack(expand=True, fill=BOTH)
         pass
 
-    '''
-        used to update angle if number of holes changed
-    '''
-    def _updateAngle(self, nV, **kv):
-        print ("update hole angle")
-        self.__angle = round(45.0,1)
-        if (self.__numberOfHoles.get() > 0):
-            # pre set of
-            self.__angle = round(360.0 / float(nV),1)
-            print ("update angle between holes {0:5.2f} Holes {1}".format(
-                self.__angle, nV
-            ))
-            self.__distanceB.set(str(self.__angle))
-        return True
-
-
+        
     #-------------------------------------------------------------
     # here you generate your GCode.
     # some of this code should be used every time.
@@ -461,7 +444,6 @@ class ContourMillHolesGrid(GeometricalFrame):
         nHX = float(self.__numberOfHolesX.get())
         nHY = float(self.__numberOfHolesY.get())
         toolDia = float(self.__tooldia.get())
-        print "ToolDia {}".format(toolDia)
 
         if (nHX <= 0.0 or nHY <= 0.0):
             self.MessageBox(state="ERROR",
