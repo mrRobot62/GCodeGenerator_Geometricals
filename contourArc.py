@@ -78,7 +78,8 @@ class ContourArc(GeometricalFrame):
         row += 1
         self.__cuttercompensation = StringVar()
         self.__cuttercompensation.set("G40")
-        Label(self.frmButtonsIndividualContent, text='Tool movement').grid(row=row, column=0, sticky=W)
+        Label(self.frmButtonsIndividualContent, text='Tool movement').grid(
+            row=row, column=0, sticky=W)
         Radiobutton(self.frmButtonsIndividualContent, text="on contour", variable=self.__cuttercompensation,
             value="G40").grid(row=row, column=1, sticky=W)
         Radiobutton(self.frmButtonsIndividualContent, text="left from contour", variable=self.__cuttercompensation,
@@ -88,15 +89,18 @@ class ContourArc(GeometricalFrame):
 
         row += 1
         self.__tooldia = StringVar(value="3.0")
-        Label(self.frmButtonsIndividualContent, text="Tool diameter").grid(row=row, column=0, sticky=W)
+        Label(self.frmButtonsIndividualContent, text="Tool diameter").grid(
+            row=row, column=0, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=False,
             textvariable=self.__tooldia).grid(row=row, column=1, sticky=W)
 
         row += 1
         self.__centerX = StringVar(value="0.0")
         self.__centerY = StringVar(value="0.0")
-        Label(self.frmButtonsIndividualContent, text='Center X').grid(row=row, column=0, sticky=W)
-        Label(self.frmButtonsIndividualContent, text="Center Y").grid(row=row, column=2, sticky=W)
+        Label(self.frmButtonsIndividualContent, text='Center X').grid(
+            row=row, column=0, sticky=W)
+        Label(self.frmButtonsIndividualContent, text="Center Y").grid(
+            row=row, column=2, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=True,
             textvariable=self.__centerX).grid(row=row, column=1, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=True,
@@ -104,7 +108,8 @@ class ContourArc(GeometricalFrame):
 
         row += 1
         self.__dia = StringVar()
-        Label(self.frmButtonsIndividualContent, text="Arc diameter").grid(row=row, column=0, sticky=W)
+        Label(self.frmButtonsIndividualContent, text="Arc diameter").grid(
+            row=row, column=0, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=True,
             textvariable=self.__dia,
             vcmd=self.__validation,
@@ -113,8 +118,10 @@ class ContourArc(GeometricalFrame):
         row += 1
         self.__arcstart = StringVar(value="0.0")
         self.__arcend = StringVar(value="0.0")
-        Label(self.frmButtonsIndividualContent, text="Start arc(0-360)").grid(row=row, column=0, sticky=W)
-        Label(self.frmButtonsIndividualContent, text="End arc (0-360)").grid(row=row, column=2, sticky=W)
+        Label(self.frmButtonsIndividualContent, text="Start arc(0-360)").grid(
+            row=row, column=0, sticky=W)
+        Label(self.frmButtonsIndividualContent, text="End arc (0-360)").grid(
+            row=row, column=2, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=5,
             textvariable=self.__arcstart).grid(
             row=row, column=1, sticky=W)
@@ -124,7 +131,8 @@ class ContourArc(GeometricalFrame):
         row += 1
         self.__depthtotal = StringVar(value="-0.5")
         self.__depthstep = StringVar(value="-0.5")
-        Label(self.frmButtonsIndividualContent, text="Total depth").grid(row=row, column=0, sticky=W)
+        Label(self.frmButtonsIndividualContent, text="Total depth").grid(
+            row=row, column=0, sticky=W)
         Label(self.frmButtonsIndividualContent, text="depth cutting per step").grid(
             row=row, column=2, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=5,
@@ -135,21 +143,26 @@ class ContourArc(GeometricalFrame):
             row=row, column=3, sticky=W)
 
         row += 1
-        self.__speed_XY_G00 = StringVar(value="0.0")
-        self.__speed_Z_G00 = StringVar(value="0.0")
-        Label(self.frmButtonsIndividualContent, text="Feed (G00 X/Y)").grid(row=row, column=0, sticky=W)
-        Label(self.frmButtonsIndividualContent, text="Feed (G00 Z)").grid(row=row, column=2, sticky=W)
+        self.__speed_XY_G00 = StringVar(value="200.0")
+        self.__speed_Z_G00 = StringVar(value="200.0")
+        Label(self.frmButtonsIndividualContent, text="Feed (G00 X/Y)").grid(
+            row=row, column=0, sticky=W)
+        Label(self.frmButtonsIndividualContent, text="Feed (G00 Z)").grid(
+            row=row, column=2, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=5,
             textvariable=self.__speed_XY_G00, mandatory=False).grid(
             row=row, column=1, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.__speed_Z_G00, mandatory=False).grid(row=row, column=3, sticky=W)
+            textvariable=self.__speed_Z_G00, mandatory=False).grid(
+                row=row, column=3, sticky=W)
 
         row += 1
-        self.__speed_XY_G02G03 = StringVar(value="0.0")
-        self.__speed_Z_G01 = StringVar(value="0.0")
-        Label(self.frmButtonsIndividualContent, text="Feed (G02/G03 X/Y)").grid(row=row, column=0, sticky=W)
-        Label(self.frmButtonsIndividualContent, text="Feed (G01 Z)").grid(row=row, column=2, sticky=W)
+        self.__speed_XY_G02G03 = StringVar(value="100.0")
+        self.__speed_Z_G01 = StringVar(value="80.0")
+        Label(self.frmButtonsIndividualContent, text="Feed (G02/G03 X/Y)").grid(
+            row=row, column=0, sticky=W)
+        Label(self.frmButtonsIndividualContent, text="Feed (G01 Z)").grid(
+            row=row, column=2, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=5,
             textvariable=self.__speed_XY_G02G03, mandatory=False).grid(
             row=row, column=1, sticky=W)
@@ -159,14 +172,16 @@ class ContourArc(GeometricalFrame):
 
         row += 1
         self.__start_Z = StringVar(value="3.0")
-        Label(self.frmButtonsIndividualContent, text="Start Z").grid(row=row, column=0, sticky=W)
+        Label(self.frmButtonsIndividualContent, text="Start Z").grid(
+            row=row, column=0, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=10,
             textvariable=self.__start_Z, mandatory=False).grid(
             row=row, column=1, sticky=W)
 
         row += 1
         self.__safety_Z = StringVar(value="10.0")
-        Label(self.frmButtonsIndividualContent, text="Safety Z").grid(row=row, column=0, sticky=W)
+        Label(self.frmButtonsIndividualContent, text="Safety Z").grid(
+            row=row, column=0, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=10,
             textvariable=self.__safety_Z, mandatory=False).grid(
             row=row, column=1, sticky=W)
@@ -176,21 +191,18 @@ class ContourArc(GeometricalFrame):
         pass
 
     def __validation(self, nV, **kv):
-        # print ("__validation '{}  {}'".format(nV,float(self.__dia.get())))
-        # print (kv)
-        # if (float(self.__dia.get()) > 0.0):
-        #     self.setBtnStates(state=NORMAL)
-        #     return True
-        # else:
-        #     self.setBtnStates(state=DISABLED)
-        #     self.MessageBox(state="ERROR",
-        #         title="Error",
-        #         text="wrong input value")
-        #     self.__dia.set(value="")
-
+        # nothing
         return True
 
-    def subClassValidation(self):
+    def userInputValidation(self):
+        if (self.__dia.get() is None or
+            self.__dia.get() == "" or
+            float(self.__dia.get()) <= 0.0):
+            self.MessageBox(state="ERROR",
+                title="ERROR",
+                text="Diameter should be greater than 0.0")
+            return False
+
         if (float(self.__tooldia.get()) >= float(self.__dia.get())):
             self.MessageBox(state="ERROR",
                 title="ERROR",
@@ -202,6 +214,7 @@ class ContourArc(GeometricalFrame):
                 title="ERROR",
                 text="Values for CenterX/Y should be positive")
             return False
+
 
         if (float(self.__arcstart.get()) > float(self.__arcend.get())):
             self.MessageBox(state="ERROR",
@@ -276,11 +289,11 @@ class ContourArc(GeometricalFrame):
         if (self.__cuttercompensation.get() == "G41"):
             gc += CR + "(-- Cutter compensation LEFT --){}".format(CR)
             gc += "{} {}".format(self.__cuttercompensation.get(),CR)
-            X -= (float(self.__tooldia) / 2.0)
-        if (self.__cuttercompensation.get() == "G41"):
+            X -= (float(self.__tooldia.get()) / 2.0)
+        if (self.__cuttercompensation.get() == "G42"):
             gc += CR + "(-- Cutter compensation RIGHT --){}".format(CR)
             gc += "{} {}".format(self.__cuttercompensation.get(),CR)
-            X += (float(self.__tooldia) / 2.0)
+            X += (float(self.__tooldia.get()) / 2.0)
 
         # set start postion X/Y
         gc += "G00 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
