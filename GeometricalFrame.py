@@ -123,6 +123,26 @@ class GeometricalFrame(Frame):
         # override from subclass
         pass
 
+    def getGCodeCutterComp(self, compensation = "G40", toolDia = 0.0):
+        '''
+        return a GCode for given cutter compensation
+
+        This cutter compensation do not use tool table adjustment for
+        tool diameters.
+        '''
+        gc = ""
+        if toolDia == 0.0:
+            compensation = "G40"
+
+        gc += "(-- cutter compensation --)" + CR
+        if (compensation == "G41"):
+            gc += "G41.1 D{0:5.2f} {1}".format(toolDia, CR)
+        elif (compensation == "G42"):
+            gc += "G42.1 D{0:5.2f} {1}".format(toolDia, CR)
+        else : # G40
+            gc += "G40 {0}".format(CR)
+        return gc
+
     def copyClipboard(self, event=None):
         print "copyClipboard"
         gc = self.getGCode()

@@ -253,6 +253,8 @@ class ContourArc(GeometricalFrame):
             float(self.__safety_Z.get()),
             float(self.__speed_Z_G00.get()), CR)
 
+        toolDia = float(self.__tooldia.get())
+
         xoffset = float(0.0)
         yoffset = float(0.0)
         if (int(self.__CC.get()) == 1):
@@ -270,6 +272,8 @@ class ContourArc(GeometricalFrame):
         if (int(self.__CC.get()) == 5):
             xoffset = float(0.0) # ignore user input
             yoffset = float(0.0) # ignore user input
+
+        intend = "".ljust(2)
         # X
         X = (float(self.__dia.get()) / 2.0) + xoffset
 
@@ -281,19 +285,6 @@ class ContourArc(GeometricalFrame):
 
         # J
         J = -0.0
-
-        # cutter compensation
-        if (self.__cuttercompensation.get() == "G40"):
-            gc += CR + "(-- Cutter compensation --){}".format(CR)
-            gc += "{} {}".format(self.__cuttercompensation.get(),CR)
-        if (self.__cuttercompensation.get() == "G41"):
-            gc += CR + "(-- Cutter compensation LEFT --){}".format(CR)
-            gc += "{} {}".format(self.__cuttercompensation.get(),CR)
-            X -= (float(self.__tooldia.get()) / 2.0)
-        if (self.__cuttercompensation.get() == "G42"):
-            gc += CR + "(-- Cutter compensation RIGHT --){}".format(CR)
-            gc += "{} {}".format(self.__cuttercompensation.get(),CR)
-            X += (float(self.__tooldia.get()) / 2.0)
 
         # set start postion X/Y
         gc += "G00 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
@@ -314,7 +305,7 @@ class ContourArc(GeometricalFrame):
         depth = float(self.__depthtotal.get())
         z = 0.0
         loop = ""
-        gc += CR + "(------- start circel -------------)" + CR
+        gc += CR + "(-- START circel --)" + CR
         gc += "(-- Dia {0:06.3f}, Depth {1:06.3f}, Step Z {2:06.3f} --){3}".format(
             float(self.__dia.get()),
             depth,
@@ -326,7 +317,13 @@ class ContourArc(GeometricalFrame):
             float(Y),
             CR
         )
-        gc += CR + "(-- loop --)" + CR
+        gc += "(-- LOOP --)" + CR + CR
+        # cutter compensation
+        #
+        gc += self.getGCodeCutterComp(
+            self.__cuttercompensation.get(),
+            toolDia
+        )
         while (abs(z) < abs(depth)):
             # set next Z depth
             if ((abs(depth) - abs(z)) < abs(step)):
@@ -337,24 +334,26 @@ class ContourArc(GeometricalFrame):
                 z -= abs(step)
                 print "new Z: {}".format(z)
 
-            loop += CR + "(set new Z {0:05.2f} position)".format(z) + CR
-            loop += "G01 Z{0:08.3f} F{1:05.1f} {2}".format(
+            loop += intend + "(set new Z {0:05.2f} position)".format(z) + CR
+            loop += intend + "G01 Z{0:08.3f} F{1:05.1f} {2}".format(
                 float(z),
                 float(self.__speed_Z_G01.get()), CR)
             # set direction G02/G03
             #
-            loop += self.__dir.get()
+            loop += intend + self.__dir.get()
             loop += " X{0:08.3f} Y{1:08.3f} I{2:08.3f} J{3:08.3f} F{4:05.1f} {5}".format(
                 X, Y, I, J, float(self.__speed_XY_G02G03.get()), CR
             )
+            loop += CR
             #
             # for saftey issues.
             if (abs(step) == 0.0):
                 break
+            pass
 
         gc += loop
         #----------------------------
-        gc += "(----------------------------------)" + CR
+        gc += CR + "(-- END circle -)" + CR
         gc += self._postamble.get() + CR
         gc += CR
         print gc
