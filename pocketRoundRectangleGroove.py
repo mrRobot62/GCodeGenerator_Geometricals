@@ -139,18 +139,18 @@ class PocketRoundRectangleGroove(GeometricalFrame):
             textvariable=self.__distanceB).grid(row=row, column=3, sticky=W)
 
         row += 1
-        self.__pocketWidth = StringVar(value="15.0")
-        # default half tool diameter as overlap
-        self.__pocketOverlap = StringVar(value=float(self.__tooldia.get())/2.0)
+        self.__pocketWidth = StringVar(value="20.0")
+        # default forward feed inside pocket (from track to track)
+        self.__forwardfeed = StringVar(value="1.0")
         Label(self.frmButtonsIndividualContent, text="Pocket (Width)").grid(
             row=row, column=0, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=10,
             textvariable=self.__pocketWidth, mandatory=False).grid(
             row=row, column=1, sticky=W)
-        Label(self.frmButtonsIndividualContent, text="Pocket Overlap").grid(
+        Label(self.frmButtonsIndividualContent, text="Forward feed").grid(
             row=row, column=2, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=10,
-            textvariable=self.__pocketOverlap, mandatory=False).grid(
+            textvariable=self.__forwardfeed, mandatory=False).grid(
             row=row, column=3, sticky=W)
 
         row += 1
@@ -219,7 +219,7 @@ class PocketRoundRectangleGroove(GeometricalFrame):
         a = float(self.__distanceA.get())
         b = float(self.__distanceB.get())
         toolDia = float(self.__tooldia.get())
-        overlap = float(self.__pocketOverlap.get())
+        forwardstep = float(self.__forwardfeed.get())
 
         if (gR < 0.0):
             self.MessageBox(state="ERROR",
@@ -239,11 +239,17 @@ class PocketRoundRectangleGroove(GeometricalFrame):
                 text="Tool diamater should be greater than 0.0 and less than width")
             return False
 
-        if (overlap >= toolDia):
+        if (forwardstep > (toolDia)):
             self.MessageBox(state="ERROR",
                 title="ERROR",
-                text="Overlap is greater or equal tool diameter.")
+                text="forward feed is greater than tool diameter.")
             return False
+
+        if (forwardstep == (toolDia)):
+            self.MessageBox(state="WARN",
+                title="WARN",
+                text="forward feed equal tool diameter - are you shure?")
+            return True
 
         if (abs(float(self.__depthtotal.get())) < abs(float(self.__depthstep.get()))):
             self.MessageBox(state="ERROR",
@@ -271,20 +277,38 @@ class PocketRoundRectangleGroove(GeometricalFrame):
     # insert your code bettween marked rows
     #-------------------------------------------------------------
     def generateGCode(self):
+        '''
+        for a pocket in an rounded rectangle, even what user set as reference point, we
+        recalculate it to inner contour and start with milling on outer line
+        of this contour until we touch outer line contour
+        '''
+        cPoint = (float(self.__centerX.get()),
+                  float(self.__centerY.get()))
         sizeAB = (float(self.__distanceA.get()),
                   float(self.__distanceB.get()))
         radius = float(self.__radius.get())
-        pocketWidth = float(self.__pocketWidth.get())
-        cPoint = (float(self.__centerX.get()),
-                  float(self.__centerY.get()))
         toolDia = float(self.__tooldia.get())
 
-        pocketCCP = (
-            # a, b
+        pWidth = float(self.__pocketWidth.get())
+        forwardstep = float(self.__forwardfeed.get())
+
+        pocketMillTracks = [
+            # list contain every size of a pocket mill pocket mill track
+            # beginning with inner track. Every track is on "forwardstep" bigger
+            # than track before
+            # a,b
             (0.0, 0.0)
+        ]
+
+        zPos = {
+            "safetyZ" : float(self.__safety_Z.get()),
+            "startZ" : float(self.__start_Z.get())
+        }
+
+        depth = (
+            float(self.__depthtotal.get()),
+            float(self.__depthstep.get()),
         )
-        saftyZ = float(self.__safety_Z.get())
-        startZ = float(self.__start_Z.get())
 
         dir = self.__dir.get()
 
@@ -303,7 +327,7 @@ class PocketRoundRectangleGroove(GeometricalFrame):
         # set Z axis
         gc += CR + "(set Z saftey position)" + CR
         gc += "G00 Z{0:08.3f} F{1:05.1f} {2}".format(
-            saftyZ, feeds["ZG0"],CR)
+            zPos["safetyZ"], feeds["ZG0"],CR)
 
         #
         # even which center point user choosed, we start on
@@ -320,7 +344,7 @@ class PocketRoundRectangleGroove(GeometricalFrame):
         # generate as many shape steps are needed until depthtotal is reached
         # cut an Arc
         step = float(self.__depthstep.get())
-        depth = float(self.__depthtotal.get())
+#        depth = float(self.__depthtotal.get())
         z = step
         loop = ""
         gc += CR + "(------- start shape -------------)" + CR
@@ -340,7 +364,7 @@ class PocketRoundRectangleGroove(GeometricalFrame):
         # start with shape
         gc += CR + "(move Z-axis to start postion near surface)" + CR
         gc += "G00 Z{0:08.3f} F{1:05.1f} {2}".format(
-            startZ,
+            zPos["startZ"],
             feeds["ZG0"],
             CR)
         spaces = "".ljust(2)
@@ -349,104 +373,188 @@ class PocketRoundRectangleGroove(GeometricalFrame):
         # if not needed for your shape, remove this part and rewrite
         #----------------------------------------------------------------------
         #
-        # def __createPocketCenterPoints(self, width, sizeAB, toolDia):
 
-        pocketCCP = self.__createPocketCenterPoints(
-            pocketWidth,
-            sizeAB,
-            toolDia
-        )
-        print " PocketCenterPoints ({})".format(pocketCCP)
+        # we do not use G41/G42 ! - we calculate it for G02 vecorts
+        # we start with inner contour and from this ContourRect
+        # left outside - in this case we have an offset of half tool dia
+        offset = toolDia / 2.0
+        cWidth = offset             # start pocket width = tool diameter
+        pocketMillTracks = []
+        x = 1
+        finished = False
+        while (not finished):
+            print ("Width {} cWidth {}".format(
+                pWidth, cWidth
+            ))
+            if (cWidth + (toolDia/2.0)>= pWidth):
+                # oh, we over shot, we have to reduce offset to a value
+                # which is the difference between width - cWidth
+                cWidth += (pWidth - cWidth) - (toolDia / 2.0)
+                # this is our last track
+                finished = True
 
-        # outer loop is responsible for pocket width
-        gc += CR + "(-- outer loop --)"
-        for pCP in pocketCCP:
-            # inner loop mill pocket depth
-            gc += CR + spaces + "(-- inner loop {}--)".format(pCP)
-            # set start postion X/Y
-            loop = ""
-            z = 0.0
-            while (abs(z) < abs(depth)):
-                # set next Z depth
-                if ((abs(depth) - abs(z)) < abs(step)):
-                    # this happens, if a small amount is the rest
-                    z -= (abs(depth) - abs(z))
-                    print "rest Z: {}".format(z)
-                else:
-                    z -= abs(step)
-                    print "new Z: {}".format(z)
+            t = self.__createPocketTracks(
+                cPoint,
+                pWidth,
+                sizeAB,
+                radius,
+                cWidth
+            )
+            pocketMillTracks.append(t)
+            print ("{3}#{0:03d} --- cWidth {1} step {4} {2}".format(
+                x, cWidth, CR, CR, forwardstep
+            ))
+            #print (t)
+            x += 1
+            cWidth += forwardstep
 
-                #
-                # start with this start position
-                loop += self.__gcodeRoundRect(
-                    cPoint,
-                    pCP,
-                    pocketWidth,
-                    dir,
-                    radius,
-                    z,
-                    feeds,
-                    indent = 4)
+        #
+        # it's time to generate the real gCode
+        #
+        # Every round we mill all tracks in the same detph
+        # than we increase depth as long as we reached total depthStep
 
-                #---------------------------------------------------
-                # indiviual GCode - END
-                #---------------------------------------------------
-                #
-                # for saftey issues.
-                if (abs(step) == 0.0):
-                    break
+        gc += CR + "(-- START DEPTH Loop --)" + CR
+        z = depth[1]
+        while (abs(z) < abs(depth[0])):
+            # set next Z depth
+            if ((abs(depth[0]) - abs(z)) < abs(depth[1])):
+                # this happens, if a small amount is the rest
+                z -= (abs(depth[0]) - abs(z))
+                print "rest Z: {}".format(z)
+            else:
+                z -= abs(depth[1])
+                print "new Z: {}".format(z)
 
-                gc += loop
-                #----------------------------
-                gc += spaces + "(-- end inner loop)" + CR
+            loop += CR
+            gc += spaces + "(-- START Track Loop  --)" + CR
+            for t in pocketMillTracks:
+                # every track contain a fixed number of separate gCode
+                # commands
+                spaces2 = spaces.ljust(2)
+                # set new depth
+                gc += CR + spaces2 + "(-- next depth z {0:08.3f} --){1}".format(z,CR)
+                gc += spaces2 + "G01 Z{0:08.3f} {1}".format(z,CR)
+                for cmd in t:
+                    #
+                    # combine all parameter to one command
+                    gc += spaces2
+                    #  0  1  2  3  4
+                    # GC, X, Y, I, J
+                    print cmd
+                    for p in range(len(cmd)):
+                        if p == 0:
+                            gc += cmd[p]
+                        if p == 1:
+                            gc += " X{0:08.3f}".format(float(cmd[p]))
+                        if p == 2:
+                            gc += " Y{0:08.3f}".format(float(cmd[p]))
+                        if p == 3:
+                            gc += " I{0:08.3f}".format(float(cmd[p]))
+                        if p == 4:
+                            gc += " J{0:08.3f}".format(float(cmd[p]))
+
+                    gc += CR
+
+            gc += spaces + "(-- END Track Loop  --)"
             pass
 
-        gc += "(-- end outer loop)" + CR
+        # outer loop is responsible for pocket width
+        # for pCP in pocketMillTracks:
+        #     # inner loop mill pocket depth
+        #     gc += CR + spaces + "(-- inner loop {}--)".format(pCP)
+        #     # set start postion X/Y
+        #     loop = ""
+        #     z = 0.0
+        #     while (abs(z) < abs(depth)):
+        #         # set next Z depth
+        #         if ((abs(depth) - abs(z)) < abs(step)):
+        #             # this happens, if a small amount is the rest
+        #             z -= (abs(depth) - abs(z))
+        #             print "rest Z: {}".format(z)
+        #         else:
+        #             z -= abs(step)
+        #             print "new Z: {}".format(z)
+        #
+        #         #
+        #         # start with this start position
+        #         loop += self.__gcodeRoundRect(
+        #             cPoint,
+        #             pocketMillTracks,
+        #             dir,
+        #             radius,
+        #             z,
+        #             feeds,
+        #             4)
+        #
+        #         #---------------------------------------------------
+        #         # indiviual GCode - END
+        #         #---------------------------------------------------
+        #         #
+        #         # for saftey issues.
+        #         if (abs(step) == 0.0):
+        #             break
+        #
+        #         gc += loop
+        #         #----------------------------
+        #         gc += spaces + "(-- end inner loop)" + CR
+        #     pass
+        #
+        gc += "(-- END DEPTH loop --)" + CR
 
         gc += self._postamble.get() + CR
         gc += CR
         #print gc
         return  gc
 
-    def __createPocketCenterPoints(self, width, sizeAB, toolDia):
-        print "__createPocketCenterPoints"
-        ps = [
-                # this ist the first cut - inner contour
-                (
-                    sizeAB[0] - (width / 2.0) + (toolDia / 2.0),
-                    sizeAB[1] - (width / 2.0) + (toolDia / 2.0)
-                ),
+    def __createPocketTracks(self, cPoint, width, sizeAB, r, offset=0.0 ):
+        # h = h1 + 2*r
+        # w = w1 + 2*r
+        w0 = sizeAB[1]
+        w1 = sizeAB[1] - (2*r)  # horizontal distance between arcs
+        h0 = sizeAB[0]
+        h1 = sizeAB[0] - (2*r)  # vertical distance betwween arcs
 
-            ]
-        v = ()
-        vl = ps[0]  # last vector
-        offset = float(self.__pocketOverlap.get())
-        s = offset
-        print "vl {}".format(vl)
-        print "s {}".format(s)
-        while ( s <= width):
-            v = (vl[0] + s, vl[1] + s)
-            print v
-            ps.append(v)
-            vl = v
-            if ((s + offset) > width):
-                s += 1
-            else:
-                s += s
-        return ps
+        x = cPoint[0]
+        y = cPoint[1]
+        # sequence to mill a rounded rectangle
+        seq = [
+            #start
+            ("G01", x,y-offset),
+            # arc1
+            # G02, X Y I J
+            ("G02", x-r-offset, y+r, 0.0, r+offset),
+            # vertical to arc2
+            ("G01", x-r-offset, y+r+h1),
+            # arc2
+            # G02, X Y I J
+            ("G02", x, y+h0+offset, r+offset, 0.0),
+            # horizontal to arc 3
+            ("G01", x+w1, y+h0+offset),
+            # arc 3
+            # G02, X Y I J
+            ("G02", x+w0+offset, y+r+h1, 0.0, -r-offset),
+            # vertical to arc 4
+            ("G01", x+w1+r+offset, y+r),
+            # arc 4
+            # G02, X Y I J
+            ("G02", x+w1, y-offset, -r-offset, 0.0),
+            # go back to start position
+            ("G01", x, y-offset),
+        ]
+        #print "{1}---- offset {0} -----".format(offset,CR)
+        #print seq
+        return seq
 
-    def __gcodeRoundRect(self, cPoint, sizeAB, pocketWidth, dir, r ,newZ, feeds, indent=0 ):
+    def __gcodeRoundRect(self, cPoint, sizeAB, dir, r ,newZ, feeds, indent=0 ):
         spaces = "".ljust(indent)
         gc = spaces
         gc += CR + spaces + "(next depth Z {0:05.2f} position)".format(newZ) + CR
-        # set start XY position
+        # set start XY position fast go
         gc += spaces + "G00 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
-            # X = X - (half b) + r
-            cPoint[0]-(sizeAB[1]/2.0) + r,
-            # Y = Y - (half a) - r
-            cPoint[1] - (sizeAB[0]/2.0),
-            # speed
-            feeds["XYGn"],
+            (cPoint[0] + sizeAB[0]),      # cp + calculated X
+            (cPoint[1] + sizeAB[1]),      # cp + calculated Y
+            feeds["XYGn"],  # speed
             CR)
         # set new Z
         gc += spaces + "G01 Z{0:08.3f} F{1:05.1f} {2}".format(
@@ -456,79 +564,75 @@ class PocketRoundRectangleGroove(GeometricalFrame):
         # mill arc #1
         gc += spaces + dir
         gc += " X{0:08.3f} Y{1:08.3f} J{2:08.3f} F{3:05.1f} {4}".format(
-            # X = X - (half b)
-            cPoint[0]-(sizeAB[1]/2.0),
-            # Y = Y - (half a) + r
-            cPoint[1]-(sizeAB[0]/2.0) + r,
-            # R
-            r,
-            # speed
-            feeds["XYGn"],
+            cPoint[0] + sizeAB[0],      # cp + calculated X
+            cPoint[1] + sizeAB[1],      # cp + calculated Y
+            r,                          # radius
+            feeds["XYGn"],              # speed
             CR)
-        # set XY position
-        gc += spaces + "G01 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
-            # X = X - (half b)
-            cPoint[0]-(sizeAB[1]/2.0),
-            # Y = Y + (half a) - r
-            cPoint[1]+(sizeAB[0]/2.0) - r,
-            # speed
-            feeds["XYGn"],
-            CR)
-        # mill to next arc position
-        gc += spaces + dir
-        gc += " X{0:08.3f} Y{1:08.3f} I{2:08.3f} F{3:05.1f} {4}".format(
-            # X = X - (half b) + r
-            cPoint[0]-(sizeAB[1]/2.0) + r,
-            # Y = Y + (half a)
-            cPoint[1]+(sizeAB[0]/2.0),
-            # I
-            r,
-            # speed
-            feeds["XYGn"],
-            CR)
-        # set next arc position
-        gc += spaces + "G01 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
-            # X = X + (half b) - r
-            cPoint[0]+(sizeAB[1]/2.0) - r,
-            # Y = Y - (half a)
-            cPoint[1]+(sizeAB[0]/2.0),
-            # speed
-            feeds["XYGn"],
-            CR)
-        # mill next arc #2
-        gc += spaces + dir
-        gc += " X{0:08.3f} Y{1:08.3f} J{2:08.3f} F{3:05.1f} {4}".format(
-            # X = X + (half b)
-            cPoint[0] + (sizeAB[1]/2.0),
-            # Y = Y - (half a) - r
-            cPoint[1] + (sizeAB[0]/2.0) - r,
-            # R
-            -r,
-            # speed
-            feeds["XYGn"],
-            CR)
-        # next postion
-        gc += spaces + "G01 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
-            # X = X - (half B)
-            cPoint[0]+(sizeAB[1]/2.0),
-            # Y = Y - (half a) + r
-            cPoint[1]-(sizeAB[0]/2.0) + r,
-            feeds["XYGn"],
-            CR
-        )
-        # mill arc
-        gc += spaces + dir
-        gc += " X{0:08.3f} Y{1:08.3f} I{2:08.3f} F{3:05.1f} {4}".format(
-            # X = X + (half b) - r
-            cPoint[0]+(sizeAB[1]/2.0) - r,
-            # Y = Y + (half a)
-            cPoint[1]-(sizeAB[0]/2.0),
-            # I
-            -r,
-            # speed
-            feeds["XYGn"],
-            CR)
-
+        # # set XY position
+        # gc += spaces + "G01 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
+        #     # X = X - (half b)
+        #     cPoint[0]-(sizeAB[1]/2.0),
+        #     # Y = Y + (half a) - r
+        #     cPoint[1]+(sizeAB[0]/2.0) - r,
+        #     # speed
+        #     feeds["XYGn"],
+        #     CR)
+        # # mill to next arc position
+        # gc += spaces + dir
+        # gc += " X{0:08.3f} Y{1:08.3f} I{2:08.3f} F{3:05.1f} {4}".format(
+        #     # X = X - (half b) + r
+        #     cPoint[0]-(sizeAB[1]/2.0) + r,
+        #     # Y = Y + (half a)
+        #     cPoint[1]+(sizeAB[0]/2.0),
+        #     # I
+        #     r,
+        #     # speed
+        #     feeds["XYGn"],
+        #     CR)
+        # # set next arc position
+        # gc += spaces + "G01 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
+        #     # X = X + (half b) - r
+        #     cPoint[0]+(sizeAB[1]/2.0) - r,
+        #     # Y = Y - (half a)
+        #     cPoint[1]+(sizeAB[0]/2.0),
+        #     # speed
+        #     feeds["XYGn"],
+        #     CR)
+        # # mill next arc #2
+        # gc += spaces + dir
+        # gc += " X{0:08.3f} Y{1:08.3f} J{2:08.3f} F{3:05.1f} {4}".format(
+        #     # X = X + (half b)
+        #     cPoint[0] + (sizeAB[1]/2.0),
+        #     # Y = Y - (half a) - r
+        #     cPoint[1] + (sizeAB[0]/2.0) - r,
+        #     # R
+        #     -r,
+        #     # speed
+        #     feeds["XYGn"],
+        #     CR)
+        # # next postion
+        # gc += spaces + "G01 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
+        #     # X = X - (half B)
+        #     cPoint[0]+(sizeAB[1]/2.0),
+        #     # Y = Y - (half a) + r
+        #     cPoint[1]-(sizeAB[0]/2.0) + r,
+        #     feeds["XYGn"],
+        #     CR
+        # )
+        # # mill arc
+        # gc += spaces + dir
+        # gc += " X{0:08.3f} Y{1:08.3f} I{2:08.3f} F{3:05.1f} {4}".format(
+        #     # X = X + (half b) - r
+        #     cPoint[0]+(sizeAB[1]/2.0) - r,
+        #     # Y = Y + (half a)
+        #     cPoint[1]-(sizeAB[0]/2.0),
+        #     # I
+        #     -r,
+        #     # speed
+        #     feeds["XYGn"],
+        #     CR)
+        #
         # gc += "G01 X{0:08.3f} Y{1:08.3f} F{3:05.1f} {4}".format(
         #     # X = X - (half b) -r
         #     cPoint[0] - (sizeAB[1]/2.0) - r,
