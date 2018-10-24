@@ -14,6 +14,7 @@ Status October 2018 - under development - currently contourARC is finished **
 |0.2 | save to file implemented |
 |0.3 | contourRectange & contourHoles |
 |0.4 | contourMillHolesGrid. Milling holes on a grid |
+|0.5 | pocketRoundRectangle |
 
 ## Example screenshot (more details inside WIKI)
 ![](https://github.com/mrRobot62/GCodeGenerator_Geometricals/blob/master/img/screenshots/screen_cCircle.png)
