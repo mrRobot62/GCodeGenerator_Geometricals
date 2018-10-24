@@ -92,7 +92,7 @@ function inside menu.
 Use your new function. A new window appears. Check your functionality.
 With button "GCode" you can check your generated GCODE **before** you do it on your CNC
 
-## (3) give the community the chance to participate on your new implementation
+## (3) give our community a chance to participate on your new implementation
 upload you implementation to this github repository.
 **THANKS**
 
