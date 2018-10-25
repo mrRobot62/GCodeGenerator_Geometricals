@@ -4,7 +4,7 @@ With this python collection it is possible to create simple geometrical shapes a
 Primary this tool set is used for my LinuxCNC milling machines.
 
 **Tested with Python 2.7
-Status October 2018 - under development - currently contourARC is finished **
+Status October 2018 - under development **
 
 
 ## History:
@@ -15,6 +15,8 @@ Status October 2018 - under development - currently contourARC is finished **
 |0.3 | contourRectange & contourHoles |
 |0.4 | contourMillHolesGrid. Milling holes on a grid |
 |0.5 | pocketRoundRectangle |
+|0.6 | contourRoundRectangle |
+
 
 ## Example screenshot (more details inside WIKI)
 ![](https://github.com/mrRobot62/GCodeGenerator_Geometricals/blob/master/img/screenshots/screen_cCircle.png)
