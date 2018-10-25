@@ -397,6 +397,12 @@ class PocketRoundRectangle(GeometricalFrame):
 
             loop += CR
             gc += spaces + "(-- START Track Loop  --)" + CR
+            gc += spaces + "(set start position including cutter compensation)" + CR
+            gc += "G00 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
+                cPoint[0],
+                cPoint[1] - toolDia / 2.0,
+                feeds["XYG0"],
+                CR)
             for t in pocketMillTracks:
                 # every track contain a fixed number of separate gCode
                 # commands
