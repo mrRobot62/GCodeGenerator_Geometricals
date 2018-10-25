@@ -123,6 +123,12 @@ class GeometricalFrame(Frame):
         # override from subclass
         pass
 
+    def getGCode_Homeing(self, x=0, y=0, z=10, f=100):
+        gc = "G01 X{0:08.3f} Y{1:08.3f} Z{2:08.3f} F{3:05.1f} {4}".format(
+            x,y,z,f,CR
+        )
+        return gc
+
     def getGCodeCutterComp(self, compensation = "G40", toolDia = 0.0):
         '''
         return a GCode for given cutter compensation
@@ -160,7 +166,7 @@ class GeometricalFrame(Frame):
             initialdir = "./",
             title = "Save file",
             defaultextension = "*.ngc",
-            filetypes = (("Axis ","*.ngc"),("Gcode ","*.gc"),("all files","*.*"))
+            filetypes = (("Axis ","*.ngc"),("Gcode ","*.gcode"),("all files","*.*"))
             )
         if (fname == None):
             # cancle button
@@ -233,8 +239,8 @@ class GeometricalFrame(Frame):
     #------ EXIT --------------------------
     def cancel(self, event=None):
         print "cancel"
+        #self.destroy()
         self.master.quit()
-        self.destroy()
         pass
 
     def MessageBox(self, state="INFO", title = "", text=""):

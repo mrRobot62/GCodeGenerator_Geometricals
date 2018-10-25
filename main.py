@@ -44,9 +44,11 @@ import os
 
 from contourArc import *
 from contourRectangle import *
+from contourRoundRectangle import *
 from contourHoles import *
 from contourMillHolesGrid import *
-from pocketRoundRectangleGroove import *
+from pocketRoundRectangle import *
+from pocketCircle import *
 
 IN_AXIS = os.environ.has_key("AXIS_PROGRESS_BAR")
 CR = '\n'
@@ -104,6 +106,8 @@ class GCodeGenerator(Frame):
         self.ContourMenu.add_command(label="Circle or Arc", command=self.DialogContourArc)
         # Contour - Arc
         self.ContourMenu.add_command(label="Rectangle", command=self.DialogContourRec)
+        # Contour - Arc
+        self.ContourMenu.add_command(label="Rounded rectangle", command=self.DialogContourRoundedRec)
         # Contour - Holes
         self.ContourMenu.add_command(label="Holes on circle", command=self.DialogContourHoles)
         # Contour - Holes on a grid
@@ -122,7 +126,8 @@ class GCodeGenerator(Frame):
         self.PocketingMenu = Menu(self.FileMenu)
         self.FileMenu.add_cascade(label="Pocketing", menu=self.PocketingMenu)
         #--------- Insert pocketing shapes here ---------------------#
-        self.PocketingMenu.add_command(label="Mill a groove as round rect", command=self.DialogPocketRoundRectGroove)
+        self.PocketingMenu.add_command(label="Mill a circle pocket", command=self.PocketCircle)
+        self.PocketingMenu.add_command(label="Mill a round rect pocket", command=self.PocketRoundRectangle)
 
         #------------------------------------------------------#
 
@@ -155,6 +160,15 @@ class GCodeGenerator(Frame):
         self.myApp.show()
         pass
 
+
+    def DialogContourRoundedRec(self):
+        print "DialogContourRoundedRec"
+        title = "Contour Rounded Rectangle"
+        self.myApp = DialogContourRoundedRec(self.app, self.master, self.frame, title)
+        self.myApp.init()
+        self.myApp.show()
+        pass
+
     def DialogContourHoles(self):
         print "DialogContourHoles"
         title = "Contour Holes on a circle"
@@ -171,14 +185,21 @@ class GCodeGenerator(Frame):
         self.myApp.show()
         pass
 
-    def DialogPocketRoundRectGroove(self):
-        print "DialogPocketRoundRectGroove"
-        title = "Mill groove as rounded rectangle"
-        self.myApp = PocketRoundRectangleGroove(self.app, self.master, self.frame, title)
+    def PocketRoundRectangle(self):
+        print "PocketRoundRectangle"
+        title = "Mill round rectangle pocket"
+        self.myApp = PocketRoundRectangle(self.app, self.master, self.frame, title)
         self.myApp.init()
         self.myApp.show()
         pass
 
+    def PocketCircle(self):
+        print "PocketCircle"
+        title = "Mill pocket circle"
+        self.myApp = PocketCircle(self.app, self.master, self.frame, title)
+        self.myApp.init()
+        self.myApp.show()
+        pass
 
 #--------- Menu callbacks ---------------------#
 
