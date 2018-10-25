@@ -77,7 +77,11 @@ Implement a callback function like this:
 Do not forget to import your new python module like This `from contourArc import *` at beginning of `main.py`
 
 ## (2) Implement your new functions
-Use `shapeTemplate.py`and make a copy of this file. Rename the copy to a approperiate filename like `contourArc.py`
+Use `shapeTemplate.py`and make a copy of this file if you like to start more or less from scratch ;-). Alternative make a copy of an existing shape/pocket/... and rename it. Than start with point 1. 
+
+Rename the copy to a approperiate filename like `pocketEveryShapeIKnow.py`
+
+For more complex implementations, take a look into pocketXXXXX.py implementations.
 
 Start with implementing of your code.
 
@@ -92,7 +96,9 @@ start main.py, if implemenation in menu.py was correct, you should see, your new
 function inside menu.
 
 Use your new function. A new window appears. Check your functionality.
-With button "GCode" you can check your generated GCODE **before** you do it on your CNC
+With button "GCode" you can check your generated GCODE **before** you do it on your CNC. Use a GCode-Simulator like NCViewer or CAMotics to visualize and simulate your generated gcode.
+
+If everything is ok, **than** start gcode on your CNC
 
 ## (3) give our community a chance to participate on your new implementation
 upload you implementation to this github repository.
