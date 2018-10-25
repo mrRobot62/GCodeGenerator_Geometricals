@@ -237,9 +237,14 @@ class ContourHoles(GeometricalFrame):
 
         feeds = {
             "XYG0" : float(self.__speed_XY_G00.get()),
-            "XYGn" : float(self.__speed_Z_G01.get()),
+            "XYGn" : float(self.__speed_XY_G02G03.get()),
             "ZG0" : float(self.__speed_Z_G00.get()),
             "ZGn" : float(self.__speed_Z_G01.get())
+        }
+
+        zPos = {
+            "safetyZ" : float(self.__safety_Z.get()),
+            "startZ" : float(self.__start_Z.get())
         }
 
         # dir
@@ -301,10 +306,15 @@ class ContourHoles(GeometricalFrame):
 
         gc += loop
         gc += "(--- END HOLES ---)" + CR
-        gc += self._postamble.get() + CR
-        gc += "G00 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
-            cPoint[0], cPoint[1], feeds["XYG0"], CR
+
+        gc += self.getGCode_Homeing(
+            cPoint[0],
+            cPoint[1],
+            zPos["safetyZ"],
+            feeds["XYG0"]
         )
+        gc += self._postamble.get() + CR
+        gc += CR
         return  gc
 
     def __calculateHoleCPoints(self, numberOfHoles, cPoint, radii, angle, deg):

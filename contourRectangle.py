@@ -76,7 +76,6 @@ class ContourRectangle(GeometricalFrame):
             self.__CC, *choices, command=self._changeImage).grid(
             row=row, column=1)
 
-
         row += 1
         self.__unit = StringVar()
         self.__unit.set("G21")
@@ -135,7 +134,7 @@ class ContourRectangle(GeometricalFrame):
             textvariable=self.__distanceB).grid(row=row, column=3, sticky=W)
 
         row += 1
-        self.__depthtotal = StringVar(value="-0.5")
+        self.__depthtotal = StringVar(value="-1.5")
         self.__depthstep = StringVar(value="-0.5")
         Label(self.frmButtonsIndividualContent, text="Total depth").grid(row=row, column=0, sticky=W)
         Label(self.frmButtonsIndividualContent, text="depth cutting per step").grid(
@@ -214,7 +213,7 @@ class ContourRectangle(GeometricalFrame):
 
         feeds = {
             "XYG0" : float(self.__speed_XY_G00.get()),
-            "XYGn" : float(self.__speed_Z_G01.get()),
+            "XYGn" : float(self.__speed_XY_G02G03.get()),
             "ZG0" : float(self.__speed_Z_G00.get()),
             "ZGn" : float(self.__speed_Z_G01.get())
         }
@@ -398,9 +397,14 @@ class ContourRectangle(GeometricalFrame):
         gc += loop
         #----------------------------
         gc += "(----------------------------------)" + CR
+        gc += self.getGCode_Homeing(
+            0,
+            0,
+            zPos["safetyZ"],
+            feeds["XYG0"]
+        )
         gc += self._postamble.get() + CR
         gc += CR
-        #print gc
         return  gc
 
     def __createGCodeRect(self, dir, cPoint,z,sizeAB, feeds):

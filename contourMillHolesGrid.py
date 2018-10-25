@@ -222,6 +222,18 @@ class ContourMillHolesGrid(GeometricalFrame):
         hCPoint = (0.0, 0.0) # center of current milled hole
         gSize = (0.0, 0.0) # hole distances a & b
 
+        zPos = {
+            "safetyZ" : float(self.__safety_Z.get()),
+            "startZ" : float(self.__start_Z.get())
+        }
+
+        feeds = {
+            "XYG0" : float(self.__speed_XY_G00.get()),
+            "XYGn" : float(self.__speed_XY_G02G03.get()),
+            "ZG0" : float(self.__speed_Z_G00.get()),
+            "ZGn" : float(self.__speed_Z_G01.get())
+        }
+
         # radius r = entire Circle, r1= radius per hole
         r = float(self.__holeRadius.get())
         # tool diameter
@@ -279,6 +291,14 @@ class ContourMillHolesGrid(GeometricalFrame):
             pass
 
         gc += "(--- END HOLES ---)" + CR
+        gc += self.getGCode_Homeing(
+            cPoint[0],
+            cPoint[1],
+            zPos["safetyZ"],
+            feeds["XYG0"]
+        )
+        gc += self._postamble.get() + CR
+        gc += CR
         return  gc
 
     def createHoleCenterPointVectorList(self, cPoint, gSize, angle=0.0):

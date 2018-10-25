@@ -354,7 +354,13 @@ class ContourArc(GeometricalFrame):
         gc += loop
         #----------------------------
         gc += CR + "(-- END circle -)" + CR
+        gc += self.getGCode_Homeing(
+            float(self.__centerY.get()),
+            float(self.__centerX.get()),
+            float(self.__safety_Z.get()),
+            float(self.__speed_XY_G00.get())
+        ) + CR
         gc += self._postamble.get() + CR
         gc += CR
-        print gc
+#        print gc
         return  gc
