@@ -17,6 +17,7 @@ Status October 2018 - under development **
 |0.5 | pocketRoundRectangle |
 |0.6 | contourRoundRectangle |
 |0.7 | pocketCircle |
+|0.8 | pocketRectangle |
 
 
 ## Example screenshot (more details inside WIKI)
