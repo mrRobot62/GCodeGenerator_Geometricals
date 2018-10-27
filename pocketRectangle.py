@@ -26,14 +26,14 @@ CR = "\n"
 #
 #
 #----------------------------------------------------------------------------
-class PocketCircle(GeometricalFrame):
+class PocketRectangle(GeometricalFrame):
 
     #
     # define your own images to describe your GCode-Generator
     def init(self):
         self.__imageNames = [
             # left down
-            "./img/pocket/PocketCircle.005.png"
+            "./img/pocket/PocketRectangle.005.png"
         ]
 
     #-------------------------------------------------------------
@@ -91,23 +91,19 @@ class PocketCircle(GeometricalFrame):
 
         row += 1
         self.__tooldia = StringVar(value="6.0")
-        self.__forwardfeed = StringVar(value="3.0")
         Label(self.frmButtonsIndividualContent, text="Tool diameter").grid(
             row=row, column=0, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=False,
             textvariable=self.__tooldia).grid(row=row, column=1, sticky=W)
-        Label(self.frmButtonsIndividualContent, text="-Offset").grid(
+        #
+        # default forward feed inside pocket (from track to track)
+        # row += 1
+        self.__forwardfeed = StringVar(value="3.0")
+        Label(self.frmButtonsIndividualContent, text="Forward feed").grid(
             row=row, column=2, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=10,
             textvariable=self.__forwardfeed, mandatory=False).grid(
             row=row, column=3, sticky=W)
-
-        # #row += 1
-        # self.__radius = StringVar(value="10.0")
-        # Label(self.frmButtonsIndividualContent, text="Edge radius (R)").grid(
-        #     row=row, column=2, sticky=W)
-        # FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=False,
-        #     textvariable=self.__radius).grid(row=row, column=3, sticky=W)
 
         row += 1
         self.__centerX = StringVar(value="0.0")
@@ -119,18 +115,17 @@ class PocketCircle(GeometricalFrame):
         FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=True,
             textvariable=self.__centerY).grid(row=row, column=3, sticky=W)
 
+
         row += 1
-        self.__radiusOuter = StringVar(value="30.0")
-        self.__radiusInner = StringVar(value="0.0")
-        Label(self.frmButtonsIndividualContent, text="Radius outer circle").grid(
-            row=row, column=0, sticky=W)
-        Label(self.frmButtonsIndividualContent, text="Radius inner").grid(
-            row=row, column=2, sticky=W)
+        self.__distanceA = StringVar(value="70.0")
+        self.__distanceB = StringVar(value="100.0")
+        Label(self.frmButtonsIndividualContent, text="Height (a)").grid(row=row, column=0, sticky=W)
+        Label(self.frmButtonsIndividualContent, text="Width (b)").grid(row=row, column=2, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.__radiusOuter).grid(
+            textvariable=self.__distanceA).grid(
             row=row, column=1, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.__radiusInner).grid(row=row, column=3, sticky=W)
+            textvariable=self.__distanceB).grid(row=row, column=3, sticky=W)
 
         row += 1
         self.__depthtotal = StringVar(value="-1.5")
@@ -193,33 +188,21 @@ class PocketCircle(GeometricalFrame):
         this class is used to validate necessary user input fields
         '''
         print ("userInputValidation")
-        radii = (float(self.__radiusOuter.get()),
-                 float(self.__radiusInner.get()))
+        a = float(self.__distanceA.get())
+        b = float(self.__distanceB.get())
         toolDia = float(self.__tooldia.get())
         forwardstep = float(self.__forwardfeed.get())
 
-        if (radii[0] <= 0.0):
+        if (a <= 0.0 or b <= 0.0):
             self.MessageBox(state="ERROR",
                 title="ERROR",
-                text="outer radius should be greater 0.0")
+                text="a and b should be greater than 0.0")
             return False
 
-        if (radii[1] < 0.0):
+        if (toolDia <= 0.0):
             self.MessageBox(state="ERROR",
                 title="ERROR",
-                text="inner radius should be greater or equal 0.0")
-            return False
-
-        if (radii[0] < radii[1]):
-            self.MessageBox(state="ERROR",
-                title="ERROR",
-                text="outer radius should be greater inner radius")
-            return False
-
-        if (toolDia <= 0.0 or toolDia > radii[0]):
-            self.MessageBox(state="ERROR",
-                title="ERROR",
-                text="Tool diamater should be greater than 0.0 and less than outer radius")
+                text="Tool diamater should be greater than 0.0")
             return False
 
         if (forwardstep > (toolDia)):
@@ -267,11 +250,11 @@ class PocketCircle(GeometricalFrame):
         '''
         cPoint = (float(self.__centerX.get()),
                   float(self.__centerY.get()))
-        radii = (float(self.__radiusOuter.get()),
-                 float(self.__radiusInner.get()))
-
+        sizeAB = (float(self.__distanceA.get()),
+                  float(self.__distanceB.get()))
         toolDia = float(self.__tooldia.get())
 
+        pWidth = sizeAB[1]
         forwardstep = float(self.__forwardfeed.get())
 
         zPos = {
@@ -340,33 +323,32 @@ class PocketCircle(GeometricalFrame):
         # we start with inner contour and from this ContourRect
         # left outside - in this case we have an offset of half tool dia
         offset = toolDia / 2.0
-        pWidth = radii[0]-radii[1]
-        cWidth = offset
+        cWidth = offset             # start pocket width = tool diameter
         pocketMillTracks = []
         x = 1
         finished = False
-        #
-        # start at "3 a clock" position
-        cPoint = (cPoint[0] + radii[0], cPoint[1])
         while (not finished):
-            print ("cPointX {} oRadius {} iRadius {} cWidth {} cWidth {}".format(
-                cPoint[0], radii[0], radii[1], pWidth, cWidth
+            print ("Width {} cWidth {} offset {}".format(
+                pWidth, cWidth, offset
             ))
-            if (cWidth + (toolDia/2.0)>= pWidth):
-                # oh, we over shot, we have to reduce offset to a value
-                # which is the difference between width - cWidth
-                cWidth += (pWidth - cWidth) - (toolDia / 2.0)
-                # this is our last track
-                finished = True
+            # if (cWidth + (toolDia/2.0)>= pWidth):
+            #     # oh, we over shot, we have to reduce offset to a value
+            #     # which is the difference between width - cWidth
+            #     cWidth += (pWidth - cWidth) - (toolDia / 2.0)
+            #     # this is our last track
+            #     finished = True
+            if ( (cWidth / 2.0) > (sizeAB[0] / 2.0) or
+                 (cWidth / 2.0) > (sizeAB[1] / 2.0)) :
+                 finished = True
 
-#    def __createPocketTracks(self, cPoint, r, feeds, depth, offset=0.0 ):
             t = self.__createPocketTracks(
                 cPoint,
-                radii[0],
+                sizeAB,
+                toolDia,
                 feeds,
-                z,
                 cWidth
             )
+
             pocketMillTracks.append(t)
             # print ("{3}#{0:03d} --- cWidth {1} step {4} {2}".format(
             #     x, cWidth, CR, CR, forwardstep
@@ -374,71 +356,72 @@ class PocketCircle(GeometricalFrame):
             #print (t)
             x += 1
             cWidth += forwardstep
-            
+            pass
+
         #
         # it's time to generate the real gCode
         #
         # Every round we mill all tracks in the same detph
         # than we increase depth as long as we reached total depthStep
 
-            gc += CR + "(-- START DEPTH Loop --)" + CR
-            z = 0.0
-            while (abs(z) < abs(depth[0])):
-                # set next Z depth
-                if ((abs(depth[0]) - abs(z)) < abs(depth[1])):
-                    # this happens, if a small amount is the rest
-                    z -= (abs(depth[0]) - abs(z))
-                    print "rest Z: {}".format(z)
-                else:
-                    z -= abs(depth[1])
-                    print "new Z: {}".format(z)
+        gc += CR + "(-- START DEPTH Loop --)" + CR
+        z = 0.0
+        while (abs(z) < abs(depth[0])):
+            # set next Z depth
+            if ((abs(depth[0]) - abs(z)) < abs(depth[1])):
+                # this happens, if a small amount is the rest
+                z -= (abs(depth[0]) - abs(z))
+                print "rest Z: {}".format(z)
+            else:
+                z -= abs(depth[1])
+                print "new Z: {}".format(z)
 
-                loop += CR
-                gc += spaces + "(-- START Track Loop  --)" + CR
-                for t in pocketMillTracks:
-                    # every track contain a fixed number of separate gCode
-                    # commands
-                    spaces2 = spaces.ljust(2)
-                    # set new depth
-                    gc += CR + spaces2 + "(-- next depth z {0:08.3f} --){1}".format(z,CR)
-                    for cmd in t:
-                        #
-                        # combine all parameter to one command
-                        gc += spaces2
-                        print cmd
-                        #
-                        # pattern to recognize special command set
-                        regFloat = r"{\d:\d+\.\d+f}"
-                        for p in range(len(cmd)):
-                            if isinstance(cmd[p], basestring):
-                                x = re.findall(regFloat,cmd[p], re.UNICODE)
-                                if (len(x) != 0):
-                                    #print "RegFloat found"
-                                    gc += cmd[p].format(float(z))
-                                else:
-                                    # normal string
-                                    gc += " " + cmd[p]
-                            if isinstance(cmd[p], float):
-                                gc += "{0:08.3f}".format(cmd[p])
-                            if isinstance(cmd[p], int):
-                                gc += "{0:05d}".format(cmd[p])
-                        gc += CR
+            loop += CR
+            gc += spaces + "(-- START Track Loop  --)" + CR
+            for t in pocketMillTracks:
+                # every track contain a fixed number of separate gCode
+                # commands
+                spaces2 = spaces.ljust(2)
+                # set new depth
+                gc += CR + spaces2 + "(-- next depth z {0:08.3f} --){1}".format(z,CR)
+                for cmd in t:
+                    #
+                    # combine all parameter to one command
+                    gc += spaces2
+                    print cmd
+                    #
+                    # pattern to recognize special command set
+                    regFloat = r"{\d:\d+\.\d+f}"
+                    for p in range(len(cmd)):
+                        if isinstance(cmd[p], basestring):
+                            x = re.findall(regFloat,cmd[p], re.UNICODE)
+                            if (len(x) != 0):
+                                #print "RegFloat found"
+                                gc += cmd[p].format(float(z))
+                            else:
+                                # normal string
+                                gc += " " + cmd[p]
+                        if isinstance(cmd[p], float):
+                            gc += "{0:08.3f}".format(cmd[p])
+                        if isinstance(cmd[p], int):
+                            gc += "{0:05d}".format(cmd[p])
+                    gc += CR
 
-                gc += spaces + "(-- END Track Loop  --)" + CR
-                pass
+            gc += spaces + "(-- END Track Loop  --)" + CR
+            pass
 
-            gc += "(-- END DEPTH loop --)" + CR
-            gc += self.getGCode_Homeing(
-                cPoint[0],
-                cPoint[1],
-                zPos["safetyZ"],
-                feeds["XYG0"]
-            )
-            gc += self._postamble.get() + CR
-            gc += CR
-            return  gc
+        gc += "(-- END DEPTH loop --)" + CR
+        gc += self.getGCode_Homeing(
+            cPoint[0],
+            cPoint[1],
+            zPos["safetyZ"],
+            feeds["XYG0"]
+        )
+        gc += self._postamble.get() + CR
+        gc += CR
+        return  gc
 
-    def __createPocketTracks(self, cPoint, r, feeds, depth, offset=0.0 ):
+    def __createPocketTracks(self, cPoint, sizeAB, toolDia, feeds, offset=0.0 ):
         '''
         This method create for a track all needed GCode parameters and save
         them in a list. This list is used (afterwards) to create the real
@@ -446,19 +429,36 @@ class PocketCircle(GeometricalFrame):
 
         This method is called in a loop with a new offset. The offset describes
         next millings position
+
+        we do not use G41/G42 cutter compensation. CC is calculated
         '''
-        x = cPoint[0]
-        y = cPoint[1]
+        r = toolDia / 2.0
+
+        w0 = sizeAB[1] - offset
+        wcc = sizeAB[1] -offset - toolDia  # inner cutter compensation width
+        h0 = sizeAB[0] - offset
+        hcc = sizeAB[0] - offset - toolDia  # inner cutter compensation height
+
+        x = cPoint[0] - offset - (wcc / 2.0) # set x to lower left corner
+        y = cPoint[1] - offset - (hcc / 2.0) # set y to lower left corner
+
+        x += r # add cutter compensation
+        y += r # add cutter compensation
 
         # sequence to mill a rounded rectangle
         seq = [
             #start
-            ("G00", "X", x-offset, "Y", y, "F", feeds["XYG0"]),
             # G01 Zxxx Fyyy
             ("G01", "Z", "{0:08.3f}", "F", feeds["ZGn"], ),
-            # G02, F X Y I
-            ("G02", "I", -(r-offset), "F", feeds["XYGn"]),
+            # start left down
+            ("G01", "X", x + offset, "Y", y + offset, "F", feeds["XYGn"], ),
+            # left up
+            ("G01", "X", x + offset, "Y", y + hcc + offset, "F", feeds["XYGn"], ),
+            # right up
+            ("G01", "X", x +  wcc + offset, "Y", y + offset + hcc, "F", feeds["XYGn"], ),
+            # left down
+            ("G01", "X", x +  wcc + offset, "Y", y + offset, "F", feeds["XYGn"], ),
+            # go back to start position
+            ("G01", "X", x + offset, "Y", y + offset, "F", feeds["XYGn"], ),
         ]
-        #print "{1}---- offset {0} -----".format(offset,CR)
-        print seq
         return seq

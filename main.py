@@ -49,6 +49,7 @@ from contourHoles import *
 from contourMillHolesGrid import *
 from pocketRoundRectangle import *
 from pocketCircle import *
+from pocketRectangle import *
 
 IN_AXIS = os.environ.has_key("AXIS_PROGRESS_BAR")
 CR = '\n'
@@ -128,6 +129,7 @@ class GCodeGenerator(Frame):
         #--------- Insert pocketing shapes here ---------------------#
         self.PocketingMenu.add_command(label="Mill a circle pocket", command=self.PocketCircle)
         self.PocketingMenu.add_command(label="Mill a round rect pocket", command=self.PocketRoundRectangle)
+        self.PocketingMenu.add_command(label="Mill a rectangle pocket", command=self.PocketRectangle)
 
         #------------------------------------------------------#
 
@@ -189,6 +191,14 @@ class GCodeGenerator(Frame):
         print "PocketRoundRectangle"
         title = "Mill round rectangle pocket"
         self.myApp = PocketRoundRectangle(self.app, self.master, self.frame, title)
+        self.myApp.init()
+        self.myApp.show()
+        pass
+
+    def PocketRectangle(self):
+        print "PocketRectangle"
+        title = "Mill rectangle pocket"
+        self.myApp = PocketRectangle(self.app, self.master, self.frame, title)
         self.myApp.init()
         self.myApp.show()
         pass
