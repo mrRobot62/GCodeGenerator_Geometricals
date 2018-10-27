@@ -6,6 +6,7 @@ from math import *
 from tkSimpleDialog import *
 import tkMessageBox
 import tkFileDialog
+import re
 
 CR = '\n'
 
