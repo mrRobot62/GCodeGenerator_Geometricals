@@ -33,6 +33,10 @@ class PocketRectangle(GeometricalFrame):
     def init(self):
         self.__imageNames = [
             # left down
+            "./img/pocket/PocketRectangle.005.png",
+            "./img/pocket/PocketRectangle.005.png",
+            "./img/pocket/PocketRectangle.005.png",
+            "./img/pocket/PocketRectangle.005.png",
             "./img/pocket/PocketRectangle.005.png"
         ]
 
@@ -59,7 +63,7 @@ class PocketRectangle(GeometricalFrame):
         self.init()
         row = 0
         #choices = [1,2,3]
-        choices = [1]
+        choices = [5]
 
         self.__CC = StringVar()
         self.__CC.set(choices[0])
@@ -323,20 +327,21 @@ class PocketRectangle(GeometricalFrame):
         # we start with inner contour and from this ContourRect
         # left outside - in this case we have an offset of half tool dia
         offset = toolDia / 2.0
-        cWidth = offset             # start pocket width = tool diameter
+        cWidth = 0.0             # start pocket width = tool diameter
         pocketMillTracks = []
         x = 1
         finished = False
+        #
+        # set to left down corner
+        gc += "G00 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
+            cPoint[0] - (sizeAB[1] / 2.0),
+            cPoint[1] - (sizeAB[0] / 2.0),
+            feeds["XYG0"],
+            CR)
         while (not finished):
-            print ("Width {} cWidth {} offset {}".format(
-                pWidth, cWidth, offset
-            ))
-            # if (cWidth + (toolDia/2.0)>= pWidth):
-            #     # oh, we over shot, we have to reduce offset to a value
-            #     # which is the difference between width - cWidth
-            #     cWidth += (pWidth - cWidth) - (toolDia / 2.0)
-            #     # this is our last track
-            #     finished = True
+            # print ("Width {} cWidth {} offset {}".format(
+            #     pWidth, cWidth, offset
+            # ))
             if ( (cWidth / 2.0) > (sizeAB[0] / 2.0) or
                  (cWidth / 2.0) > (sizeAB[1] / 2.0)) :
                  finished = True
@@ -350,10 +355,6 @@ class PocketRectangle(GeometricalFrame):
             )
 
             pocketMillTracks.append(t)
-            # print ("{3}#{0:03d} --- cWidth {1} step {4} {2}".format(
-            #     x, cWidth, CR, CR, forwardstep
-            # ))
-            #print (t)
             x += 1
             cWidth += forwardstep
             pass
@@ -432,26 +433,29 @@ class PocketRectangle(GeometricalFrame):
 
         we do not use G41/G42 cutter compensation. CC is calculated
         '''
-        r = toolDia / 2.0
+        #r = toolDia / 2.0
 
         w0 = sizeAB[1] - offset
-        wcc = sizeAB[1] -offset - toolDia  # inner cutter compensation width
+        wcc = sizeAB[1] - offset - toolDia  # inner cutter compensation width
         h0 = sizeAB[0] - offset
         hcc = sizeAB[0] - offset - toolDia  # inner cutter compensation height
 
         x = cPoint[0] - offset - (wcc / 2.0) # set x to lower left corner
         y = cPoint[1] - offset - (hcc / 2.0) # set y to lower left corner
 
-        x += r # add cutter compensation
-        y += r # add cutter compensation
+        print "cPb {} cPa {} x {} y {} offset {} w0 {} h0 {} wcc {} hcc {} ".format(
+            cPoint[1], cPoint[0], x, y, offset, w0, h0, wcc, hcc
+        )
+        #x += r # add cutter compensation
+        #y += r # add cutter compensation
 
         # sequence to mill a rounded rectangle
         seq = [
             #start
-            # G01 Zxxx Fyyy
-            ("G01", "Z", "{0:08.3f}", "F", feeds["ZGn"], ),
             # start left down
             ("G01", "X", x + offset, "Y", y + offset, "F", feeds["XYGn"], ),
+            # G01 Zxxx Fyyy
+            ("G01", "Z", "{0:08.3f}", "F", feeds["ZGn"], ),
             # left up
             ("G01", "X", x + offset, "Y", y + hcc + offset, "F", feeds["XYGn"], ),
             # right up
