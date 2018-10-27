@@ -12,11 +12,12 @@ Status October 2018 - under development **
 |---------|----------------------------------------------------|
 |0.1 | initial version with contour circel shape unstable version |
 |0.2 | save to file implemented |
-|0.3 | contourRectange & contourHoles |
-|0.4 | contourMillHolesGrid. Milling holes on a grid |
-|0.5 | pocketRoundRectangle |
-|0.6 | contourRoundRectangle |
-|0.7 | pocketCircle |
+|0.3 | new contourRectange & contourHoles |
+|0.4 | new contourMillHolesGrid. Milling holes on a grid |
+|0.5 | new pocketRoundRectangle |
+|0.6 | new contourRoundRectangle |
+|0.7 | new pocketCircle |
+|0.8 | new pocketRectangle |
 
 
 ## Example screenshot (more details inside WIKI)
