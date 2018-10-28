@@ -125,8 +125,11 @@ class GeometricalFrame(Frame):
         pass
 
     def getGCode_Homeing(self, x=0, y=0, z=10, f=100):
-        gc = "G01 X{0:08.3f} Y{1:08.3f} Z{2:08.3f} F{3:05.1f} {4}".format(
-            x,y,z,f,CR
+        gc = "G01 Z{0:08.3f} F{1:05.1f} {2}".format(
+            z,f,CR
+        )
+        gc += "G01 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
+            x,y,f,CR
         )
         return gc
 
