@@ -297,11 +297,11 @@ class ContourHoles(GeometricalFrame):
              float(self.__safety_Z.get()),
              float(self.__speed_Z_G00.get()), CR)
         gc += "(--- START HOLES ---)" + CR
-        intend = "".ljust(2)
+        indent = "".ljust(2)
         dir = self.__dir.get()
         h = 0
         for v in hCPoint:
-            loop += self.__generateSubHole(h, v, radii, feeds, dir, intend, retraction="0.0" )
+            loop += self.__generateSubHole(h, v, radii, feeds, dir, indent, retraction="0.0" )
             h += 1
 
         gc += loop
@@ -389,14 +389,14 @@ class ContourHoles(GeometricalFrame):
             h += 1
         return hcp
 
-    def __generateSubHole(self, nr, vec, radii, feeds, dir, intend = "", retraction="0.5"):
+    def __generateSubHole(self, nr, vec, radii, feeds, dir, indent = "", retraction="0.5"):
         '''
             create gCode for hole "nr" at point "hCPoint"
             direction of cut is set in "cDir"
 
         '''
         # gc is local !
-        gc = intend + "(--Hole #{0:02d} at pos {1} --){2}".format(
+        gc = indent + "(--Hole #{0:02d} at pos {1} --){2}".format(
             nr, vec, CR)
 
         depthZ = (float(self.__depthtotal.get()), float(self.__depthstep.get()))
@@ -415,13 +415,15 @@ class ContourHoles(GeometricalFrame):
 
         #
         # set start X/Y position
-        gc += intend + "G01 X{0:08.3f} Y{1:08.3f} Z{2:08.3f} F{3:05.1f} {4}".format(
-            vec[0], vec[1], zPos["startZ"], feeds["XYGn"],CR)
-        gc += intend + "(-- start Z loop total {0} step {1}--) {2}".format(
+        gc += indent + "G01 Z{0:08.3f} F{1:05.1f} {2}".format(
+            zPos["startZ"], feeds["XYGn"],CR)
+        gc += indent + "G01 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
+            vec[0], vec[1], feeds["XYGn"],CR)
+        gc += indent + "(-- start Z loop total {0} step {1}--) {2}".format(
             depthZ[0], depthZ[1], CR
         )
         lgc = ""
-        intend2 = intend.ljust(2)
+        indent2 = indent.ljust(2)
         if (retraction == ""):
             retraction = "0.0"
         while (abs(dZ) < abs(depthZ[0])):
@@ -439,19 +441,19 @@ class ContourHoles(GeometricalFrame):
             #
             # before we start next depthstep, we move 0.5 upwards for
             # retraction
-            lgc += intend2 + "(-- new Z {0:08.3f} --) {1}".format(dZ, CR)
-            lgc += intend2 + "(retraction)" + CR
-            lgc += intend2 + "G01 Z{0:08.3f} F{1:04.0f} {2}".format(
+            lgc += indent2 + "(-- new Z {0:08.3f} --) {1}".format(dZ, CR)
+            lgc += indent2 + "(retraction)" + CR
+            lgc += indent2 + "G01 Z{0:08.3f} F{1:04.0f} {2}".format(
                 dZ + float(retraction),
                 feeds["ZG0"],
                 CR
             )
             #
             # set new Z
-            lgc += intend2 + "G01 Z{0:08.3f} F{1:04.0f} {2}".format(
+            lgc += indent2 + "G01 Z{0:08.3f} F{1:04.0f} {2}".format(
                 dZ, feeds["ZGn"], CR)
             # set XZ
-            lgc += intend2 + dir
+            lgc += indent2 + dir
             lgc += " X{0:08.3f} Y{1:08.3f} I{2:08.3f} J{3:08.3f} F{4:05.1f} {5}".format(
                 vec[0], vec[1], I, J, feeds["XYGn"], CR)
             #
@@ -461,7 +463,7 @@ class ContourHoles(GeometricalFrame):
             lgc += CR
             pass
         gc += lgc
-        gc += intend + "(-- end loop --)" + CR + CR
+        gc += indent + "(-- end loop --)" + CR + CR
         gc += CR
         return gc
 
