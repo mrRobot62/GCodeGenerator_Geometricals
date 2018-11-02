@@ -18,6 +18,7 @@ Status October 2018 - under development **
 |0.6 | new contourRoundRectangle |
 |0.7 | new pocketCircle |
 |0.8 | new pocketRectangle |
+|0.9 | new drill holes on a grid |
 
 
 ## Example screenshot (more details inside WIKI)
