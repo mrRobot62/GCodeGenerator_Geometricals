@@ -51,7 +51,7 @@ from pocketRoundRectangle import *
 from pocketCircle import *
 from pocketRectangle import *
 from drillHoles import *
-
+from drillHolesGrid import *
 
 IN_AXIS = os.environ.has_key("AXIS_PROGRESS_BAR")
 CR = '\n'
@@ -124,8 +124,8 @@ class GCodeGenerator(Frame):
         #--------- Insert drilling shapes here ---------------------#
 
         self.DrillingMenu.add_command(label="Drill holes", command=self.DrillHoles)
-
-        #------------------------------------------------------#
+        self.DrillingMenu.add_command(label="Drill holes grid", command=self.DrillHolesGrid)
+         #------------------------------------------------------#
 
         # sub menu Pocketing
         self.PocketingMenu = Menu(self.FileMenu)
@@ -219,6 +219,14 @@ class GCodeGenerator(Frame):
         print "DrillHoles"
         title = "Drill holes in a circle"
         self.myApp = DrillHoles(self.app, self.master, self.frame, title)
+        self.myApp.init()
+        self.myApp.show()
+        pass
+
+    def DrillHolesGrid(self):
+        print "DrillHolesGrid"
+        title = "Drill holes in a grid"
+        self.myApp = DrillHolesGrid(self.app, self.master, self.frame, title)
         self.myApp.init()
         self.myApp.show()
         pass
