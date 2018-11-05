@@ -102,7 +102,7 @@ class ContourMillHolesGrid(GeometricalFrame):
 
         row += 1
         self.__numberOfHolesX = StringVar(value="4")
-        self.__numberOfHolesY = StringVar(value="2")
+        self.__numberOfHolesY = StringVar(value="3")
         Label(self.frmButtonsIndividualContent, text="Number of Holes X").grid(
             row=row, column=0, sticky=W)
         IntegerEntry(self.frmButtonsIndividualContent, width=10,
@@ -142,14 +142,14 @@ class ContourMillHolesGrid(GeometricalFrame):
 
         row += 1
         self.__angle = 0
-        self.__distanceA = StringVar(value="30.0")
-        self.__distanceB = StringVar(value = "20.0")
-        Label(self.frmButtonsIndividualContent, text="Distance between holes (a)").grid(
+        self.__distanceA = StringVar(value="15.0")
+        self.__distanceB = StringVar(value = "15.0")
+        Label(self.frmButtonsIndividualContent, text="Distance rows (a)").grid(
             row=row, column=0, sticky=W)
         self.__w5 = FloatEntry(self.frmButtonsIndividualContent, width=5,
             textvariable=self.__distanceA).grid(
             row=row, column=1, sticky=W)
-        Label(self.frmButtonsIndividualContent, text="Distance between holes (b)").grid(
+        Label(self.frmButtonsIndividualContent, text="Distance columns (b)").grid(
             row=row, column=2, sticky=W)
         self.__w5 = FloatEntry(self.frmButtonsIndividualContent, width=5,
             textvariable=self.__distanceB).grid(
@@ -219,7 +219,7 @@ class ContourMillHolesGrid(GeometricalFrame):
 
         # x/y position for circle
         cPoint = (0.0, 0.0) # general Centerpoint of hole #1
-        hCPoint = (0.0, 0.0) # center of current milled hole
+        hCPoints = (0.0, 0.0) # center of current milled hole
         gSize = (0.0, 0.0) # hole distances a & b
 
         zPos = {
@@ -238,13 +238,13 @@ class ContourMillHolesGrid(GeometricalFrame):
         r = float(self.__holeRadius.get())
         # tool diameter
         tD = float(self.__tooldia.get())
-        a = float(self.__distanceA.get())
-        b = float(self.__distanceB.get())
+        row = float(self.__distanceA.get())
+        col = float(self.__distanceB.get())
 
         X = float(self.__centerX.get())
         Y = float(self.__centerY.get())
 
-        gSize = (a,b)
+        gSize = (row,col)
 
         # grid angle (A)
         gridAngle = round(float(self.__gridAngle.get()),1)
@@ -277,7 +277,7 @@ class ContourMillHolesGrid(GeometricalFrame):
 
         hCPoints = self.createHoleCenterPointVectorList(cPoint, gSize, gridAngle)
         print "hCPoints {}".format(hCPoints)
-        hCPoints = self.addCutterCompensation(hCPoints, tD)
+        hCPoints = self.addCutterCompensation(hCPoints, tD, r)
         print "with cutter compensation hCPoints {}".format(hCPoints)
 
         # hole X/Y center point
@@ -301,7 +301,7 @@ class ContourMillHolesGrid(GeometricalFrame):
         gc += CR
         return  gc
 
-    def createHoleCenterPointVectorList(self, cPoint, gSize, angle=0.0):
+    def createHoleCenterPointVectorList(self, cPoint, gSize, gAngle, colOffsetX=0.0):
         '''
         based on CPoint this method create for all holes the center point
         This vector list is later on used to calculate starting milling position
@@ -313,56 +313,145 @@ class ContourMillHolesGrid(GeometricalFrame):
         numberOfHolesY = int(self.__numberOfHolesY.get())
 
         hCPoints = []
+        #
+        # to avoid over shoots
+        if gAngle < 0.0 or gAngle > 90.0:
+            gAngle = 0.0
 
         #
         # initialize point vector list
-        dA = dB = 0.0
+        cPointTemp = cPoint
+        distRow = distCol = 0.0
         intend = "".ljust(2)
-        for y in range(numberOfHolesY):
-            print (CR + "Row #{0} Angle {1:5.1f}".format((y+1), angle))
-            # calculate triangle sides a + b. Both are equal, because
-            # hypernuse is our distance b and we have a 90deg Angle
-            # from row to row
+
+        cPX = cPY = distRow = distCol = 0.0
+        cColOffset = (0.0, 0.0)
+        for y in range (numberOfHolesY):
+            cPX = cPY = 0.0
+            print (CR + "Row #{0} grid Angle {1:5.1f}, colOffsetX {2:5.1f}".format(
+                (y+1), gAngle, colOffsetX)
+            )
+
+            gamma = 90
+            alpha = gAngle
+            beta = gamma - alpha
+
+            dRow = (gSize[0] * y)
             #
+            # this triangle is needed to calculate the new center point
+            # for next drill hole
+            sideA = round(dRow * math.cos(math.radians(beta)),3)
+            sideB = round((math.sqrt(math.pow(dRow, 2) - math.pow(sideA, 2))),3)
+            sideC = round(gSize[0], 3) #a
             #
-            # to calculate a/b
-            # ab = (DistanceB * sin(45)) / sin(90)
+            # below calculation is neede for all rows above themes
+            # first row and only if gridAngle is > 0.0
+            # because if we turn the grid for x degrees, than a
+            # little triangle can be calculated. The hypernuse of this
+            # triangle is distance ROW (a), in this case side "a" of This
+            # triangle is the distance between current X and new X. New X
+            # is every time left from current X
             #
-            # Example: DistanceB = 5
-            # a/b = 3,53
-            if y > 0:
-                rad = math.radians(angle)
-                ab = (dB * math.sin(rad)) / math.sin(90)
+            # side b of triangle is the distance vorm current Y and next Y
+            # and every time above current Y
+            #
+            if y > 0 and gAngle > 0.0:
                 print ("1) cPoint ({})".format(cPoint))
-                cPoint = ((cPoint[0] - ab),(cPoint[1] + ab))
+                # next xPoint is left from last xPoint
+                # next yPoint is up from last yPoint
+                cPoint = ((cPointTemp[0] - sideA),(cPointTemp[1] + sideB))
                 print ("2) cPoint ({})".format(cPoint))
-            dA = 0.0
-            for x in range(numberOfHolesX):
-                print ("Hole #{}".format((x+1) + (y*numberOfHolesX)))
-                # set hole #1 per default to (0.0, 0.0)
-                if (x == 0):
-                    cPX = cPoint[0]
-                    # add distanceB for all holes
-                    cPY = cPoint[1] + dB
-                    hCPoints.append((round(cPX,3), round(cPY,3)))
-                else:
-                    dA += gSize[0] #a
-                    rad = math.radians(angle)
-                    #
-                    # from hole to hole the distance dA increase to factor
-                    # "original distanceA" (same for dB)
-                    cPX = round(math.cos(rad) * dA + cPoint[0] + dA, 3)
-                    cPY = round(math.sin(rad) * dA + cPoint[1] + dB, 3)
-                    hCPoints.append((round(cPX,3), round(cPY,3)))
-                #
-                print ("cPX {0} cPY {1}, dA {2}, dB {3}".format(
-                    cPX, cPY, dA, dB))
+                print "Triangle a({})  b({})  c({})  alpa({})  beta({})  gamma({})".format(
+                    sideA, sideB, sideC, alpha, beta, gamma
+                )
+                cColOffset = self.__setOffsetX(
+                    colOffsetX,
+                    gAngle)
+
+                cPoint = (
+                    cPoint[0] + cColOffset[0],
+                    cPoint[1] + cColOffset[1])
                 pass
-            dB += gSize[1] #b
+
+            distCol = 0.0
+            for x in range(numberOfHolesX):
+                print ("Hole #{0} cPX{1}. cPY{2} sA {3} sB {4} sC {5}".format(
+                    ((x+1) + (y*numberOfHolesX)),
+                    cPX, cPY, sideA, sideB, sideC))
+                #
+                # for every "first" hole in a row, some special
+                # calculations are needed
+                if (x == 0):
+                    # add/sub calculated triangle sides a + b from
+                    # current Centerpoint
+                    if (gAngle > 0.0):
+                        cPY += (sideB + cColOffset[1])
+                        cPX -= sideA
+                        cPX += cColOffset[0]
+                    else:
+                        cPY += dRow
+                else:
+                    distCol += gSize[1] #b
+                    rad = math.radians(gAngle)
+                    #
+                    # sin/cos is calculated every time with gSize(b) (distCol)
+                    cPX = round(math.cos(rad) * (gSize[1] * x) + cPoint[0], 3)
+                    cPY = round(math.sin(rad) * (gSize[1] * x) + cPoint[1], 3)
+
+                    # if gridAngle = 0.=, than y is every time distance b
+                    if (gAngle == 0.0):
+                        cPY += dRow
+                    #
+                    # add this vector
+                #
+                # offset is only relevant for above rows !
+                if (y > 0):
+                    cColOffset = self.__setOffsetX(
+                        colOffsetX,
+                        gAngle)
+
+                    print("--> (a) Offset cPX {}, cPY {}, colOffset {} ".format(cPX, cPY, cColOffset))
+                    cPY += cColOffset[1]
+                    if (gAngle == 0.0):
+                        cPX += (cColOffset[0] * y)
+                    else:
+                        cPX += cColOffset[0]
+                    print("--> (b) Offset cPX {}, cPY {}, colOffset {} ".format(cPX, cPY, cColOffset))
+                    pass
+
+                hCPoints.append((round(cPX,3), round(cPY,3)))
+
+                #
+                print ("   new cPX {0} cPY {1}, distRow {2}, distCol {3}".format(
+                    cPX, cPY, distRow, distCol))
+                pass
+            distRow += gSize[0] #a
             pass
+
         return hCPoints
 
-    def addCutterCompensation(self, hCPoints, toolDia):
+    def __setOffsetX(self, offset, gAngle):
+        x = y = 0.0
+
+        gamma = 90
+        alpha = gAngle
+        beta = gamma - alpha
+
+        #
+        # this triangle is needed to calculate the new center point
+        # for next drill hole
+        sideA = round(offset * math.cos(math.radians(beta)),3)
+        sideB = round((math.sqrt(math.pow(offset, 2) - math.pow(sideA, 2))),3)
+        sideC = round(offset, 3) #a
+
+        x += sideB
+        y += sideA
+
+        print ("CalcOffset x {}, y {}".format(x,y))
+        return (x,y)
+
+
+    def addCutterCompensation(self, hCPoints, toolDia, holeRadius):
         '''
         if cutter compenstation is needed, this method set the real starting
         point for milling including compensation (inside, outside, cneter)
@@ -372,6 +461,9 @@ class ContourMillHolesGrid(GeometricalFrame):
         r = toolDia/2.0
         hcp = []
         for v in hCPoints:
+#            print ("->(a) V {}".format(v))
+#            v = (v[0]+(holeRadius/2.0),v[1])
+#            print ("->(b) V {}".format(v))
             if (self.__cuttercompensation.get() == "G40"):
                 hcp.append(v)
                 pass
