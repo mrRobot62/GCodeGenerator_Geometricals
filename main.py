@@ -56,7 +56,7 @@ from drillHolesGrid import *
 IN_AXIS = os.environ.has_key("AXIS_PROGRESS_BAR")
 CR = '\n'
 
-VERSION = "0.4 (2018-10-18)"
+VERSION = "0.9 (2018-05-11)"
 
 '''
     Geometrical Main-Application

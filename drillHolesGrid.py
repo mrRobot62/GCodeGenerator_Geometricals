@@ -26,7 +26,7 @@ class DrillHolesGrid(GeometricalFrame):
     def init(self):
         self.__imageNames = [
             # center
-            "./img/drilling/drillHolesGrid.005.png",
+            "/Users/bernhardklein/Public/local-workspace/python/geometricals/GCodeGenerator_Geometricals/img/drilling/drillHolesGrid.005.png",
         ]
 
     #-------------------------------------------------------------
@@ -269,9 +269,6 @@ class DrillHolesGrid(GeometricalFrame):
         # to make it easier, we calculate everything on center of
         # milling of every hole starts on a 45degr angle
 
-        cOffset = (0.0, 0.0) # Offset for entire circle X/Y
-        hOffset = (0.0, 0.0) # start position
-
         #
         # lets assume we start for the first hole on X/Y position
 
@@ -308,6 +305,7 @@ class DrillHolesGrid(GeometricalFrame):
         return  gc
 
     def createHoleCenterPointVectorList(self, cPoint, gSize, gAngle, colOffsetX=0.0):
+
         '''
         based on CPoint this method create for all holes the center point
         This vector list is later on used to calculate starting milling position
@@ -334,7 +332,8 @@ class DrillHolesGrid(GeometricalFrame):
         #
         # initialize point vector list
         cPX = cPY = distRow = distCol = 0.0
-        indent = "".ljust(2)
+        cColOffset = (0.0, 0.0)
+        #indent = "".ljust(2)
         for y in range(numberOfHolesY):
             cPX = cPY = 0.0
             print (CR + "Row #{0} grid Angle {1:5.1f}, colOffsetX {2:5.1f}".format(
@@ -368,6 +367,7 @@ class DrillHolesGrid(GeometricalFrame):
             #
 
             #
+
             if y > 0 and gAngle > 0.0:
                 print ("1) cPoint ({})".format(cPoint))
                 # next xPoint is left from last xPoint
@@ -377,30 +377,32 @@ class DrillHolesGrid(GeometricalFrame):
                 print "Triangle a({})  b({})  c({})  alpa({})  beta({})  gamma({})".format(
                     sideA, sideB, sideC, alpha, beta, gamma
                 )
-                x1,y1 = self.__setOffsetX(
+                cColOffset = self.__setOffsetX(
                     colOffsetX,
                     gAngle)
 
                 cPoint = (
-                    cPoint[0] + x1,
-                    cPoint[1] + y1)
+                    cPoint[0] + cColOffset[0],
+                    cPoint[1] + cColOffset[1])
                 pass
 
             distCol = 0.0
             for x in range(numberOfHolesX):
-                print ("Hole #{0} cPX{1}. cPY{2}".format(
+                print ("Hole #{0} cPX{1}. cPY{2} sA {3} sB {4} sC {5}".format(
                     ((x+1) + (y*numberOfHolesX)),
-                    cPX, cPY))
+                    cPX, cPY, sideA, sideB, sideC))
                 #
                 # for every "first" hole in a row, some special
                 # calculations are needed
                 if (x == 0):
                     # add/sub calculated triangle sides a + b from
                     # current Centerpoint
-                    cPY += sideB
-                    # sub distanceA from
-                    cPX -= sideA
-
+                    if (gAngle > 0.0):
+                        cPY += (sideB + cColOffset[1])
+                        cPX -= sideA
+                        cPX += cColOffset[0]
+                    else:
+                        cPY += dRow
 #                    hCPoints.append((round(cPX,3), round(cPY,3)))
                 else:
                     distCol += gSize[1] #b
@@ -420,16 +422,17 @@ class DrillHolesGrid(GeometricalFrame):
                 #
                 # offset is only relevant for above rows !
                 if (y > 0):
-                    x1,y1 = self.__setOffsetX(
+                    cColOffset = self.__setOffsetX(
                         colOffsetX,
                         gAngle)
 
-                    cPY += y1
+                    print("--> (a) Offset cPX {}, cPY {}, colOffset {} ".format(cPX, cPY, cColOffset))
+                    cPY += cColOffset[1]
                     if (gAngle == 0.0):
-                        cPX += (x1*y)
+                        cPX += (cColOffset[0] * y)
                     else:
-                        cPX += x1
-                    print("--> + Offset cPX {}, cPY {}, x{}, y {}".format(cPX, cPY, x, y))
+                        cPX += cColOffset[0]
+                    print("--> (b) Offset cPX {}, cPY {}, colOffset {} ".format(cPX, cPY, cColOffset))
                     pass
 
                 hCPoints.append((round(cPX,3), round(cPY,3)))
@@ -460,7 +463,7 @@ class DrillHolesGrid(GeometricalFrame):
         y += sideA
 
         print ("CalcOffset x {}, y {}".format(x,y))
-        return x,y
+        return (x,y)
 
     def drillSubHole(self, nr, gAngle, hCPoint, cDir, indent="", retraction=0.0):
         '''
