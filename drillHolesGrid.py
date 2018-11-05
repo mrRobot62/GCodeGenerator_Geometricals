@@ -353,19 +353,7 @@ class DrillHolesGrid(GeometricalFrame):
             sideB = round((math.sqrt(math.pow(dRow, 2) - math.pow(sideA, 2))),3)
             sideC = round(gSize[0], 3) #a
 
-            #
-            # below calculation is neede for all rows above themes
-            # first row and only if gridAngle is > 0.0
-            # because if we turn the grid for x degrees, than a
-            # little triangle can be calculated. The hypernuse of this
-            # triangle is distance ROW (a), in this case side "a" of This
-            # triangle is the distance between current X and new X. New X
-            # is every time left from current X
-            #
-            # side b of triangle is the distance vorm current Y and next Y
-            # and every time above current Y
-            #
-
+d
             #
 
             if y > 0 and gAngle > 0.0:
