@@ -131,11 +131,11 @@ class DrillHoles(GeometricalFrame):
             textvariable=self.__circleRadius,
             background="Red").grid(row=row, column=1, sticky=W)
 
-        self.__peckCycle = StringVar(value = "0.5")
-        Label(self.frmButtonsIndividualContent, text="peck cycle").grid(
+        self.__retraction = StringVar(value = "0.5")
+        Label(self.frmButtonsIndividualContent, text="retraction").grid(
             row=row, column=2, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=10,  mandatory=False,
-            textvariable=self.__peckCycle,
+            textvariable=self.__retraction,
             background="Red").grid(row=row, column=3, sticky=W)
 
         row += 1
@@ -237,7 +237,7 @@ class DrillHoles(GeometricalFrame):
 
         # radius r = entire Circle
         radius = float(self.__circleRadius.get())
-        peckCycle = float(self.__peckCycle.get())
+        peckCycle = float(self.__retraction.get())
 
         # tool diameter
         tD = float(self.__tooldia.get())
@@ -341,6 +341,7 @@ class DrillHoles(GeometricalFrame):
 
         depthZ = (float(self.__depthtotal.get()), float(self.__depthstep.get()))
         dZ = 0.0
+        dwell = 0.25
 
         zPos = {
             "safetyZ"   : float(self.__safety_Z.get()),
@@ -349,15 +350,15 @@ class DrillHoles(GeometricalFrame):
 
         #
         # set start X/Y position
-        gc += indent + "G01 Z{0:08.3f} F{1:05.1f} {2}".format(
-            zPos["startZ"], feeds["XYGn"], CR)
-        gc += indent + "G01 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
-            vec[0], vec[1], feeds["XYGn"],CR)
+        gc += indent + "G00 Z{0:08.3f}{1}".format(
+            zPos["startZ"], CR)
+        gc += indent + "G00 X{0:08.3f} Y{1:08.3f} {2}".format(
+            vec[0], vec[1], CR)
         gc += indent + "(-- start Z loop total {0} step {1}--) {2}".format(
             depthZ[0], depthZ[1], CR
         )
         lgc = ""
-        indent2 = indent.ljust(2)
+        indent2 = indent.ljust(len(indent) + 2)
         if (retraction == ""):
             retraction = "0.0"
         while (abs(dZ) < abs(depthZ[0])):
@@ -376,17 +377,21 @@ class DrillHoles(GeometricalFrame):
             # before we start next depthstep, we move 0.5 upwards for
             # retraction
             lgc += indent2 + "(-- new Z {0:08.3f} --) {1}".format(dZ, CR)
+
+            #
+            # set new Z
+            lgc += indent2 + "(drill)" + CR
+            lgc += indent2 + "G01 Z{0:08.3f} F{1:05.1f} {2}".format(
+                dZ, feeds["ZGn"], CR)
+            #
+            # pause a short period
+            lgc += indent2 + "G04 P{0:04.2f} {1}".format(dwell, CR)
             lgc += indent2 + "(retraction)" + CR
             lgc += indent2 + "G01 Z{0:08.3f} F{1:05.1f} {2}".format(
                 dZ + float(retraction),
                 feeds["ZG0"],
                 CR
             )
-
-            #
-            # set new Z
-            lgc += indent2 + "G01 Z{0:08.3f} F{1:05.1f} {2}".format(
-                dZ, feeds["ZGn"], CR)
             # # set XZ
             # lgc += indent2 + "G01 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
             #     vec[0], vec[1], feeds["XYGn"], CR)
@@ -440,7 +445,7 @@ class DrillHoles(GeometricalFrame):
         tD = float(self.__depthtotal.get())
         sD = float(self.__depthstep.get())
 
-        pC = float(self.__peckCycle.get())
+        pC = float(self.__retraction.get())
 
         tool = float(self.__tooldia.get())
         print ("userInputValidation")
