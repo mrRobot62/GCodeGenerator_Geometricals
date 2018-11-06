@@ -250,6 +250,8 @@ class DrillHolesGrid(GeometricalFrame):
         gridAngle = round(float(self.__gridAngleW1.get()),1)
         colOffsetX = round(float(self.__columnOffsetPerRow.get()),1)
 
+        retraction = float(self.__retraction.get())
+
         gSize = (a,b)
 
         gc = ""
@@ -290,7 +292,7 @@ class DrillHolesGrid(GeometricalFrame):
         for vc in hCPoints:
             nr += 1
             gc += self.drillSubHole(
-                nr, gridAngle, vc, self.__dir.get(), indent)
+                nr, gridAngle, vc, self.__dir.get(), indent, retraction)
             pass
 
         gc += "(--- END DRILL HOLES ---)" + CR
@@ -353,9 +355,7 @@ class DrillHolesGrid(GeometricalFrame):
             sideB = round((math.sqrt(math.pow(dRow, 2) - math.pow(sideA, 2))),3)
             sideC = round(gSize[0], 3) #a
 
-d
             #
-
             if y > 0 and gAngle > 0.0:
                 print ("1) cPoint ({})".format(cPoint))
                 # next xPoint is left from last xPoint
@@ -471,9 +471,9 @@ d
         FZ1 = float(self.__speed_Z_G01.get())
         FXY0 = float(self.__speed_XY_G00.get())
         FXY1 = float(self.__speed_XY_G02G03.get())
+        dwell = 0.25
         X = hCPoint[0]
         Y = hCPoint[1]
-        gc += indent
         #
         # set start X/Y position
         gc += indent + "G01 Z{0:08.3f} F{1:05.1f} {2}".format(
@@ -483,7 +483,7 @@ d
             X, Y, FXY1, CR)
         gc += indent + "(-- start loop --)" + CR
         lgc = ""
-        indent2 = indent.ljust(2)
+        indent2 = indent.ljust(len(indent) + 2)
         while (abs(dZ) < abs(dT)):
             #
             # calculate next Z
@@ -497,24 +497,26 @@ d
                 print "new Z: {}".format(dZ)
 
             #
-            # before we start next depthstep, we move 0.5 upwards for
+            # set new Z
+            lgc += indent2 + "(-- new Z {0:08.3f} --) {1}".format(dZ, CR)
+            lgc += indent2 + "(drill)" + CR
+            lgc += indent2 + "G01 Z{0:08.3f} F{1:04.0f} {2}".format(
+                dZ, FZ1, CR)
+            # short pause 0.25secs
+            lgc += indent2 + "G04 P{0:04.2f} {1}".format(dwell, CR)
+            # set XZ
+            #lgc += indent2 + "G01 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
+            #    X, Y, FXY1, CR)
+            #
+            # before we start next depthstep, we move "retraction" upwards for
             # retraction
             if retraction > 0.0:
-                lgc += indent2 + "(-- new Z {0:08.3f} --) {1}".format(dZ, CR)
                 lgc += indent2 + "(retraction)" + CR
                 lgc += indent2 + "G01 Z{0:08.3f} F{1:04.0f} {2}".format(
                     dZ + retraction,
                     FZ0,
                     CR
                 )
-            #
-            # set new Z
-            lgc += indent2 + "(drill)" + CR
-            lgc += indent2 + "G01 Z{0:08.3f} F{1:04.0f} {2}".format(
-                dZ, FZ1, CR)
-            # set XZ
-            lgc += indent2 + "G01 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
-                X, Y, FXY1, CR)
             #
             # for saftey issues.
             if (abs(dZ) == 0.0):
