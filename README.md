@@ -19,6 +19,7 @@ Status October 2018 - under development **
 |0.7 | new pocketCircle |
 |0.8 | new pocketRectangle |
 |0.9 | new drill holes on a grid |
+|0.10 | new smooth surface rectangle |
 
 
 ## Example screenshot (more details inside WIKI)
