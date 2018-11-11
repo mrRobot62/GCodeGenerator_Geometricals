@@ -1,7 +1,7 @@
 # GCode - Generator - Python - LinuxCNC
 
 With this python collection it is possible to create simple geometrical shapes and generate gcode.
-Primary this tool set is used for my LinuxCNC milling machines.
+You can use this tool set to include it into LinuxCNC AXIS.
 
 **Tested with Python 2.7
 Status October 2018 - under development **
