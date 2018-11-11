@@ -301,6 +301,8 @@ class ToolTip:
         self.widget = widget
         self.text = text
         self.widget.bind("<Enter>", self.onEnter)
+        self.widget.bind("<FocusIn>", self.onEnter)
+        self.widget.bind("<FocusOut>", self.onLeave)
         self.widget.bind("<Leave>", self.onLeave)
         self.widget.bind("<ButtonPress>", self.onLeave)
         self.bg = bg
@@ -376,25 +378,25 @@ class ToolTip:
         widget = self.widget
 
         # creates a toplevel window
-        self.tw = tk.Toplevel(widget)
+        self.tw = Toplevel(widget)
 
         # Leaves only the label and removes the app window
         self.tw.wm_overrideredirect(True)
 
-        win = tk.Frame(self.tw,
+        win = Frame(self.tw,
                        background=bg,
                        borderwidth=0)
-        label = tk.Label(win,
+        label = Label(win,
                           text=self.text,
-                          justify=tk.LEFT,
+                          justify=LEFT,
                           background=bg,
-                          relief=tk.SOLID,
+                          relief=SOLID,
                           borderwidth=0,
                           wraplength=self.wraplength)
 
         label.grid(padx=(pad[0], pad[2]),
                    pady=(pad[1], pad[3]),
-                   sticky=tk.NSEW)
+                   sticky=NSEW)
         win.grid()
 
         x, y = tip_pos_calculator(widget, label)

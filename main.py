@@ -47,16 +47,20 @@ from contourRectangle import *
 from contourRoundRectangle import *
 from contourHoles import *
 from contourMillHolesGrid import *
+
 from pocketRoundRectangle import *
 from pocketCircle import *
 from pocketRectangle import *
+
 from drillHoles import *
 from drillHolesGrid import *
+
+from surfaceRectangle import *
 
 IN_AXIS = os.environ.has_key("AXIS_PROGRESS_BAR")
 CR = '\n'
 
-VERSION = "0.9 (2018-05-11)"
+VERSION = "0.10 (2018-11-11)"
 
 '''
     Geometrical Main-Application
@@ -75,6 +79,8 @@ VERSION = "0.9 (2018-05-11)"
     0.2 ContourRectangle
     0.3 contourHoles
     0.4 contourMillHolesGrid
+
+    0.10 surfaceRectangle (base version)
 
 '''
 class GCodeGenerator(Frame):
@@ -137,6 +143,13 @@ class GCodeGenerator(Frame):
 
         #------------------------------------------------------#
 
+        # sub menu Surface
+        self.SurfaceMenu = Menu(self.FileMenu)
+        self.FileMenu.add_cascade(label="Surface", menu=self.SurfaceMenu)
+        #--------- Insert engraving shapes here ---------------------#
+        self.SurfaceMenu.add_command(label="surface milling Rectangle", command=self.SurfaceRectangle)
+
+        #------------------------------------------------------#
         # sub menu Engraving
         self.EngravingMenu = Menu(self.FileMenu)
         self.FileMenu.add_cascade(label="Engraving", menu=self.EngravingMenu)
@@ -227,6 +240,14 @@ class GCodeGenerator(Frame):
         print "DrillHolesGrid"
         title = "Drill holes in a grid"
         self.myApp = DrillHolesGrid(self.app, self.master, self.frame, title)
+        self.myApp.init()
+        self.myApp.show()
+        pass
+
+    def SurfaceRectangle(self):
+        print "SurfaceRectangle"
+        title = "surface milling a rectangle"
+        self.myApp = SurfaceRectangle(self.app, self.master, self.frame, title)
         self.myApp.init()
         self.myApp.show()
         pass
