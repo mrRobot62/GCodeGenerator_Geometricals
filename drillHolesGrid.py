@@ -26,7 +26,7 @@ class DrillHolesGrid(GeometricalFrame):
     def init(self):
         self.__imageNames = [
             # center
-            "/Users/bernhardklein/Public/local-workspace/python/geometricals/GCodeGenerator_Geometricals/img/drilling/drillHolesGrid.005.png",
+            "./img/drilling/drillHolesGrid.005.png",
         ]
 
     #-------------------------------------------------------------
