@@ -146,8 +146,8 @@ class SurfaceCircle(GeometricalFrame):
 
 
         row += 1
-        self.__depthtotal = StringVar(value="-1.5")
-        self.__depthstep = StringVar(value="-0.5")
+        self.__depthtotal = StringVar(value="-1.0")
+        self.__depthstep = StringVar(value="-0.2")
         Label(self.frmButtonsIndividualContent, text="Total depth").grid(row=row, column=0, sticky=W)
         Label(self.frmButtonsIndividualContent, text="depth cutting per step").grid(
             row=row, column=2, sticky=W)
@@ -371,16 +371,23 @@ class SurfaceCircle(GeometricalFrame):
             overshot))
         #
         # depth control
+        i = 1
         for d in range (numberOfDepthSteps):
             gc += self.__getGCodeOnTrack(cPoint, feeds, dir,
-                        numberOfDepthSteps+1, d, radius, toolDia, stepover,
+                        i, z, radius, toolDia, stepover,
                         overshot)
+            i += 1
             pass
         #
         # last depth position
         gc += self.__getGCodeOnTrack(cPoint, feeds, dir,
                     numberOfDepthSteps+1, restDepth,
                     radius, toolDia, stepover, overshot)
+        gc += "(-- END --)" + CR
+        gc += self.getGCode_Homeing(
+            x=cPoint[0],
+            y=cPoint[1],
+            z=zPos["safetyZ"])
         gc += self._postamble.get() + CR
         gc += CR
         return  gc
@@ -416,12 +423,17 @@ class SurfaceCircle(GeometricalFrame):
         wRest = round(float((radius + o) % s),2)
         x = cPoint[0]
         y = cPoint[1]
-        gc += indent + "G01 X{0:08.3f} Y{1:08.3f} F{2:08.3f} {3}".format(
+        gc += indent + "G01 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
             x,y,feeds["XYGn"], CR
         )
-        gc += indent + "G01 G91 Z{0:08.3f} F{1:08.3f} (relative position){2}".format(
-            z,feeds["ZGn"], CR
-        )
+        if dSteps <= 1:
+            gc += indent + "G01 Z{0:08.3f} F{1:05.1f} (relative position){2}".format(
+                z,feeds["ZGn"], CR
+            )
+        else:
+            gc += indent + "G01 G91 Z{0:08.3f} F{1:05.1f} (relative position){2}".format(
+                z,feeds["ZGn"], CR
+            )
         orientation = 1     # G02 (CW)
         if dir == "G03":    # G03 (CCW)
             orientation = -1
@@ -452,96 +464,7 @@ class SurfaceCircle(GeometricalFrame):
             print (loop)
             gc += loop
             pass
-
+        #
+        #
+        gc += indent + "(-- END current depth --)" + CR
         return gc
-        pass
-
-#         while (not finished):
-#             print ("cPointX {} oRadius {} iRadius {} cWidth {} cWidth {}".format(
-#                 cPoint[0], radii[0], radii[1], pWidth, cWidth
-#             ))
-#             if (cWidth + (toolDia/2.0)>= pWidth):
-#                 # oh, we over shot, we have to reduce offset to a value
-#                 # which is the difference between width - cWidth
-#                 cWidth += (pWidth - cWidth) - (toolDia / 2.0)
-#                 # this is our last track
-#                 finished = True
-#
-# #    def __createPocketTracks(self, cPoint, r, feeds, depth, offset=0.0 ):
-#             t = self.__createPocketTracks(
-#                 cPoint,
-#                 radii[0],
-#                 feeds,
-#                 z,
-#                 cWidth
-#             )
-#             pocketMillTracks.append(t)
-#             # print ("{3}#{0:03d} --- cWidth {1} step {4} {2}".format(
-#             #     x, cWidth, CR, CR, forwardstep
-#             # ))
-#             #print (t)
-#             x += 1
-#             cWidth += forwardstep
-#
-#         #
-#         # it's time to generate the real gCode
-#         #
-#         # Every round we mill all tracks in the same detph
-#         # than we increase depth as long as we reached total depthStep
-#
-#             gc += CR + "(-- START DEPTH Loop --)" + CR
-#             z = 0.0
-#             while (abs(z) < abs(depth[0])):
-#                 # set next Z depth
-#                 if ((abs(depth[0]) - abs(z)) < abs(depth[1])):
-#                     # this happens, if a small amount is the rest
-#                     z -= (abs(depth[0]) - abs(z))
-#                     print "rest Z: {}".format(z)
-#                 else:
-#                     z -= abs(depth[1])
-#                     print "new Z: {}".format(z)
-#
-#                 loop += CR
-#                 gc += spaces + "(-- START Track Loop  --)" + CR
-#                 for t in pocketMillTracks:
-#                     # every track contain a fixed number of separate gCode
-#                     # commands
-#                     spaces2 = spaces.ljust(2)
-#                     # set new depth
-#                     gc += CR + spaces2 + "(-- next depth z {0:08.3f} --){1}".format(z,CR)
-#                     for cmd in t:
-#                         #
-#                         # combine all parameter to one command
-#                         gc += spaces2
-#                         print cmd
-#                         #
-#                         # pattern to recognize special command set
-#                         regFloat = r"{\d:\d+\.\d+f}"
-#                         for p in range(len(cmd)):
-#                             if isinstance(cmd[p], basestring):
-#                                 x = re.findall(regFloat,cmd[p], re.UNICODE)
-#                                 if (len(x) != 0):
-#                                     #print "RegFloat found"
-#                                     gc += cmd[p].format(float(z))
-#                                 else:
-#                                     # normal string
-#                                     gc += " " + cmd[p]
-#                             if isinstance(cmd[p], float):
-#                                 gc += "{0:08.3f}".format(cmd[p])
-#                             if isinstance(cmd[p], int):
-#                                 gc += "{0:05d}".format(cmd[p])
-#                         gc += CR
-#
-#                 gc += spaces + "(-- END Track Loop  --)" + CR
-#                 pass
-#
-#             gc += "(-- END DEPTH loop --)" + CR
-#             gc += self.getGCode_Homeing(
-#                 cPoint[0],
-#                 cPoint[1],
-#                 zPos["safetyZ"],
-#                 feeds["XYG0"]
-#             )
-#             gc += self._postamble.get() + CR
-#             gc += CR
-#             return  gc
