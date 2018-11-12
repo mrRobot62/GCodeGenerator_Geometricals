@@ -305,7 +305,7 @@ class ToolTip:
                  pad=(5, 3, 5, 3),
                  text='widget info',
                  waittime=400,
-                 wraplength=250):
+                 wraplength=300):
 
         self.waittime = waittime  # in miliseconds, originally 500
         self.wraplength = wraplength  # in pixels, originally 180

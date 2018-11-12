@@ -118,9 +118,7 @@ class SurfaceRectangle(GeometricalFrame):
         w7a.grid(
             row=row, column=3, sticky=W)
         ToolTip(w7a,
-        text="This percentage is an overshot for tool on work piece edges. \
-        Normally the value should be between 0-150%. \
-        Values >= 100 move tool completely outwards from work piece")
+        text='''This percentage is an overshot for used tool on work piece edges. Normally the value should be between 0-150%. Values >= 100 move tool completely outside from work piece''')
 
         row += 1
         self.__centerX = StringVar(value="0.0")

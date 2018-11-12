@@ -90,7 +90,7 @@ class SurfaceCircle(GeometricalFrame):
                     value="G03").grid(row=row, column=2, sticky=W)
 
         row += 1
-        self.__tooldia = StringVar(value="6.0")
+        self.__tooldia = StringVar(value="12.0")
         Label(self.frmButtonsIndividualContent, text="Tool diameter").grid(
             row=row, column=0, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=False,
@@ -124,14 +124,15 @@ class SurfaceCircle(GeometricalFrame):
         #
         # stepover from row to row
         #row += 1
-        self.__stepover = StringVar(value="80")
+        self.__stepover = StringVar(value="50")
         Label(self.frmButtonsIndividualContent, text="Stepover tooldia %").grid(
             row=row, column=2, sticky=W)
         w7 = FloatEntry(self.frmButtonsIndividualContent, width=5,
             textvariable=self.__stepover, mandatory=False)
         w7.grid(
             row=row, column=3, sticky=W)
-        ToolTip(w7,text="This percentage is the overlap from row to row based on tool diameter. Normally the value should be between 30-90%")
+        ToolTip(w7,text=
+        '''This percentage is the overlap from row to row based on tool diameter. Normally the value should be between 30-90%''')
 
         self.__overshot = StringVar(value="110")
         Label(self.frmButtonsIndividualContent, text="Overshot %").grid(
@@ -141,9 +142,7 @@ class SurfaceCircle(GeometricalFrame):
         w7a.grid(
             row=row, column=5, sticky=W)
         ToolTip(w7a,
-        text="This percentage is an overshot for tool on work piece edges. \
-        Normally the value should be between 0-150%. \
-        Values >= 100 move tool completely outwards from work piece")
+        text='''This percentage is an overshot for used tool on work piece edges. Normally the value should be between 0-150%. Values >= 100 move tool completely outside from work piece''')
 
 
         row += 1
