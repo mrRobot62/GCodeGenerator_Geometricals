@@ -33,7 +33,7 @@ class SurfaceRectangle(GeometricalFrame):
     def init(self):
         self.__imageNames = [
             # left down
-            "/Users/bernhardklein/Public/local-workspace/python/geometricals/GCodeGenerator_Geometricals/img/surface/zigzag_X_001.png"
+            "./img/surface/zigzag_X_001.png"
         ]
 
     #-------------------------------------------------------------
