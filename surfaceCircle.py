@@ -87,7 +87,7 @@ class SurfaceCircle(GeometricalFrame):
         Radiobutton(self.frmButtonsIndividualContent, text="CW (G02)", variable=self.__dir,
                     value="G02").grid(row=row, column=1, sticky=W)
         Radiobutton(self.frmButtonsIndividualContent, text="CCW (G03)", variable=self.__dir,
-                    value=1).grid(row=row, column=2, sticky=W)
+                    value="G03").grid(row=row, column=2, sticky=W)
 
         row += 1
         self.__tooldia = StringVar(value="6.0")
