@@ -56,6 +56,7 @@ from drillHoles import *
 from drillHolesGrid import *
 
 from surfaceRectangle import *
+from surfaceCircle import *
 
 IN_AXIS = os.environ.has_key("AXIS_PROGRESS_BAR")
 CR = '\n'
@@ -148,6 +149,7 @@ class GCodeGenerator(Frame):
         self.FileMenu.add_cascade(label="Surface", menu=self.SurfaceMenu)
         #--------- Insert engraving shapes here ---------------------#
         self.SurfaceMenu.add_command(label="surface milling Rectangle", command=self.SurfaceRectangle)
+        self.SurfaceMenu.add_command(label="surface milling Circle", command=self.SurfaceCircle)
 
         #------------------------------------------------------#
         # sub menu Engraving
@@ -248,6 +250,14 @@ class GCodeGenerator(Frame):
         print "SurfaceRectangle"
         title = "surface milling a rectangle"
         self.myApp = SurfaceRectangle(self.app, self.master, self.frame, title)
+        self.myApp.init()
+        self.myApp.show()
+        pass
+
+    def SurfaceCircle(self):
+        print "SurfaceCircle"
+        title = "surface milling a spiral"
+        self.myApp = SurfaceCircle(self.app, self.master, self.frame, title)
         self.myApp.init()
         self.myApp.show()
         pass

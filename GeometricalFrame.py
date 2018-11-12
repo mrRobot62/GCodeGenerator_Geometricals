@@ -133,6 +133,7 @@ class GeometricalFrame(Frame):
         )
         return gc
 
+
     def getGCodeCutterComp(self, compensation = "G40", toolDia = 0.0):
         '''
         return a GCode for given cutter compensation
@@ -257,6 +258,16 @@ class GeometricalFrame(Frame):
         else:
             tkMessageBox.showtitle("!!!unknown - State !!!", text)
 
+    def getDepthSteps(self, total, step):
+        '''
+        calculate how many depth steps we need to mill to total depth.
+        Return two values:
+            1. Value = numberOfWindings
+            2. Value = rest depth
+        '''
+        r = round((total % step),3)
+        w = int(abs(total/step))
+        return w, r
 
 class ToolTip:
     '''
