@@ -73,7 +73,7 @@ class ContourArc(GeometricalFrame):
         Radiobutton(self.frmButtonsIndividualContent, text="CW (G02)", variable=self.__dir,
                     value="G02").grid(row=row, column=1, sticky=W)
         Radiobutton(self.frmButtonsIndividualContent, text="CCW (G03)", variable=self.__dir,
-                    value=1).grid(row=row, column=2, sticky=W)
+                    value="G03").grid(row=row, column=2, sticky=W)
 
         row += 1
         self.__cuttercompensation = StringVar()
@@ -295,9 +295,9 @@ class ContourArc(GeometricalFrame):
 
         # start with circel
         gc += CR + "(move Z-axis to start postion near surface)" + CR
-        gc += "G00 Z{0:08.3f} F{1:05.1f} {2}".format(
+        gc += "G01 Z{0:08.3f} F{1:05.1f} {2}".format(
             float(self.__start_Z.get()),
-            float(self.__speed_Z_G00.get()), CR)
+            float(self.__speed_Z_G01.get()), CR)
         #
         # generate as many circle steps as needed until depthtotal is reached
         # cut an Arc
@@ -358,7 +358,8 @@ class ContourArc(GeometricalFrame):
             float(self.__centerY.get()),
             float(self.__centerX.get()),
             float(self.__safety_Z.get()),
-            float(self.__speed_XY_G00.get())
+            float(self.__speed_XY_G00.get()),
+            float(self.__speed_Z_G00.get())
         ) + CR
         gc += self._postamble.get() + CR
         gc += CR
