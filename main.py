@@ -82,6 +82,9 @@ VERSION = "0.10 (2018-11-11)"
     0.4 contourMillHolesGrid
 
     0.10 surfaceRectangle (base version)
+    0.11 surfaceCircle(base version)
+    0.12 bugfix-release. Fixed issues
+            #5, #6
 
 '''
 class GCodeGenerator(Frame):
