@@ -255,8 +255,8 @@ class ContourArc(GeometricalFrame):
 
         toolDia = float(self.__tooldia.get())
 
-        xoffset = float(0.0)
-        yoffset = float(0.0)
+        X = xoffset = float(0.0)
+        Y = yoffset = float(0.0)
         if (int(self.__CC.get()) == 1):
             xoffset = float(self.__centerX.get())
             yoffset = float(self.__centerY.get())
@@ -275,20 +275,25 @@ class ContourArc(GeometricalFrame):
 
         intend = "".ljust(2)
         # X
-        X = (float(self.__dia.get()) / 2.0) + xoffset
-
+        #X = (float(self.__dia.get()) / 2.0) + xoffset
+        X += xoffset
         # Y
-        Y = float(self.__centerY.get()) + yoffset
+        #Y = float(self.__centerY.get()) + yoffset
+        Y += yoffset
 
         # I - this is the radius
-        I = (float(self.__dia.get()) / 2.0) * -1.0
+        R = (float(self.__dia.get()) / 2.0)
+        I = R * -1.0
+
 
         # J
         J = -0.0
 
         # set start postion X/Y
+        # for milling an arc, we move to 3clock position and start from
+        # this position
         gc += "G00 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
-            float(X),
+            float(X+R),
             float(Y),
             float(self.__speed_XY_G00.get()),
             CR)
@@ -313,7 +318,7 @@ class ContourArc(GeometricalFrame):
             CR
         )
         gc += "(-- X {0:06.3f}, Y {1:06.3f} --) {2}".format(
-            float(X),
+            float(X+R),
             float(Y),
             CR
         )
@@ -342,7 +347,7 @@ class ContourArc(GeometricalFrame):
             #
             loop += intend + self.__dir.get()
             loop += " X{0:08.3f} Y{1:08.3f} I{2:08.3f} J{3:08.3f} F{4:05.1f} {5}".format(
-                X, Y, I, J, float(self.__speed_XY_G02G03.get()), CR
+                X+R, Y, I, J, float(self.__speed_XY_G02G03.get()), CR
             )
             loop += CR
             #
@@ -355,8 +360,7 @@ class ContourArc(GeometricalFrame):
         #----------------------------
         gc += CR + "(-- END circle -)" + CR
         gc += self.getGCode_Homeing(
-            float(self.__centerY.get()),
-            float(self.__centerX.get()),
+            X,Y,
             float(self.__safety_Z.get()),
             float(self.__speed_XY_G00.get()),
             float(self.__speed_Z_G00.get())
