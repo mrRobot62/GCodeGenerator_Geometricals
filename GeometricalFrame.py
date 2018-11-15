@@ -124,12 +124,12 @@ class GeometricalFrame(Frame):
         # override from subclass
         pass
 
-    def getGCode_Homeing(self, x=0, y=0, z=10, f=100):
-        gc = "G01 Z{0:08.3f} F{1:05.1f} {2}".format(
-            z,f,CR
+    def getGCode_Homeing(self, x=0, y=0, z=10, fxy=100, fz=100):
+        gc = "G00 Z{0:08.3f} F{1:05.1f} {2}".format(
+            z,fz,CR
         )
-        gc += "G01 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
-            x,y,f,CR
+        gc += "G00 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
+            x,y,fxy,CR
         )
         return gc
 

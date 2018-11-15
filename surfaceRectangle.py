@@ -147,7 +147,7 @@ class SurfaceRectangle(GeometricalFrame):
 
         row += 1
         self.__depthtotal = StringVar(value="-1.0")
-        self.__depthstep = StringVar(value="-0.25")
+        self.__depthstep = StringVar(value="-0.2")
         Label(self.frmButtonsIndividualContent, text="Total depth").grid(row=row, column=0, sticky=W)
         Label(self.frmButtonsIndividualContent, text="depth cutting per step").grid(
             row=row, column=2, sticky=W)
