@@ -58,6 +58,7 @@ from drillHolesGrid import *
 from surfaceRectangle import *
 from surfaceCircle import *
 
+#from toolTable import *
 IN_AXIS = os.environ.has_key("AXIS_PROGRESS_BAR")
 CR = '\n'
 
@@ -83,8 +84,8 @@ VERSION = "0.10 (2018-11-11)"
 
     0.10 surfaceRectangle (base version)
     0.11 surfaceCircle(base version)
-    0.12 bugfix-release. Fixed issues
-            #5, #6
+    0.12.1 bugfix-release. Fixed issues
+            #5, #6, #9, #12a+b,
 
 '''
 class GCodeGenerator(Frame):
@@ -161,6 +162,7 @@ class GCodeGenerator(Frame):
         #--------- Insert engraving shapes here ---------------------#
 
         #------------------------------------------------------#
+        #self.FileMenu.add_command(label="Tool table", command=self.ToolTable)
 
         # Quit
         self.FileMenu.add_command(label="Quit", command=self.quit)
@@ -184,6 +186,16 @@ class GCodeGenerator(Frame):
         self.myApp.show()
         pass
 
+
+    def ToolTable(self):
+        print "Tool table"
+        title = "Tool table"
+        self.myApp = ToolTable(self.app, self.master, self.frame, title)
+        self.myApp.init()
+        self.myApp.show(showImage=False,
+            showStandardContent=False,
+            showStandartButton=False)
+        pass
 
     def DialogContourRoundedRec(self):
         print "DialogContourRoundedRec"
