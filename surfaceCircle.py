@@ -286,6 +286,7 @@ class SurfaceCircle(GeometricalFrame):
         '''
         cPoint = (float(self.__centerX.get()),
                   float(self.__centerY.get()))
+        cPointOrig = cPoint
         radius = float(self.__radius.get())
 
         toolDia = float(self.__tooldia.get())
@@ -342,12 +343,12 @@ class SurfaceCircle(GeometricalFrame):
         loop = ""
         gc += CR + "(------- start shape -------------)" + CR
 
-        # start with shape
-        gc += CR + "(move Z-axis to start postion near surface)" + CR
-        gc += "G00 Z{0:08.3f} F{1:05.1f} {2}".format(
-            zPos["startZ"],
-            feeds["ZG0"],
-            CR)
+        # # start with shape
+        # gc += CR + "(move Z-axis to start postion near surface)" + CR
+        # gc += "G00 Z{0:08.3f} F{1:05.1f} {2}".format(
+        #     zPos["startZ"],
+        #     feeds["ZG0"],
+        #     CR)
         spaces = "".ljust(2)
         #----------------------------------------------------------------------
         # This loop assume, that you try to mill into your object.
@@ -373,6 +374,17 @@ class SurfaceCircle(GeometricalFrame):
         # depth control
         i = 1
         for d in range (numberOfDepthSteps):
+            #
+            # bugfix: #9, move Z-Axis to startZ Position, than move to Center
+            # start with shape
+            gc += CR + "(move Z-axis to start postion near surface)" + CR
+            gc += "G00 Z{0:08.3f} F{1:05.1f} {2}".format(
+                zPos["startZ"],
+                feeds["ZG0"],
+                CR)
+
+            #
+            # please notice: Z-Axis is positioned by a relative G91 code
             gc += self.__getGCodeOnTrack(cPoint, feeds, dir,
                         i, z, radius, toolDia, stepover,
                         overshot)
@@ -410,7 +422,7 @@ class SurfaceCircle(GeometricalFrame):
         '''
         indent = "".ljust(2)
         gc = "(-- Step #{0:03d} Z{1:08.3f} --) {2}".format(
-             dSteps, z, CR)
+             dSteps, (z*dSteps), CR)
         #
         # calculate stepover and overshot from percentage
         s = round(toolDia - (float(toolDia * stepover) / 100), 1)
