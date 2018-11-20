@@ -11,25 +11,32 @@ import re
 CR = '\n'
 
 class GeometricalFrame(Frame):
-    def __init__(self, app, master, frame, title):
+    def __init__(self, app, master, frame, title, winGeometry="800x700"):
         self.app = app
         self.parentFrame = frame
         self.title = title
         self.master = master
-        self.master.geometry("800x700")
+        self.master.geometry(winGeometry)
         self.app.master.title(title)
         self.frmButtonsIndividualContent = Frame(self.parentFrame,
             highlightbackground="darkgray",
             highlightcolor="darkgray",
             highlightthickness=1)
 
-    def show(self):
+    def show(self, showImage=True, showStandardContent=True, showStandartButton=True):
         print "Show"
-        self.__frmImage()
-        self.__frmStandardContent()
+        #
+        if showImage:
+            self.__frmImage()
+        #
+        if showStandardContent:
+            self.__frmStandardContent()
+        #
         self._frmIndividualContent()
-        self.__buttonBox()
-        self.setBtnStates(state=NORMAL)
+        #
+        if showStandartButton:
+            self.__buttonBox()
+            self.setBtnStates(state=NORMAL)
         pass
 
     def onClose(self):
@@ -47,27 +54,29 @@ class GeometricalFrame(Frame):
         self.frmImage.pack(expand=True)
         pass
 
-    def __frmStandardContent(self):
+    def __frmStandardContent(self, showPreamble=True, showPostamble=True):
         print "__frmStandardContent"
         self.frmStandardContent = Frame(self.parentFrame,
             highlightbackground="darkgray",
             highlightcolor="darkgray",
             highlightthickness=1)
         row = 0
-        self._preamble = StringVar()
-        self._preamble.set("G21 G90 G64 G17 G40 G49")
-        Label(self.frmStandardContent, text="PreGCode").grid(row=row, column=0, sticky=W)
-        FloatEntry(self.frmStandardContent, width=70, mandatory=False,
-            textvariable=self._preamble).grid(row=row, column=1, sticky=W)
+        if showPreamble:
+            self._preamble = StringVar()
+            self._preamble.set("G21 G90 G64 G17 G40 G49")
+            Label(self.frmStandardContent, text="PreGCode").grid(row=row, column=0, sticky=W)
+            FloatEntry(self.frmStandardContent, width=70, mandatory=False,
+                textvariable=self._preamble).grid(row=row, column=1, sticky=W)
 
-        row += 1
-        self._postamble = StringVar()
-        post = "G00 Z10 F100 \n"
-        post+= "M2"
-        self._postamble.set(post)
-        Label(self.frmStandardContent, text="PostGCode").grid(row=row, column=0, sticky=W)
-        FloatEntry(self.frmStandardContent, width=70, mandatory=False,
-            textvariable=self._postamble).grid(row=row, column=1, sticky=W)
+        if showPreamble:
+            row += 1
+            self._postamble = StringVar()
+            post = "G00 Z10 F100 \n"
+            post+= "M2"
+            self._postamble.set(post)
+            Label(self.frmStandardContent, text="PostGCode").grid(row=row, column=0, sticky=W)
+            FloatEntry(self.frmStandardContent, width=70, mandatory=False,
+                textvariable=self._postamble).grid(row=row, column=1, sticky=W)
 
         self.frmStandardContent.pack(expand=True, fill=BOTH)
         pass
