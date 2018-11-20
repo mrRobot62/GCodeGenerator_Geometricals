@@ -132,8 +132,8 @@ class SurfaceRectangle(GeometricalFrame):
 
 
         row += 1
-        self.__distanceA = StringVar(value="70.0")
-        self.__distanceB = StringVar(value="100.0")
+        self.__distanceA = StringVar(value="50.0")
+        self.__distanceB = StringVar(value="30.0")
         Label(self.frmButtonsIndividualContent, text="Height (a)").grid(row=row, column=0, sticky=W)
         Label(self.frmButtonsIndividualContent, text="Width (b)").grid(row=row, column=2, sticky=W)
         w8 = FloatEntry(self.frmButtonsIndividualContent, width=10,
@@ -273,6 +273,7 @@ class SurfaceRectangle(GeometricalFrame):
         '''
         cPoint = (float(self.__centerX.get()),
                   float(self.__centerY.get()))
+        cPointOrig = cPoint
         sizeAB = (float(self.__distanceA.get()),
                   float(self.__distanceB.get()))
         toolDia = float(self.__tooldia.get())
@@ -345,7 +346,7 @@ class SurfaceRectangle(GeometricalFrame):
         #
 
         offset = toolDia / 2.0
-        cWidth = 0.0             # start pocket width = tool diameter
+        currentPos = 0.0             # start pocket width = tool diameter
         pocketMillTracks = []
         x = 1
         finished = False
@@ -356,8 +357,15 @@ class SurfaceRectangle(GeometricalFrame):
             cPoint[1],
             feeds["XYG0"],
             CR)
+
+        # bugfix 12b; currentPosition & toPosition implemented
+        #   better than cWidth.....
+        toPostion = 0.0
+        if orientation == 1:
+            toPostion = sizeAB[0]
+
         while (not finished):
-            if (cWidth > sizeAB[1]) :
+            if (currentPos > toPostion) :
                  finished = True
 
             t, cPoint, yOff = self.__createPocketTracks(
@@ -373,7 +381,7 @@ class SurfaceRectangle(GeometricalFrame):
 
             pocketMillTracks.append(t)
             x += 1
-            cWidth += yOff
+            currentPos += (2*yOff)
             pass
 
         #
@@ -426,6 +434,17 @@ class SurfaceRectangle(GeometricalFrame):
                     gc += CR
 
             gc += spaces + "(-- END Track Loop  --)" + CR
+            gc += spaces + "G00 Z{0:08.3f} F{1:05.1f} {2}".format(
+                zPos["startZ"],
+                feeds["ZG0"],
+                CR)
+            # set to left down corner
+            # Bugfix #12b
+            gc += spaces + "G00 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
+                cPointOrig[0],
+                cPointOrig[1],
+                feeds["XYG0"],
+                CR)
             pass
 
         gc += "(-- END DEPTH loop --)" + CR
@@ -451,7 +470,7 @@ class SurfaceRectangle(GeometricalFrame):
 
         parameters
         cPoint          base position for X/Y
-        sizeAB          widht, length (a + b)
+        sizeAB          height, widht (a + b)
         tollDia         diameter of used tool
         orientation     1 = from left to right than up (default)
                         2 = from right to left than up
@@ -463,12 +482,16 @@ class SurfaceRectangle(GeometricalFrame):
         offsetStepover = float(toolDia - (toolDia * stepover / 100.0))
         offsetOvershot = float(toolDia * overshot / 100) - float(toolDia / 2.0)
 
-        a = sizeAB[0]   # widht
-        b = sizeAB[1]   # height
+        #
+        # bugfix 12a; a+b changed
+        a = sizeAB[0]   # height
+        b = sizeAB[1]   # width
         # definition w = width is size of work piece in X-direction (=> a) + overshot
         # definition h = height is size of work piece in Y-Direction (=> b) + overshot
-        w = a + (offsetOvershot*2)
-        h = b + (offsetOvershot*2)
+
+        # bugfix 12a; a+b changed
+        w = b + (offsetOvershot*2)
+        h = a + (offsetOvershot*2)
 
         x = cPoint[0]  # we assume, that cp is left down edge
         y = cPoint[1]  # dito
@@ -510,7 +533,7 @@ class SurfaceRectangle(GeometricalFrame):
 
         # sequence to mill a rounded rectangle
         seq = [
-            #start
+            # move to next horizontal position
             # go to depth
             ("G01", "Z", "{0:08.3f}", "F", feeds["ZGn"], ),
             # move to start position
@@ -521,10 +544,12 @@ class SurfaceRectangle(GeometricalFrame):
             ("G01", "X", x + w , "Y", y + yStepOver, "F", feeds["XYGn"], ),
             # move next horizontal position
             ("G01", "X", x, "Y", y + yStepOver, "F", feeds["XYGn"], ),
+            # move next Y position
+            ("G01", "X", x , "Y", y + (2*yStepOver), "F", feeds["XYGn"], ),
         ]
         # set new start position
         cPoint = (
             cPoint[0],
-            cPoint[1] + yStepOver
+            cPoint[1] + (2*yStepOver)
         )
         return seq, cPoint, yStepOver
