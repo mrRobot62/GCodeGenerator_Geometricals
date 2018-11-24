@@ -86,6 +86,8 @@ VERSION = "0.10 (2018-11-11)"
     0.11 surfaceCircle(base version)
     0.12.1 bugfix-release. Fixed issues
             #5, #6, #9, #12a+b,
+    0.12.2 bugfix-release. Fixed issues
+            #14
 
 '''
 class GCodeGenerator(Frame):
@@ -167,7 +169,9 @@ class GCodeGenerator(Frame):
         # Quit
         self.FileMenu.add_command(label="Quit", command=self.quit)
 
-
+    def closeDialog(self):
+        self.myApp.onClose()
+        pass
 
 #------ Menu callbacks ----------------
     def DialogContourArc(self):
@@ -279,11 +283,19 @@ class GCodeGenerator(Frame):
 
 #--------- Menu callbacks ---------------------#
 
+
+def on_closing():
+    if tkMessageBox.askokcancel("Quit", "Do you want to quit?"):
+        print ("Destroy main window")
+        app.closeDialog()
+
+
 #------------------------------------------------------#
 
 app = GCodeGenerator()
 app.init(app)
 app.master.title("Geometricals {}".format(VERSION))
+app.master.protocol("WM_DELETE_WINDOW", on_closing)
 app.mainloop()
 
 #-----------------------------------------------------------
