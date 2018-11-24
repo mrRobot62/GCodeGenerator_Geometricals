@@ -21,6 +21,8 @@ Status October 2018 - under development **
 |0.9 | new drill holes on a grid |
 |0.10 | new smooth a rectangle surface in parallel lines |
 |0.11 | new smooth a round surface in a spiral |
+|0.12.1 | bugfix release #5, #6, #9, #12a+b |
+|0.12.2 | bugfix #13, #14 |
 
 
 ## Example screenshot (more details inside WIKI)
