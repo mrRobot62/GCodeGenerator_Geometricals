@@ -31,13 +31,15 @@ class PocketRectangle(GeometricalFrame):
     #
     # define your own images to describe your GCode-Generator
     def init(self):
+        #path = "/Users/bernhardklein/Public/local-workspace/python/geometricals/GCodeGenerator_Geometricals/"
+        path = "./"
         self.__imageNames = [
             # left down
-            "./img/pocket/PocketRectangle.005.png",
-            "./img/pocket/PocketRectangle.005.png",
-            "./img/pocket/PocketRectangle.005.png",
-            "./img/pocket/PocketRectangle.005.png",
-            "./img/pocket/PocketRectangle.005.png"
+            path + "img/pocket/PocketRectangle.005.png",
+            path + "img/pocket/PocketRectangle.005.png",
+            path + "img/pocket/PocketRectangle.005.png",
+            path + "img/pocket/PocketRectangle.005.png",
+            path + "img/pocket/PocketRectangle.005.png"
         ]
 
     #-------------------------------------------------------------
@@ -194,6 +196,7 @@ class PocketRectangle(GeometricalFrame):
         print ("userInputValidation")
         a = float(self.__distanceA.get())
         b = float(self.__distanceB.get())
+
         toolDia = float(self.__tooldia.get())
         forwardstep = float(self.__forwardfeed.get())
 
