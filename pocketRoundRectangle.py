@@ -31,11 +31,13 @@ class PocketRoundRectangle(GeometricalFrame):
     #
     # define your own images to describe your GCode-Generator
     def init(self):
+        #path = "/Users/bernhardklein/Public/local-workspace/python/geometricals/GCodeGenerator_Geometricals/"
+        path = "./"
         self.__imageNames = [
             # left down
-            "./img/pocket/MillRoundRectPocket_3.002.png",
-            "./img/pocket/MillRoundRectPocket_3.003.png",
-            "./img/pocket/MillRoundRectPocket_3.001.png"
+            path + "./img/pocket/MillRoundRectPocket_3.002.png",
+            path + "./img/pocket/MillRoundRectPocket_3.003.png",
+            path + "./img/pocket/MillRoundRectPocket_3.001.png"
         ]
 
     #-------------------------------------------------------------
@@ -129,16 +131,16 @@ class PocketRoundRectangle(GeometricalFrame):
         row += 1
         self.__pocketWidth = StringVar(value="20.0")
         # default forward feed inside pocket (from track to track)
-        self.__forwardfeed = StringVar(value="1.0")
+        self.__stepover = StringVar(value="50.0")
         Label(self.frmButtonsIndividualContent, text="Pocket (Width)").grid(
             row=row, column=0, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=10,
             textvariable=self.__pocketWidth, mandatory=False).grid(
             row=row, column=1, sticky=W)
-        Label(self.frmButtonsIndividualContent, text="Forward feed").grid(
+        Label(self.frmButtonsIndividualContent, text="Stepover tooldia %").grid(
             row=row, column=2, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=10,
-            textvariable=self.__forwardfeed, mandatory=False).grid(
+            textvariable=self.__stepover, mandatory=False).grid(
             row=row, column=3, sticky=W)
 
         row += 1
@@ -207,7 +209,7 @@ class PocketRoundRectangle(GeometricalFrame):
         a = float(self.__distanceA.get())
         b = float(self.__distanceB.get())
         toolDia = float(self.__tooldia.get())
-        forwardstep = float(self.__forwardfeed.get())
+        stepover = float(self.__stepover.get())
 
         if (gR < 0.0):
             self.MessageBox(state="ERROR",
@@ -221,23 +223,33 @@ class PocketRoundRectangle(GeometricalFrame):
                 text="a and b should be greater than 0.0")
             return False
 
+        # bugfix #13
+        if (a <= gR or b <= gR):
+            self.MessageBox(state="ERROR",
+                title="ERROR",
+                text="Edge Radius is greater or equal a or b")
+            return False
+
+        # bugfix #13
+        if ((gR*2) >= a or (gR*2) >= b):
+            self.MessageBox(state="ERROR",
+                title="ERROR",
+                text="Edge radius should maximum half of side a or b")
+            return False
+
         if (toolDia <= 0.0 or toolDia >= width):
             self.MessageBox(state="ERROR",
                 title="ERROR",
                 text="Tool diamater should be greater than 0.0 and less than width")
             return False
 
-        if (forwardstep > (toolDia)):
+        # bugfix #13
+        if (stepover < 30 or stepover > 90):
             self.MessageBox(state="ERROR",
                 title="ERROR",
-                text="forward feed is greater than tool diameter.")
+                text="Stepover should be in range 30-90%")
             return False
 
-        if (forwardstep == (toolDia)):
-            self.MessageBox(state="WARN",
-                title="WARN",
-                text="forward feed equal tool diameter - are you shure?")
-            return True
 
         if (abs(float(self.__depthtotal.get())) < abs(float(self.__depthstep.get()))):
             self.MessageBox(state="ERROR",
@@ -278,7 +290,8 @@ class PocketRoundRectangle(GeometricalFrame):
         toolDia = float(self.__tooldia.get())
 
         pWidth = float(self.__pocketWidth.get())
-        forwardstep = float(self.__forwardfeed.get())
+        stepover = float(self.__stepover.get())
+        stepover = round(toolDia - (float(toolDia * stepover) / 100), 1)
 
         zPos = {
             "safetyZ" : float(self.__safety_Z.get()),
@@ -371,11 +384,11 @@ class PocketRoundRectangle(GeometricalFrame):
             )
             pocketMillTracks.append(t)
             print ("{3}#{0:03d} --- cWidth {1} step {4} {2}".format(
-                x, cWidth, CR, CR, forwardstep
+                x, cWidth, CR, CR, stepover
             ))
             #print (t)
             x += 1
-            cWidth += forwardstep
+            cWidth += stepover
 
         #
         # it's time to generate the real gCode
