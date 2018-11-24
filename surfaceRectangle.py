@@ -31,9 +31,11 @@ class SurfaceRectangle(GeometricalFrame):
     #
     # define your own images to describe your GCode-Generator
     def init(self):
+        #path = "/Users/bernhardklein/Public/local-workspace/python/geometricals/GCodeGenerator_Geometricals/"
+        path = "./"
         self.__imageNames = [
             # left down
-            "./img/surface/zigzag_X_001.png"
+            path + "./img/surface/zigzag_X_001.png"
         ]
 
     #-------------------------------------------------------------
