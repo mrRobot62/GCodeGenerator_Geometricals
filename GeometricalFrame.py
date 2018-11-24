@@ -22,6 +22,11 @@ class GeometricalFrame(Frame):
             highlightbackground="darkgray",
             highlightcolor="darkgray",
             highlightthickness=1)
+#        if self.master.status() == "withdrawn":
+#            self.master.deiconify()
+
+    def onExit(self):
+        pass
 
     def show(self, showImage=True, showStandardContent=True, showStandartButton=True):
         print "Show"
@@ -41,8 +46,8 @@ class GeometricalFrame(Frame):
 
     def onClose(self):
         """ """
-        self.destroy()
-        self.original_frame.show()
+        self.master.withdraw()
+        #self.original_frame.show()
 
     def __frmImage(self):
         print "__frmImage"
