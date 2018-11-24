@@ -87,7 +87,7 @@ VERSION = "0.10 (2018-11-11)"
     0.12.1 bugfix-release. Fixed issues
             #5, #6, #9, #12a+b,
     0.12.2 bugfix-release. Fixed issues
-            #14
+            #13, #14
 
 '''
 class GCodeGenerator(Frame):
