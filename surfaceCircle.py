@@ -31,9 +31,12 @@ class SurfaceCircle(GeometricalFrame):
     #
     # define your own images to describe your GCode-Generator
     def init(self):
+        #path = "/Users/bernhardklein/Public/local-workspace/python/geometricals/GCodeGenerator_Geometricals/"
+        path = "./"
         self.__imageNames = [
             # left down
-            "./img/surface/spiral_circle_001.png"
+#            "./img/surface/spiral_circle_001.png"
+            path + path + "img/surface/spiral_circle_001.png"
         ]
 
     #-------------------------------------------------------------
@@ -212,6 +215,7 @@ class SurfaceCircle(GeometricalFrame):
         print ("userInputValidation")
         radius = float(self.__radius.get())
         toolDia = float(self.__tooldia.get())
+        # based on bugfix #13
         stepover = float(self.__stepover.get())
         overshot = float(self.__overshot.get())
 
@@ -233,13 +237,15 @@ class SurfaceCircle(GeometricalFrame):
                 text="Tool diamater should be greater than 0.0 and less than radius")
             return False
 
+        # based on bugfix #13
         if (stepover < 30 or stepover > 90):
             self.MessageBox(state="ERROR",
                 title="ERROR",
                 text="Stepover should be in range 30-90%")
             return False
 
-        if (stepover < 0.0 or stepover > 150.0):
+        # based on bugfix #13
+        if (overshot < 0.0 or overshot > 150.0):
             self.MessageBox(state="ERROR",
                 title="ERROR",
                 text="Overshot should be in range 0-150%")
