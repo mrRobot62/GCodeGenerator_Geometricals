@@ -16,17 +16,19 @@ CR = "\n"
 class ContourArc(GeometricalFrame):
 
     def init(self):
+        path = "/Users/bernhardklein/Public/local-workspace/python/geometricals/GCodeGenerator_Geometricals/"
+        #path = "./"
         self.__imageNames = [
             # left down
-            "./img/contour/circle-pic1_1.jpg",
+            path + "img/contour/circle-pic1_1.jpg",
             # left upper
-            "./img/contour/circle-pic1_2.jpg",
+            path + "img/contour/circle-pic1_2.jpg",
             # right upper
-            "./img/contour/circle-pic1_3.jpg",
+            path + "img/contour/circle-pic1_3.jpg",
             # right down
-            "./img/contour/circle-pic1_4.jpg",
+            path + "img/contour/circle-pic1_4.jpg",
             # center
-            "./img/contour/circle-pic1_5.jpg"
+            path + "img/contour/circle-pic1_5.jpg"
         ]
 
     def _changeImage(self):

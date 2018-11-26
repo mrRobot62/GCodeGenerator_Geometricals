@@ -25,9 +25,11 @@ class ContourHoles(GeometricalFrame):
     #
     # define your own images to describe your GCode-Generator
     def init(self):
+        path = "/Users/bernhardklein/Public/local-workspace/python/geometricals/GCodeGenerator_Geometricals/"
+        path = "./"
         self.__imageNames = [
             # center
-            "./img/contour/mill-circle-points.png",
+            path + "img/contour/mill-circle-points.png",
         ]
 
     #-------------------------------------------------------------
