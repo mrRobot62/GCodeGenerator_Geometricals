@@ -12,6 +12,7 @@ CR = '\n'
 
 class GeometricalFrame(Frame):
     def __init__(self, app, master, frame, title, winGeometry="800x700"):
+        Frame.__init__(self)
         self.app = app
         self.parentFrame = frame
         self.title = title
@@ -22,10 +23,21 @@ class GeometricalFrame(Frame):
             highlightbackground="darkgray",
             highlightcolor="darkgray",
             highlightthickness=1)
-#        if self.master.status() == "withdrawn":
-#            self.master.deiconify()
+        # format [notuse/use (0/1), GCODE, ....]
+        self._standardGCodeSeq = {
+            "HOMEING" : ["G00 Z{0:08.3f} F{1:05.1f} {2}","G00 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}"],
+            "SPINDLE_CW" : ["M3 S{0:08.4f} {1}"],
+            "SPINDLE_CCW" : ["M4 S{0:08.4f} {1}"],
+            "TOOL" : ["T{0:03d} {1}M6 {1}"],
+            "PREAMBLE" : ["G21 G90 G64 G17 G40 G49 {0}"],
+            "POSTAMBLE" : ["G00 Z10 F100 M2 {0}"]
+         }
 
-    def onExit(self):
+    def destroy(self):
+        self.frmImage.destroy()
+        self.frmStandardContent.destroy()
+        self.frmButtonsIndividualContent.destroy()
+        self.frmButtons.destroy()
         pass
 
     def show(self, showImage=True, showStandardContent=True, showStandartButton=True):
@@ -49,6 +61,47 @@ class GeometricalFrame(Frame):
         self.master.withdraw()
         #self.original_frame.show()
 
+    def _convertList2Gcode(self, gcList, pList):
+        '''
+            convert a parameter Gcode-List into a gcode String
+
+            gcList: an array with GCode placeholders. This placeholdes are changed
+                    with pList values.
+                    Format of a gcList
+                    [(cmd1,cmd2,...), "GCode1","GCode2","..."]
+
+            pList : a list of parameters. It is important, that number of argv Are
+                    the same as placeholders inside
+
+            Example:
+                This list contain a value on pos 0 only a list with one entry
+                Pos 1: 1st GCode sequence with two placeholders
+                Pos 2: 2nd GCode sequence with one placeholder
+            gcList = [(0),"G01 X{0:08.3f} Y{1:08.3f} {2}", "G01 Z{0:05.2f} {1}"]
+
+            pList = [(10.5,5.0,CR),(10.0,CR)]
+
+            return : G01 X0010.500 Y0005.000 <return> G01 Z010.0 <return>
+        '''
+        if isnull(gcList):
+            return None
+        #
+        # useing of rang instead of code in gcList. No we have the chance to
+        # use first entry (command-list)
+        cmdList =  gcList[0]
+        gc = fmt = entry = ""
+        for i in range(1,len(gcList)):
+            entry = gcList[i]
+            p = pList[i-1]
+            for f in p:
+                fmt = ".format(" + f + ","
+                pass
+            fmt += ")"
+            entry += fmt
+            #gc += exec(entry)
+            pass
+        return (cmdList, gc)
+
     def __frmImage(self):
         print "__frmImage"
         self.frmImage = Frame(self.parentFrame,
@@ -59,7 +112,7 @@ class GeometricalFrame(Frame):
         self.frmImage.pack(expand=True)
         pass
 
-    def __frmStandardContent(self, showPreamble=True, showPostamble=True):
+    def __frmStandardContent(self, showPreamble=True, showPostamble=True, showSpindleAndTool=True):
         print "__frmStandardContent"
         self.frmStandardContent = Frame(self.parentFrame,
             highlightbackground="darkgray",
@@ -71,9 +124,10 @@ class GeometricalFrame(Frame):
             self._preamble.set("G21 G90 G64 G17 G40 G49")
             Label(self.frmStandardContent, text="PreGCode").grid(row=row, column=0, sticky=W)
             FloatEntry(self.frmStandardContent, width=70, mandatory=False,
-                textvariable=self._preamble).grid(row=row, column=1, sticky=W)
+                textvariable=self._preamble).grid(
+                row=row, column=1, columnspan=5, sticky=W)
 
-        if showPreamble:
+        if showPostamble:
             row += 1
             self._postamble = StringVar()
             post = "G00 Z10 F100 \n"
@@ -81,7 +135,28 @@ class GeometricalFrame(Frame):
             self._postamble.set(post)
             Label(self.frmStandardContent, text="PostGCode").grid(row=row, column=0, sticky=W)
             FloatEntry(self.frmStandardContent, width=70, mandatory=False,
-                textvariable=self._postamble).grid(row=row, column=1, sticky=W)
+                textvariable=self._postamble).grid(
+                row=row, column=1, columnspan=5, sticky=W)
+
+        # bugfix / requirement #10
+        if showSpindleAndTool:
+            row += 1
+            self._spindle = StringVar(value="")
+            self._toolID = StringVar(value="")
+            self._spindleCCW = StringVar(value="CW")
+            Label(self.frmStandardContent, text="ToolID").grid(
+                row=row, column=0, sticky=W)
+            FloatEntry(self.frmStandardContent, width=10, mandatory=False,
+                textvariable=self._toolID).grid(row=row, column=1, sticky=W)
+            Label(self.frmStandardContent, text="Spindle Speed").grid(
+                row=row, column=2, sticky=W)
+            FloatEntry(self.frmStandardContent, width=10, mandatory=False,
+                textvariable=self._spindle).grid(row=row, column=3, sticky=W)
+            Checkbutton(self.frmStandardContent, text="Spindle CCW",
+                var=self._spindleCCW, onvalue="CCW", offvalue="CW").grid(
+                    row=row, column=4, sticky=W
+                )
+
 
         self.frmStandardContent.pack(expand=True, fill=BOTH)
         pass
@@ -127,11 +202,6 @@ class GeometricalFrame(Frame):
                 row=0, column=4
             )
 
-
-        #self.bind("<Return>", self.copyAXIS)
-        #self.bind("<Escape>", self.cancel)
-        #self.bind("<Button-1>", self.copyClipboard)
-
         self.frmButtons.pack(expand=True, fill=BOTH)
 
     def generateGCode(self):
@@ -139,10 +209,10 @@ class GeometricalFrame(Frame):
         pass
 
     def getGCode_Homeing(self, x=0, y=0, z=10, fxy=100, fz=100):
-        gc = "G00 Z{0:08.3f} F{1:05.1f} {2}".format(
+        gc = self._standardGCodeSeq["HOMEING"][0].format(
             z,fz,CR
         )
-        gc += "G00 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
+        gc += self._standardGCodeSeq["HOMEING"][1].format(
             x,y,fxy,CR
         )
         return gc
@@ -219,6 +289,37 @@ class GeometricalFrame(Frame):
         self.btnAxis.config(state=state, default=ACTIVE)
         self.btnGCode.config(state=state)
 
+    def defaultUserValidation(self):
+        pre = self._preamble.get()
+        post = self._postamble.get()
+        try:
+            spindle = float(self._spindle.get())
+        except ValueError:
+            spindle = -1
+        try:
+            toolID = float(self._toolID.get())
+        except ValueError:
+            toolID = -1
+
+        if pre == "":
+            self.MessageBox(state="WARN",
+                title="Warn",
+                text="Are you shure? There is no preamble gcode available")
+            return False
+
+        if post == "":
+            self.MessageBox(state="WARN",
+                title="Warn",
+                text="Are you shure? There is no postamble gcode available")
+            return False
+
+        if (spindle < 0 or toolID < 0):
+            self.MessageBox(state="INFO",
+                title="INFO",
+                text="You set no tool id and/or spindel control")
+            return True
+        return True
+
     def userInputValidation(self):
         # override in subclass
         '''
@@ -233,6 +334,8 @@ class GeometricalFrame(Frame):
         pass
 
     def getGCode(self):
+        if self.defaultUserValidation() == False:
+            return None
         if self.userInputValidation() == False:
             return None
         gc = "%"

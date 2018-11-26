@@ -62,7 +62,7 @@ from surfaceCircle import *
 IN_AXIS = os.environ.has_key("AXIS_PROGRESS_BAR")
 CR = '\n'
 
-VERSION = "0.10 (2018-11-11)"
+VERSION = " (0.12.3)"
 
 '''
     Geometrical Main-Application
@@ -88,6 +88,8 @@ VERSION = "0.10 (2018-11-11)"
             #5, #6, #9, #12a+b,
     0.12.2 bugfix-release. Fixed issues
             #13, #14
+    0.12.3 bugfix-release. Fixed issues
+            #15, #18 (close Window)
 
 '''
 class GCodeGenerator(Frame):
@@ -175,16 +177,18 @@ class GCodeGenerator(Frame):
 
 #------ Menu callbacks ----------------
     def DialogContourArc(self):
+        self.master.deiconify()
         print "DialogContourArc"
-        title = "Contour Arc"
+        title = "Contour Arc" + VERSION
         self.myApp = ContourArc(self.app, self.master, self.frame, title)
         self.myApp.init()
         self.myApp.show()
         pass
 
     def DialogContourRec(self):
+        self.master.deiconify()
         print "DialogContourRec"
-        title = "Contour Rectangle"
+        title = "Contour Rectangle" + VERSION
         self.myApp = ContourRectangle(self.app, self.master, self.frame, title)
         self.myApp.init()
         self.myApp.show()
@@ -192,8 +196,9 @@ class GCodeGenerator(Frame):
 
 
     def ToolTable(self):
+        self.master.deiconify()
         print "Tool table"
-        title = "Tool table"
+        title = "Tool table" + VERSION
         self.myApp = ToolTable(self.app, self.master, self.frame, title)
         self.myApp.init()
         self.myApp.show(showImage=False,
@@ -202,80 +207,90 @@ class GCodeGenerator(Frame):
         pass
 
     def DialogContourRoundedRec(self):
+        self.master.deiconify()
         print "DialogContourRoundedRec"
-        title = "Contour Rounded Rectangle"
+        title = "Contour Rounded Rectangle" + VERSION
         self.myApp = DialogContourRoundedRec(self.app, self.master, self.frame, title)
         self.myApp.init()
         self.myApp.show()
         pass
 
     def DialogContourHoles(self):
+        self.master.deiconify()
         print "DialogContourHoles"
-        title = "Contour Holes on a circle"
+        title = "Contour Holes on a circle" + VERSION
         self.myApp = ContourHoles(self.app, self.master, self.frame, title)
         self.myApp.init()
         self.myApp.show()
         pass
 
     def DialogContourHolesGrid(self):
+        self.master.deiconify()
         print "DialogContourHolesGrid"
-        title = "Mill holes on a grid"
+        title = "Mill holes on a grid" + VERSION
         self.myApp = ContourMillHolesGrid(self.app, self.master, self.frame, title)
         self.myApp.init()
         self.myApp.show()
         pass
 
     def PocketRoundRectangle(self):
+        self.master.deiconify()
         print "PocketRoundRectangle"
-        title = "Mill round rectangle pocket"
+        title = "Mill round rectangle pocket" + VERSION
         self.myApp = PocketRoundRectangle(self.app, self.master, self.frame, title)
         self.myApp.init()
         self.myApp.show()
         pass
 
     def PocketRectangle(self):
+        self.master.deiconify()
         print "PocketRectangle"
-        title = "Mill rectangle pocket"
+        title = "Mill rectangle pocket" + VERSION
         self.myApp = PocketRectangle(self.app, self.master, self.frame, title)
         self.myApp.init()
         self.myApp.show()
         pass
 
     def PocketCircle(self):
+        self.master.deiconify()
         print "PocketCircle"
-        title = "Mill pocket circle"
+        title = "Mill pocket circle" + VERSION
         self.myApp = PocketCircle(self.app, self.master, self.frame, title)
         self.myApp.init()
         self.myApp.show()
         pass
 
     def DrillHoles(self):
+        self.master.deiconify()
         print "DrillHoles"
-        title = "Drill holes in a circle"
+        title = "Drill holes in a circle" + VERSION
         self.myApp = DrillHoles(self.app, self.master, self.frame, title)
         self.myApp.init()
         self.myApp.show()
         pass
 
     def DrillHolesGrid(self):
+        self.master.deiconify()
         print "DrillHolesGrid"
-        title = "Drill holes in a grid"
+        title = "Drill holes in a grid" + VERSION
         self.myApp = DrillHolesGrid(self.app, self.master, self.frame, title)
         self.myApp.init()
         self.myApp.show()
         pass
 
     def SurfaceRectangle(self):
+        self.master.deiconify()
         print "SurfaceRectangle"
-        title = "surface milling a rectangle"
+        title = "surface milling a rectangle" + VERSION
         self.myApp = SurfaceRectangle(self.app, self.master, self.frame, title)
         self.myApp.init()
         self.myApp.show()
         pass
 
     def SurfaceCircle(self):
+        self.master.deiconify()
         print "SurfaceCircle"
-        title = "surface milling a spiral"
+        title = "surface milling a spiral" + VERSION
         self.myApp = SurfaceCircle(self.app, self.master, self.frame, title)
         self.myApp.init()
         self.myApp.show()
@@ -285,9 +300,17 @@ class GCodeGenerator(Frame):
 
 
 def on_closing():
-    if tkMessageBox.askokcancel("Quit", "Do you want to quit?"):
-        print ("Destroy main window")
-        app.closeDialog()
+#    if tkMessageBox.askokcancel("Quit", "Do you want to quit?"):
+        #print ("Destroy main window ({})".format(app.tk.call('winfo', 'children', '.')))
+        #i=0
+        app.myApp.destroy()
+        app.master.withdraw()
+        # widgetList = app.tk.call('winfo', 'children', '.')
+        # for widget in widgetList:
+        #     print ("Destroy widget #{0:02d} => ({1})".format(i,widget))
+        #     widget.destroy()
+        #     i += 1
+        # app.master.withdraw()
 
 
 #------------------------------------------------------#
