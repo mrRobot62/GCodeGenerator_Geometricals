@@ -62,7 +62,6 @@ from surfaceCircle import *
 IN_AXIS = os.environ.has_key("AXIS_PROGRESS_BAR")
 CR = '\n'
 
-VERSION = " (0.12.3)"
 
 '''
     Geometrical Main-Application
@@ -94,6 +93,8 @@ VERSION = " (0.12.3)"
             #10 TooldID, SpindleSpeed, SpindleDir
 
 '''
+VERSION = " (0.12.4)"
+
 class GCodeGenerator(Frame):
     def __init__(self, master=None, title=""):
         self.frame = Frame.__init__(self, master)
