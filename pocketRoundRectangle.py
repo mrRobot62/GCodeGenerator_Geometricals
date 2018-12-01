@@ -32,7 +32,7 @@ class PocketRoundRectangle(GeometricalFrame):
     # define your own images to describe your GCode-Generator
     def init(self):
         path = "/Users/bernhardklein/Public/local-workspace/python/geometricals/GCodeGenerator_Geometricals/"
-        #path = "./"
+        path = "./"
         self.__imageNames = [
             # left down
             path + "./img/pocket/MillRoundRectPocket_3.002.png",
@@ -312,9 +312,7 @@ class PocketRoundRectangle(GeometricalFrame):
             "ZGn" : float(self.__speed_Z_G01.get())
         }
         gc = ""
-        # Preamble
-        gc += CR + "(set preamble)" + CR
-        gc += self._preamble.get() + CR
+        gc += self.getGCode_Preamble()
         # set Unit
         gc += self.__unit.get() + CR
         # set Z axis
@@ -397,7 +395,7 @@ class PocketRoundRectangle(GeometricalFrame):
         # than we increase depth as long as we reached total depthStep
 
         gc += CR + "(-- START DEPTH Loop --)" + CR
-        
+
         # bugfix #15
         z = 0.0
         while (abs(z) < abs(depth[0])):
@@ -458,7 +456,7 @@ class PocketRoundRectangle(GeometricalFrame):
             zPos["safetyZ"],
             feeds["XYG0"]
         )
-        gc += self._postamble.get() + CR
+        gc += self.getGCode_Postamble()
         gc += CR
         return  gc
 

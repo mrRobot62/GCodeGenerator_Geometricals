@@ -17,7 +17,7 @@ class ContourArc(GeometricalFrame):
 
     def init(self):
         path = "/Users/bernhardklein/Public/local-workspace/python/geometricals/GCodeGenerator_Geometricals/"
-        #path = "./"
+        path = "./"
         self.__imageNames = [
             # left down
             path + "img/contour/circle-pic1_1.jpg",
@@ -244,9 +244,7 @@ class ContourArc(GeometricalFrame):
 
     def generateGCode(self):
         gc = ""
-        # Preamble
-        gc += CR + "(set countour arc preamble)" + CR
-        gc += self._preamble.get() + CR
+        gc += self.getGCode_Preamble()
         # set Unit
         gc += self.__unit.get() + CR
         # set Z axis
@@ -367,7 +365,6 @@ class ContourArc(GeometricalFrame):
             float(self.__speed_XY_G00.get()),
             float(self.__speed_Z_G00.get())
         ) + CR
-        gc += self._postamble.get() + CR
+        gc += self.getGCode_Postamble()
         gc += CR
-#        print gc
         return  gc

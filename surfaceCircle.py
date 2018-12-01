@@ -36,7 +36,7 @@ class SurfaceCircle(GeometricalFrame):
         self.__imageNames = [
             # left down
 #            "./img/surface/spiral_circle_001.png"
-            path + path + "img/surface/spiral_circle_001.png"
+            path + "img/surface/spiral_circle_001.png"
         ]
 
     #-------------------------------------------------------------
@@ -319,9 +319,7 @@ class SurfaceCircle(GeometricalFrame):
             "ZGn" : float(self.__speed_Z_G01.get())
         }
         gc = ""
-        # Preamble
-        gc += CR + "(set preamble)" + CR
-        gc += self._preamble.get() + CR
+        gc += self.getGCode_Preamble()
         # set Unit
         gc += self.__unit.get() + CR
         # set Z axis
@@ -406,7 +404,7 @@ class SurfaceCircle(GeometricalFrame):
             x=cPoint[0],
             y=cPoint[1],
             z=zPos["safetyZ"])
-        gc += self._postamble.get() + CR
+        gc += self.getGCode_Postamble()
         gc += CR
         return  gc
 

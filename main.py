@@ -90,6 +90,8 @@ VERSION = " (0.12.3)"
             #13, #14
     0.12.3 bugfix-release. Fixed issues
             #15, #18 (close Window)
+    0.12.4 bugfix-release. Fixed issues
+            #10 TooldID, SpindleSpeed, SpindleDir
 
 '''
 class GCodeGenerator(Frame):

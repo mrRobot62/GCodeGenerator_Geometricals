@@ -146,11 +146,11 @@ class GeometricalFrame(Frame):
             self._spindleCCW = StringVar(value="CW")
             Label(self.frmStandardContent, text="ToolID").grid(
                 row=row, column=0, sticky=W)
-            FloatEntry(self.frmStandardContent, width=10, mandatory=False,
+            IntEntry(self.frmStandardContent, width=10, mandatory=False,
                 textvariable=self._toolID).grid(row=row, column=1, sticky=W)
             Label(self.frmStandardContent, text="Spindle Speed").grid(
                 row=row, column=2, sticky=W)
-            FloatEntry(self.frmStandardContent, width=10, mandatory=False,
+            IntEntry(self.frmStandardContent, width=10, mandatory=False,
                 textvariable=self._spindle).grid(row=row, column=3, sticky=W)
             Checkbutton(self.frmStandardContent, text="Spindle CCW",
                 var=self._spindleCCW, onvalue="CCW", offvalue="CW").grid(
@@ -216,6 +216,48 @@ class GeometricalFrame(Frame):
             x,y,fxy,CR
         )
         return gc
+
+    def getGCode_SpindleAndTool(self, additional=""):
+        temp = ""
+        #------- Tool handling -----------
+        if self._toolID.get() <> "":
+            t = int(self._toolID.get())
+            if t < 0:
+                t = 0
+            temp += "T{0:03d} M6 {1}".format(t,CR)
+
+        #------- Spindle control ---------
+        if self._spindle.get() <> "":
+            s = int(self._spindle.get())
+            sdir = self._spindleCCW.get()
+            if s < 0:
+                s = 0
+            if sdir == "CW":
+                temp += "M3 S{0:04d} {1}".format(s,CR)
+            else:
+                temp += "M4 S{0:04d} {1}".format(s,CR)
+            if s == 0:
+                temp += "M5" + CR
+
+        temp += additional + CR
+        return temp
+
+    def getGCode_Preamble(self, additional=""):
+        temp = ""
+        # Preamble
+        temp += CR + "(set general preamble)" + CR
+        temp += self._preamble.get() + CR
+        temp += additional + CR
+        temp += self.getGCode_SpindleAndTool()
+        return temp
+
+    def getGCode_Postamble(self, additional=""):
+        temp = ""
+        # Preamble
+        temp += CR + "(set general postamble)" + CR
+        temp += self._postamble.get() + CR
+        temp += additional + CR
+        return temp
 
 
     def getGCodeCutterComp(self, compensation = "G40", toolDia = 0.0):
@@ -293,11 +335,11 @@ class GeometricalFrame(Frame):
         pre = self._preamble.get()
         post = self._postamble.get()
         try:
-            spindle = float(self._spindle.get())
+            spindle = int(self._spindle.get())
         except ValueError:
             spindle = -1
         try:
-            toolID = float(self._toolID.get())
+            toolID = int(self._toolID.get())
         except ValueError:
             toolID = -1
 
@@ -313,7 +355,7 @@ class GeometricalFrame(Frame):
                 text="Are you shure? There is no postamble gcode available")
             return False
 
-        if (spindle < 0 or toolID < 0):
+        if (spindle < -1 or toolID < -1):
             self.MessageBox(state="INFO",
                 title="INFO",
                 text="You set no tool id and/or spindel control")

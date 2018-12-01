@@ -31,17 +31,19 @@ class ContourRectangle(GeometricalFrame):
     #
     # define your own images to describe your GCode-Generator
     def init(self):
+        path = "/Users/bernhardklein/Public/local-workspace/python/geometricals/GCodeGenerator_Geometricals/"
+        path = "./"
         self.__imageNames = [
             # left down
-            "./img/contour/rectangle-pic1_1.jpg",
+            path + "img/contour/rectangle-pic1_1.jpg",
             # left upper
-            "./img/contour/rectangle-pic1_2.jpg",
+            path + "img/contour/rectangle-pic1_2.jpg",
             # right upper
-            "./img/contour/rectangle-pic1_3.jpg",
+            path + "img/contour/rectangle-pic1_3.jpg",
             # right down
-            "./img/contour/rectangle-pic1_4.jpg",
+            path + "img/contour/rectangle-pic1_4.jpg",
             # center
-            "./img/contour/rectangle-pic1_5.jpg"
+            path + "img/contour/rectangle-pic1_5.jpg"
         ]
 
     #-------------------------------------------------------------
@@ -223,9 +225,7 @@ class ContourRectangle(GeometricalFrame):
         cutterComp = (0.0, 0.0)
 
         gc = ""
-        # Preamble
-        gc += CR + "(set countour rectangle preamble)" + CR
-        gc += self._preamble.get() + CR
+        gc += self.getGCode_Preamble()
         # set Unit
         gc += self.__unit.get() + CR
         # set Z axis
@@ -403,7 +403,7 @@ class ContourRectangle(GeometricalFrame):
             zPos["safetyZ"],
             feeds["XYG0"]
         )
-        gc += self._postamble.get() + CR
+        gc += self.getGCode_Postamble()
         gc += CR
         return  gc
 

@@ -25,9 +25,11 @@ class ContourMillHolesGrid(GeometricalFrame):
     #
     # define your own images to describe your GCode-Generator
     def init(self):
+        path = "/Users/bernhardklein/Public/local-workspace/python/geometricals/GCodeGenerator_Geometricals/"
+        path = "./"
         self.__imageNames = [
             # center
-            "./img/contour/mill-rect-grid-points.jpg",
+            path + "img/contour/mill-rect-grid-points.jpg",
         ]
 
     #-------------------------------------------------------------
@@ -251,9 +253,7 @@ class ContourMillHolesGrid(GeometricalFrame):
 
         gc = ""
         loop = ""
-        # Preamble
-        gc += CR + "(set ContourHoles preamble)" + CR
-        gc += self._preamble.get() + CR
+        gc += self.getGCode_Preamble()
         # set Unit
         gc += self.__unit.get() + CR
         # set Z axis
@@ -297,7 +297,7 @@ class ContourMillHolesGrid(GeometricalFrame):
             zPos["safetyZ"],
             feeds["XYG0"]
         )
-        gc += self._postamble.get() + CR
+        gc += self.getGCode_Postamble()
         gc += CR
         return  gc
 

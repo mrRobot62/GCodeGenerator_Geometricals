@@ -24,9 +24,11 @@ class DrillHolesGrid(GeometricalFrame):
     #
     # define your own images to describe your GCode-Generator
     def init(self):
+        path = "/Users/bernhardklein/Public/local-workspace/python/geometricals/GCodeGenerator_Geometricals/"
+        path = "./"
         self.__imageNames = [
             # center
-            "./img/drilling/drillHolesGrid.005.png",
+            path + "img/drilling/drillHolesGrid.005.png",
         ]
 
     #-------------------------------------------------------------
@@ -254,11 +256,9 @@ class DrillHolesGrid(GeometricalFrame):
 
         gSize = (a,b)
 
-        gc = ""
         loop = ""
-        # Preamble
-        gc += CR + "(set ContourHoles preamble)" + CR
-        gc += self._preamble.get() + CR
+        gc = ""
+        gc += self.getGCode_Preamble()
         # set Unit
         gc += self.__unit.get() + CR
         # set Z axis
@@ -302,7 +302,7 @@ class DrillHolesGrid(GeometricalFrame):
             zPos["safetyZ"],
             feeds["XYG0"]
         )
-        gc += self._postamble.get() + CR
+        gc += self.getGCode_Postamble()
         gc += CR
         return  gc
 

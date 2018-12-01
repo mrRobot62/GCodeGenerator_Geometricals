@@ -288,9 +288,7 @@ class ContourHoles(GeometricalFrame):
 
         gc = ""
         loop = ""
-        # Preamble
-        gc += CR + "(set ContourHoles preamble)" + CR
-        gc += self._preamble.get() + CR
+        gc += self.getGCode_Preamble()
         # set Unit
         gc += self.__unit.get() + CR
         # set Z axis
@@ -315,7 +313,7 @@ class ContourHoles(GeometricalFrame):
             zPos["safetyZ"],
             feeds["XYG0"]
         )
-        gc += self._postamble.get() + CR
+        gc += self.getGCode_Postamble()
         gc += CR
         return  gc
 

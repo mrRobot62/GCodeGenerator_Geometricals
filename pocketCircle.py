@@ -31,7 +31,7 @@ class PocketCircle(GeometricalFrame):
     #
     # define your own images to describe your GCode-Generator
     def init(self):
-        #path = "/Users/bernhardklein/Public/local-workspace/python/geometricals/GCodeGenerator_Geometricals/"
+        path = "/Users/bernhardklein/Public/local-workspace/python/geometricals/GCodeGenerator_Geometricals/"
         path = "./"
         self.__imageNames = [
             # left down
@@ -291,9 +291,7 @@ class PocketCircle(GeometricalFrame):
             "ZGn" : float(self.__speed_Z_G01.get())
         }
         gc = ""
-        # Preamble
-        gc += CR + "(set preamble)" + CR
-        gc += self._preamble.get() + CR
+        gc += self.getGCode_Preamble()
         # set Unit
         gc += self.__unit.get() + CR
         # set Z axis
@@ -428,7 +426,7 @@ class PocketCircle(GeometricalFrame):
             zPos["safetyZ"],
             feeds["XYG0"]
         )
-        gc += self._postamble.get() + CR
+        gc += self.getGCode_Postamble()
         gc += CR
         return  gc
 
