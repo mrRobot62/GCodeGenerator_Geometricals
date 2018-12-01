@@ -24,6 +24,7 @@ Status October 2018 - under development **
 |0.12.1 | bugfix release #5, #6, #9, #12a+b |
 |0.12.2 | bugfix #13, #14 |
 |0.12.3 | bugfix #15, #18(close window, VersionNumber|
+|0.12.4 | bugfix #10, ToolID, SpindleSpeed, SpindleDir(CW/CCW|
 
 
 
