@@ -23,6 +23,8 @@ Status October 2018 - under development **
 |0.11 | new smooth a round surface in a spiral |
 |0.12.1 | bugfix release #5, #6, #9, #12a+b |
 |0.12.2 | bugfix #13, #14 |
+|0.12.3 | bugfix #15, #18(close window, VersionNumber|
+
 
 
 ## Example screenshot (more details inside WIKI)
