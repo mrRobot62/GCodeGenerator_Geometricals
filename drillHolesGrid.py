@@ -98,12 +98,12 @@ class DrillHolesGrid(GeometricalFrame):
         self.__tooldia = StringVar(value="6.0")
         Label(self.frmButtonsIndividualContent, text="Drill diameter").grid(
             row=row, column=0, sticky=W)
-        f1 = FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=False,
+        FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=False,
             textvariable=self.__tooldia).grid(row=row, column=1, sticky=W)
         self.__retraction= StringVar(value="1.0")
         Label(self.frmButtonsIndividualContent, text="Retraction").grid(
             row=row, column=2, sticky=W)
-        f2 = FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=False,
+        FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=False,
             textvariable=self.__retraction).grid(row=row, column=3, sticky=W)
 
         row += 1
@@ -152,12 +152,12 @@ class DrillHolesGrid(GeometricalFrame):
         self.__distanceB = StringVar(value = "10.0")
         Label(self.frmButtonsIndividualContent, text="Distance between rows (a)").grid(
             row=row, column=0, sticky=W)
-        self.__w5 = FloatEntry(self.frmButtonsIndividualContent, width=5,
+        FloatEntry(self.frmButtonsIndividualContent, width=5,
             textvariable=self.__distanceA).grid(
             row=row, column=1, sticky=W)
         Label(self.frmButtonsIndividualContent, text="Distance between columns (b)").grid(
             row=row, column=2, sticky=W)
-        self.__w5 = FloatEntry(self.frmButtonsIndividualContent, width=5,
+        FloatEntry(self.frmButtonsIndividualContent, width=5,
             textvariable=self.__distanceB).grid(
             row=row, column=3, sticky=W)
 
@@ -466,10 +466,8 @@ class DrillHolesGrid(GeometricalFrame):
         dS = float(self.__depthstep.get())
         dZ = 0.0
         startZ = float(self.__start_Z.get())
-        saveZ = float(self.__safety_Z.get())
         FZ0 = float(self.__speed_Z_G00.get())
         FZ1 = float(self.__speed_Z_G01.get())
-        FXY0 = float(self.__speed_XY_G00.get())
         FXY1 = float(self.__speed_XY_G02G03.get())
         dwell = 0.25
         X = hCPoint[0]

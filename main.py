@@ -174,9 +174,9 @@ class GCodeGenerator(Frame):
         # Quit
         self.FileMenu.add_command(label="Quit", command=self.quit)
 
-    def closeDialog(self):
-        self.myApp.onClose()
-        pass
+    # def closeDialog(self):
+    #     self.myApp.onClose()
+    #     pass
 
 #------ Menu callbacks ----------------
     def DialogContourArc(self):

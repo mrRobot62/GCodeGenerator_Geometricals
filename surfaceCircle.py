@@ -436,7 +436,6 @@ class SurfaceCircle(GeometricalFrame):
             o = round((float(toolDia * overshot) / 100), 1) - (toolDia / 2.0)
 
         windings = int((radius + o) / s)
-        wRest = round(float((radius + o) % s),2)
         x = cPoint[0]
         y = cPoint[1]
         gc += indent + "G01 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(

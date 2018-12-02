@@ -148,12 +148,12 @@ class ContourMillHolesGrid(GeometricalFrame):
         self.__distanceB = StringVar(value = "15.0")
         Label(self.frmButtonsIndividualContent, text="Distance rows (a)").grid(
             row=row, column=0, sticky=W)
-        self.__w5 = FloatEntry(self.frmButtonsIndividualContent, width=5,
+        FloatEntry(self.frmButtonsIndividualContent, width=5,
             textvariable=self.__distanceA).grid(
             row=row, column=1, sticky=W)
         Label(self.frmButtonsIndividualContent, text="Distance columns (b)").grid(
             row=row, column=2, sticky=W)
-        self.__w5 = FloatEntry(self.frmButtonsIndividualContent, width=5,
+        FloatEntry(self.frmButtonsIndividualContent, width=5,
             textvariable=self.__distanceB).grid(
             row=row, column=3, sticky=W)
 
@@ -265,9 +265,6 @@ class ContourMillHolesGrid(GeometricalFrame):
         #
         # to make it easier, we calculate everything on center of
         # milling of every hole starts on a 45degr angle
-
-        cOffset = (0.0, 0.0) # Offset for entire circle X/Y
-        hOffset = (0.0, 0.0) # start position including cutter compensation
 
         #
         # lets assume we start for the first hole on X/Y position
@@ -461,9 +458,6 @@ class ContourMillHolesGrid(GeometricalFrame):
         r = toolDia/2.0
         hcp = []
         for v in hCPoints:
-#            print ("->(a) V {}".format(v))
-#            v = (v[0]+(holeRadius/2.0),v[1])
-#            print ("->(b) V {}".format(v))
             if (self.__cuttercompensation.get() == "G40"):
                 hcp.append(v)
                 pass
@@ -486,10 +480,8 @@ class ContourMillHolesGrid(GeometricalFrame):
         dS = float(self.__depthstep.get())
         dZ = 0.0
         startZ = float(self.__start_Z.get())
-        saveZ = float(self.__safety_Z.get())
         FZ0 = float(self.__speed_Z_G00.get())
         FZ1 = float(self.__speed_Z_G01.get())
-        FXY0 = float(self.__speed_XY_G00.get())
         FXY1 = float(self.__speed_XY_G02G03.get())
         X = hCPoint[0]
         Y = hCPoint[1]

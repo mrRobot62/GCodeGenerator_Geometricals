@@ -147,7 +147,7 @@ class DrillHoles(GeometricalFrame):
         self.__holeAngle = StringVar(value = self.__initialStartAngle.get())
         Label(self.frmButtonsIndividualContent, text="Initial start angle").grid(
             row=row, column=0, sticky=W)
-        self.__w5 = FloatEntry(self.frmButtonsIndividualContent, width=5,
+        FloatEntry(self.frmButtonsIndividualContent, width=5,
             textvariable=self.__initialStartAngle).grid(
             row=row, column=1, sticky=W)
         Label(self.frmButtonsIndividualContent, text="Angle between holes").grid(

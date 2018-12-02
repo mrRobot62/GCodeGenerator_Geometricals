@@ -56,51 +56,51 @@ class GeometricalFrame(Frame):
             self.setBtnStates(state=NORMAL)
         pass
 
-    def onClose(self):
-        """ """
-        self.master.withdraw()
-        #self.original_frame.show()
+    # def onClose(self):
+    #     """ """
+    #     self.master.withdraw()
+    #     #self.original_frame.show()
 
-    def _convertList2Gcode(self, gcList, pList):
-        '''
-            convert a parameter Gcode-List into a gcode String
-
-            gcList: an array with GCode placeholders. This placeholdes are changed
-                    with pList values.
-                    Format of a gcList
-                    [(cmd1,cmd2,...), "GCode1","GCode2","..."]
-
-            pList : a list of parameters. It is important, that number of argv Are
-                    the same as placeholders inside
-
-            Example:
-                This list contain a value on pos 0 only a list with one entry
-                Pos 1: 1st GCode sequence with two placeholders
-                Pos 2: 2nd GCode sequence with one placeholder
-            gcList = [(0),"G01 X{0:08.3f} Y{1:08.3f} {2}", "G01 Z{0:05.2f} {1}"]
-
-            pList = [(10.5,5.0,CR),(10.0,CR)]
-
-            return : G01 X0010.500 Y0005.000 <return> G01 Z010.0 <return>
-        '''
-        if isnull(gcList):
-            return None
-        #
-        # useing of rang instead of code in gcList. No we have the chance to
-        # use first entry (command-list)
-        cmdList =  gcList[0]
-        gc = fmt = entry = ""
-        for i in range(1,len(gcList)):
-            entry = gcList[i]
-            p = pList[i-1]
-            for f in p:
-                fmt = ".format(" + f + ","
-                pass
-            fmt += ")"
-            entry += fmt
-            #gc += exec(entry)
-            pass
-        return (cmdList, gc)
+    # def _convertList2Gcode(self, gcList, pList):
+    #     '''
+    #         convert a parameter Gcode-List into a gcode String
+    #
+    #         gcList: an array with GCode placeholders. This placeholdes are changed
+    #                 with pList values.
+    #                 Format of a gcList
+    #                 [(cmd1,cmd2,...), "GCode1","GCode2","..."]
+    #
+    #         pList : a list of parameters. It is important, that number of argv Are
+    #                 the same as placeholders inside
+    #
+    #         Example:
+    #             This list contain a value on pos 0 only a list with one entry
+    #             Pos 1: 1st GCode sequence with two placeholders
+    #             Pos 2: 2nd GCode sequence with one placeholder
+    #         gcList = [(0),"G01 X{0:08.3f} Y{1:08.3f} {2}", "G01 Z{0:05.2f} {1}"]
+    #
+    #         pList = [(10.5,5.0,CR),(10.0,CR)]
+    #
+    #         return : G01 X0010.500 Y0005.000 <return> G01 Z010.0 <return>
+    #     '''
+    #     if isnull(gcList):
+    #         return None
+    #     #
+    #     # useing of rang instead of code in gcList. No we have the chance to
+    #     # use first entry (command-list)
+    #     cmdList =  gcList[0]
+    #     gc = fmt = entry = ""
+    #     for i in range(1,len(gcList)):
+    #         entry = gcList[i]
+    #         p = pList[i-1]
+    #         for f in p:
+    #             fmt = ".format(" + f + ","
+    #             pass
+    #         fmt += ")"
+    #         entry += fmt
+    #         #gc += exec(entry)
+    #         pass
+    #     return (cmdList, gc)
 
     def __frmImage(self):
         print "__frmImage"
