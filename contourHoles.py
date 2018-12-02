@@ -137,7 +137,7 @@ class ContourHoles(GeometricalFrame):
         self.__holeAngle = StringVar(value = self.__initialStartAngle.get())
         Label(self.frmButtonsIndividualContent, text="Initial start angle").grid(
             row=row, column=0, sticky=W)
-        self.__w5 = FloatEntry(self.frmButtonsIndividualContent, width=5,
+        FloatEntry(self.frmButtonsIndividualContent, width=5,
             textvariable=self.__initialStartAngle).grid(
             row=row, column=1, sticky=W)
         Label(self.frmButtonsIndividualContent, text="Angle between holes").grid(
@@ -200,7 +200,7 @@ class ContourHoles(GeometricalFrame):
         self.frmButtonsIndividualContent.pack(expand=True, fill=BOTH)
         pass
 
-    def _updateAngle(self, numberOfHoles, **kv):
+    def _updateAngle(self, numberOfHoles):
         '''
             used to update angle if number of holes changed
         '''
@@ -467,53 +467,53 @@ class ContourHoles(GeometricalFrame):
         gc += CR
         return gc
 
-    def __calcCutterComp(self, hR, tD, hCPoint):
-        '''
-        if cutter compensation is used, than X/Y position for milling
-        should be recalculated.
-        This method return a vector for (x/y) which should be added to
-        current X/Y position
-
-        hR      = hole Radius
-        tD      = tool diameter
-        hCPoint = center point of hole
-
-        Example: hCPoint X/Y = (0.0, 0.0)
-            Cutter Dia: 8mm, mill Dir = CW
-
-            Example CW
-
-
-        '''
-        # we assume, that every time, we have to set the mill to a 45deg
-        # angle from center point
-        rad = math.radians(45.0)
-        tR = tD / 2.0
-        r = hR - tR
-        hCPointNew = (round(math.cos(rad) * r + hCPoint[0], 3),
-                  round(math.sin(rad) * r + hCPoint[1], 3))
-        print ("tR {2} hCP {0}, hCPn {1}".format(hCPoint, hCPointNew, hR))
-
-        tR = round((float(self.__tooldia.get()) / 2.0 ),1)
-
-        if (self.__cuttercompensation.get() == "G40"):
-            v = (0.0, 0.0)
-        if (self.__cuttercompensation.get() == "G41"):
-            v = (tR, tR)
-        if (self.__cuttercompensation.get() == "G42"):
-            v = (-tR, -tR)
-        if (self.__dir.get() == "G03"):
-            #CW
-            v = (v[0] * 1.0, v[1] * 1.0)
-        else:
-            # G03 = CCW
-            v = (v[0] * -1.0, v[1] * -1.0)
-
-        v = (hCPoint[0] + v[0],
-             hCPoint[1] + v[1])
-
-        print ("Cutter compensation vector ({})".format(v))
-        return v
+    # def __calcCutterComp(self, hR, tD, hCPoint):
+    #     '''
+    #     if cutter compensation is used, than X/Y position for milling
+    #     should be recalculated.
+    #     This method return a vector for (x/y) which should be added to
+    #     current X/Y position
+    #
+    #     hR      = hole Radius
+    #     tD      = tool diameter
+    #     hCPoint = center point of hole
+    #
+    #     Example: hCPoint X/Y = (0.0, 0.0)
+    #         Cutter Dia: 8mm, mill Dir = CW
+    #
+    #         Example CW
+    #
+    #
+    #     '''
+    #     # we assume, that every time, we have to set the mill to a 45deg
+    #     # angle from center point
+    #     rad = math.radians(45.0)
+    #     tR = tD / 2.0
+    #     r = hR - tR
+    #     hCPointNew = (round(math.cos(rad) * r + hCPoint[0], 3),
+    #               round(math.sin(rad) * r + hCPoint[1], 3))
+    #     print ("tR {2} hCP {0}, hCPn {1}".format(hCPoint, hCPointNew, hR))
+    #
+    #     tR = round((float(self.__tooldia.get()) / 2.0 ),1)
+    #
+    #     if (self.__cuttercompensation.get() == "G40"):
+    #         v = (0.0, 0.0)
+    #     if (self.__cuttercompensation.get() == "G41"):
+    #         v = (tR, tR)
+    #     if (self.__cuttercompensation.get() == "G42"):
+    #         v = (-tR, -tR)
+    #     if (self.__dir.get() == "G03"):
+    #         #CW
+    #         v = (v[0] * 1.0, v[1] * 1.0)
+    #     else:
+    #         # G03 = CCW
+    #         v = (v[0] * -1.0, v[1] * -1.0)
+    #
+    #     v = (hCPoint[0] + v[0],
+    #          hCPoint[1] + v[1])
+    #
+    #     print ("Cutter compensation vector ({})".format(v))
+    #     return v
 
     def userInputValidation(self):
         r1 = float(self.__holeRadius.get())
