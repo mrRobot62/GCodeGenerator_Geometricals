@@ -180,6 +180,7 @@ class GCodeGenerator(Frame):
 
 #------ Menu callbacks ----------------
     def DialogContourArc(self):
+        on_closing()
         self.master.deiconify()
         print "DialogContourArc"
         title = "Contour Arc" + VERSION
@@ -189,6 +190,7 @@ class GCodeGenerator(Frame):
         pass
 
     def DialogContourRec(self):
+        on_closing()
         self.master.deiconify()
         print "DialogContourRec"
         title = "Contour Rectangle" + VERSION
@@ -199,6 +201,7 @@ class GCodeGenerator(Frame):
 
 
     def ToolTable(self):
+        on_closing()
         self.master.deiconify()
         print "Tool table"
         title = "Tool table" + VERSION
@@ -210,6 +213,7 @@ class GCodeGenerator(Frame):
         pass
 
     def DialogContourRoundedRec(self):
+        on_closing()
         self.master.deiconify()
         print "DialogContourRoundedRec"
         title = "Contour Rounded Rectangle" + VERSION
@@ -219,6 +223,7 @@ class GCodeGenerator(Frame):
         pass
 
     def DialogContourHoles(self):
+        on_closing()
         self.master.deiconify()
         print "DialogContourHoles"
         title = "Contour Holes on a circle" + VERSION
@@ -228,6 +233,7 @@ class GCodeGenerator(Frame):
         pass
 
     def DialogContourHolesGrid(self):
+        on_closing()
         self.master.deiconify()
         print "DialogContourHolesGrid"
         title = "Mill holes on a grid" + VERSION
@@ -237,6 +243,7 @@ class GCodeGenerator(Frame):
         pass
 
     def PocketRoundRectangle(self):
+        on_closing()
         self.master.deiconify()
         print "PocketRoundRectangle"
         title = "Mill round rectangle pocket" + VERSION
@@ -246,6 +253,7 @@ class GCodeGenerator(Frame):
         pass
 
     def PocketRectangle(self):
+        on_closing()
         self.master.deiconify()
         print "PocketRectangle"
         title = "Mill rectangle pocket" + VERSION
@@ -255,6 +263,7 @@ class GCodeGenerator(Frame):
         pass
 
     def PocketCircle(self):
+        on_closing()
         self.master.deiconify()
         print "PocketCircle"
         title = "Mill pocket circle" + VERSION
@@ -264,6 +273,7 @@ class GCodeGenerator(Frame):
         pass
 
     def DrillHoles(self):
+        on_closing()
         self.master.deiconify()
         print "DrillHoles"
         title = "Drill holes in a circle" + VERSION
@@ -273,6 +283,7 @@ class GCodeGenerator(Frame):
         pass
 
     def DrillHolesGrid(self):
+        on_closing()
         self.master.deiconify()
         print "DrillHolesGrid"
         title = "Drill holes in a grid" + VERSION
@@ -282,6 +293,7 @@ class GCodeGenerator(Frame):
         pass
 
     def SurfaceRectangle(self):
+        on_closing()
         self.master.deiconify()
         print "SurfaceRectangle"
         title = "surface milling a rectangle" + VERSION
@@ -291,6 +303,7 @@ class GCodeGenerator(Frame):
         pass
 
     def SurfaceCircle(self):
+        on_closing()
         self.master.deiconify()
         print "SurfaceCircle"
         title = "surface milling a spiral" + VERSION
@@ -303,18 +316,12 @@ class GCodeGenerator(Frame):
 
 
 def on_closing():
-#    if tkMessageBox.askokcancel("Quit", "Do you want to quit?"):
-        #print ("Destroy main window ({})".format(app.tk.call('winfo', 'children', '.')))
-        #i=0
+    try:
+        print ("close current window")
         app.myApp.destroy()
         app.master.withdraw()
-        # widgetList = app.tk.call('winfo', 'children', '.')
-        # for widget in widgetList:
-        #     print ("Destroy widget #{0:02d} => ({1})".format(i,widget))
-        #     widget.destroy()
-        #     i += 1
-        # app.master.withdraw()
-
+    except:
+        print ("nothing to close")
 
 #------------------------------------------------------#
 
