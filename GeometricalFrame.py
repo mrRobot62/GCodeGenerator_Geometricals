@@ -29,7 +29,7 @@ class GeometricalFrame(Frame):
             "SPINDLE_CW" : ["M3 S{0:08.4f} {1}"],
             "SPINDLE_CCW" : ["M4 S{0:08.4f} {1}"],
             "TOOL" : ["T{0:03d} {1}M6 {1}"],
-            "PREAMBLE" : ["G21 G90 G64 G17 G40 G49 {0}"],
+            "PREAMBLE" : ["G90 G64 G17 G40 G49 {0}"],
             "POSTAMBLE" : ["G00 Z10 F100 M2 {0}"]
          }
 
@@ -121,7 +121,8 @@ class GeometricalFrame(Frame):
         row = 0
         if showPreamble:
             self._preamble = StringVar()
-            self._preamble.set("G21 G90 G64 G17 G40 G49")
+            txt = self._standardGCodeSeq["PREAMBLE"][0].format(CR)
+            self._preamble.set(txt)
             Label(self.frmStandardContent, text="PreGCode").grid(row=row, column=0, sticky=W)
             FloatEntry(self.frmStandardContent, width=70, mandatory=False,
                 textvariable=self._preamble).grid(
@@ -130,9 +131,8 @@ class GeometricalFrame(Frame):
         if showPostamble:
             row += 1
             self._postamble = StringVar()
-            post = "G00 Z10 F100 \n"
-            post+= "M2"
-            self._postamble.set(post)
+            txt = self._standardGCodeSeq["POSTAMBLE"][0].format(CR)
+            self._postamble.set(txt)
             Label(self.frmStandardContent, text="PostGCode").grid(row=row, column=0, sticky=W)
             FloatEntry(self.frmStandardContent, width=70, mandatory=False,
                 textvariable=self._postamble).grid(
@@ -209,7 +209,8 @@ class GeometricalFrame(Frame):
         pass
 
     def getGCode_Homeing(self, x=0, y=0, z=10, fxy=100, fz=100):
-        gc = self._standardGCodeSeq["HOMEING"][0].format(
+        gc = "(HOMEING)" + CR
+        gc += self._standardGCodeSeq["HOMEING"][0].format(
             z,fz,CR
         )
         gc += self._standardGCodeSeq["HOMEING"][1].format(
@@ -218,16 +219,16 @@ class GeometricalFrame(Frame):
         return gc
 
     def getGCode_SpindleAndTool(self, additional=""):
-        temp = ""
+        temp = "(Tool handling)" + CR
         #------- Tool handling -----------
-        if self._toolID.get() <> "":
+        if self._toolID.get() != "":
             t = int(self._toolID.get())
             if t < 0:
                 t = 0
             temp += "T{0:03d} M6 {1}".format(t,CR)
-
+        temp += "(Spindel control)" + CR
         #------- Spindle control ---------
-        if self._spindle.get() <> "":
+        if self._spindle.get() != "":
             s = int(self._spindle.get())
             sdir = self._spindleCCW.get()
             if s < 0:
@@ -238,16 +239,20 @@ class GeometricalFrame(Frame):
                 temp += "M4 S{0:04d} {1}".format(s,CR)
             if s == 0:
                 temp += "M5" + CR
-
-        temp += additional + CR
-        return temp
+        if additional != "":
+            temp += "(additional)" + CR
+            temp += additional + CR
+        return temp + CR
 
     def getGCode_Preamble(self, additional=""):
         temp = ""
         # Preamble
         temp += CR + "(set general preamble)" + CR
         temp += self._preamble.get() + CR
-        temp += additional + CR
+        if (additional != ""):
+            temp += "(additional)" + CR
+            temp += additional + CR
+
         temp += self.getGCode_SpindleAndTool()
         return temp
 
@@ -256,7 +261,9 @@ class GeometricalFrame(Frame):
         # Preamble
         temp += CR + "(set general postamble)" + CR
         temp += self._postamble.get() + CR
-        temp += additional + CR
+        if (additional != ""):
+            temp += "(additional)" + CR
+            temp += additional + CR
         return temp
 
 
