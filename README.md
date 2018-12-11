@@ -29,7 +29,7 @@ Status October 2018 - under development **
 
 
 ## Example screenshot (more details inside WIKI)
-![](https://github.com/mrRobot62/GCodeGenerator_Geometricals/blob/master/img/screenshots/screen_cCircle.png)
+![](https://raw.githubusercontent.com/mrRobot62/GCodeGenerator_Geometricals/master/img/screenshots/screen_cCircle.png)
 
 
 ## Starting from console
