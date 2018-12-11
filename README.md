@@ -9,7 +9,7 @@ Status October 2018 - under development **
 
 ## History:
 
-| Version | Description |
+| Version | Description |<br>
 |---------|----------------------------------------------------|
 |0.1 | initial version with contour circel shape unstable version |
 |0.2 | save to file implemented |
