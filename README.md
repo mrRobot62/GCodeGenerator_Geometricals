@@ -27,6 +27,8 @@ Status October 2018 - under development **
 |0.12.3 | bugfix #15, #18(close window, VersionNumber|
 |0.12.4 | bugfix #10, ToolID, SpindleSpeed, SpindleDir(CW/CCW|
 
+## more details in our WIKI
+[Wiki](https://github.com/mrRobot62/GCodeGenerator_Geometricals/wiki)
 
 
 ## Example screenshot (more details inside WIKI)
@@ -114,4 +116,5 @@ If everything is ok, **than** start gcode on your CNC
 ## (3) give our community a chance to participate on your new implementation
 upload you implementation to this github repository.
 **THANKS**
+
 
