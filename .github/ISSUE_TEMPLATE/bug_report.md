@@ -14,8 +14,7 @@ e.g contourArc, pocketMillRoundRectangle, ...
 A clear and concise description of what the bug is.
 
 **To Reproduce**
-GCode input values to reproduce this error
-...
+Describe input fields & values to reproduce this error. eg. Tooldiameter=6, stepover=40%, ...)
 
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
