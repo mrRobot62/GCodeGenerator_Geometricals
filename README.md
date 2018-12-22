@@ -9,9 +9,10 @@ Status October 2018 - under development **
 
 ## History:
 
-| Version | Description |<br>
-|---------|----------------------------------------------------|<br>
-|0.1 | initial version with contour circel shape unstable version |<br>
+
+| Version | Description |
+|---------|----------------------------------------------------|
+|0.1 | initial version with contour circel shape unstable version |
 |0.2 | save to file implemented |
 |0.3 | new contourRectange & contourHoles |
 |0.4 | new contourMillHolesGrid. Milling holes on a grid |
