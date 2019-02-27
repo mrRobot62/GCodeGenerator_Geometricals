@@ -58,18 +58,17 @@ class DrillHolesGrid(GeometricalFrame):
         self.__CC = StringVar()
         self.__CC.set(choices[0])
         self._changeImage(self.__CC.get())
-#        Label(self.frmButtonsIndividualContent, text='Coordinate Center').grid(row=row, column=0, sticky=W)
-#        OptionMenu(self.frmButtonsIndividualContent,
-#            self.__CC, *choices, command=self._changeImage).grid(
-#            row=row, column=1)
+        # new in V012.5 --
+        self.setMaterialDict(self.selectedMaterial.get())       
+        #-----------------
 
         row = 0
         self.__unit = StringVar()
         self.__unit.set("G21")
         Label(self.frmButtonsIndividualContent, text='Unit').grid(row=row, column=0, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="mm", variable=self.__unit,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="mm", variable=self.__unit,
                     value="G21").grid(row=row, column=1, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="inch", variable=self.__unit,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="inch", variable=self.__unit,
                     value="G20").grid(row=row, column=2, sticky=W)
 
         row += 1
@@ -77,9 +76,9 @@ class DrillHolesGrid(GeometricalFrame):
         self.__dir.set("G02")
         Label(self.frmButtonsIndividualContent, text='Contour direction').grid(
             row=row, column=0, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="CW (G02)", variable=self.__dir,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="CW (G02)", variable=self.__dir,
                     value="G02").grid(row=row, column=1, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="CCW (G03)", variable=self.__dir,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="CCW (G03)", variable=self.__dir,
                     value="G03").grid(row=row, column=2, sticky=W)
 
         # row += 1
@@ -87,19 +86,19 @@ class DrillHolesGrid(GeometricalFrame):
         # self.__cuttercompensation.set("G42")
         # Label(self.frmButtonsIndividualContent, text='Tool movement').grid(
         #     row=row, column=0, sticky=W)
-        # Radiobutton(self.frmButtonsIndividualContent, text="on contour", variable=self.__cuttercompensation,
+        # ttk.Radiobutton(self.frmButtonsIndividualContent, text="on contour", variable=self.__cuttercompensation,
         #     value="G40").grid(row=row, column=1, sticky=W)
-        # Radiobutton(self.frmButtonsIndividualContent, text="left from contour", variable=self.__cuttercompensation,
+        # ttk.Radiobutton(self.frmButtonsIndividualContent, text="left from contour", variable=self.__cuttercompensation,
         #     value="G41").grid(row=row, column=2, sticky=W)
-        # Radiobutton(self.frmButtonsIndividualContent, text="right from contour", variable=self.__cuttercompensation,
+        # ttk.Radiobutton(self.frmButtonsIndividualContent, text="right from contour", variable=self.__cuttercompensation,
         #     value="G42").grid(row=row, column=3, sticky=W)
 
         row += 1
-        self.__tooldia = StringVar(value="6.0")
+        self.tooldia = StringVar(value="6.0")
         Label(self.frmButtonsIndividualContent, text="Drill diameter").grid(
             row=row, column=0, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=False,
-            textvariable=self.__tooldia).grid(row=row, column=1, sticky=W)
+            textvariable=self.tooldia).grid(row=row, column=1, sticky=W)
         self.__retraction= StringVar(value="1.0")
         Label(self.frmButtonsIndividualContent, text="Retraction").grid(
             row=row, column=2, sticky=W)
@@ -186,15 +185,15 @@ class DrillHolesGrid(GeometricalFrame):
             textvariable=self.__speed_Z_G00, mandatory=False).grid(row=row, column=3, sticky=W)
 
         row += 1
-        self.__speed_XY_G02G03 = StringVar(value="100.0")
-        self.__speed_Z_G01 = StringVar(value="120.0")
+        self.speed_XY_G02G03 = StringVar(value="100.0")
+        self.speed_Z_G01 = StringVar(value="120.0")
         Label(self.frmButtonsIndividualContent, text="Feed (G02/G03 X/Y)").grid(row=row, column=0, sticky=W)
         Label(self.frmButtonsIndividualContent, text="Feed (G01 Z)").grid(row=row, column=2, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.__speed_XY_G02G03, mandatory=False).grid(
+            textvariable=self.speed_XY_G02G03, mandatory=False).grid(
             row=row, column=1, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.__speed_Z_G01, mandatory=False).grid(
+            textvariable=self.speed_Z_G01, mandatory=False).grid(
             row=row, column=3, sticky=W)
 
         row += 1
@@ -212,6 +211,7 @@ class DrillHolesGrid(GeometricalFrame):
             row=row, column=3, sticky=W)
 
         #-----------------------------------------------------
+        self.upateMaterialFields(self.selectedMaterial.get())            
         self.frmButtonsIndividualContent.pack(expand=True, fill=BOTH)
         pass
 
@@ -235,13 +235,13 @@ class DrillHolesGrid(GeometricalFrame):
 
         feeds = {
             "XYG0" : float(self.__speed_XY_G00.get()),
-            "XYGn" : float(self.__speed_XY_G02G03.get()),
+            "XYGn" : float(self.speed_XY_G02G03.get()),
             "ZG0" : float(self.__speed_Z_G00.get()),
-            "ZGn" : float(self.__speed_Z_G01.get())
+            "ZGn" : float(self.speed_Z_G01.get())
         }
 
         # tool diameter
-        tD = float(self.__tooldia.get())
+        tD = float(self.tooldia.get())
         a = float(self.__distanceA.get())
         b = float(self.__distanceB.get())
 
@@ -467,8 +467,8 @@ class DrillHolesGrid(GeometricalFrame):
         dZ = 0.0
         startZ = float(self.__start_Z.get())
         FZ0 = float(self.__speed_Z_G00.get())
-        FZ1 = float(self.__speed_Z_G01.get())
-        FXY1 = float(self.__speed_XY_G02G03.get())
+        FZ1 = float(self.speed_Z_G01.get())
+        FXY1 = float(self.speed_XY_G02G03.get())
         dwell = 0.25
         X = hCPoint[0]
         Y = hCPoint[1]
@@ -539,7 +539,7 @@ class DrillHolesGrid(GeometricalFrame):
         b = float(self.__distanceB.get())
         nHX = float(self.__numberOfHolesX.get())
         nHY = float(self.__numberOfHolesY.get())
-        toolDia = float(self.__tooldia.get())
+        toolDia = float(self.tooldia.get())
 
         if (nHX <= 0.0 or nHY <= 0.0):
             self.MessageBox(state="ERROR",
@@ -600,7 +600,7 @@ class DrillHolesGrid(GeometricalFrame):
                 text="Z parameter values should be greater than 0.0")
             return False
 
-        if (float(self.__tooldia.get()) <= 0.0):
+        if (float(self.tooldia.get()) <= 0.0):
             self.MessageBox(state="ERROR",
                 title="ERROR",
                 text="Tooldiamter should greater than 0.0")

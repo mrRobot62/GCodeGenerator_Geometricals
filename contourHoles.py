@@ -59,6 +59,9 @@ class ContourHoles(GeometricalFrame):
         self.__CC = StringVar()
         self.__CC.set(choices[4])
         self._changeImage(self.__CC.get())
+        # new in V012.5 --
+        self.setMaterialDict(self.selectedMaterial.get())       
+        #-----------------
         Label(self.frmButtonsIndividualContent, text='Coordinate Center').grid(row=row, column=0, sticky=W)
         OptionMenu(self.frmButtonsIndividualContent,
             self.__CC, *choices, command=self._changeImage).grid(
@@ -68,9 +71,9 @@ class ContourHoles(GeometricalFrame):
         self.__unit = StringVar()
         self.__unit.set("G21")
         Label(self.frmButtonsIndividualContent, text='Unit').grid(row=row, column=0, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="mm", variable=self.__unit,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="mm", variable=self.__unit,
                     value="G21").grid(row=row, column=1, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="inch", variable=self.__unit,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="inch", variable=self.__unit,
                     value="G20").grid(row=row, column=2, sticky=W)
 
         row += 1
@@ -78,30 +81,30 @@ class ContourHoles(GeometricalFrame):
         self.__dir.set("G02")
         Label(self.frmButtonsIndividualContent, text='Contour direction').grid(
             row=row, column=0, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="CW (G02)", variable=self.__dir,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="CW (G02)", variable=self.__dir,
                     value="G02").grid(row=row, column=1, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="CCW (G03)", variable=self.__dir,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="CCW (G03)", variable=self.__dir,
                     value="G03").grid(row=row, column=2, sticky=W)
 
         row += 1
         self.__cuttercompensation = StringVar()
         self.__cuttercompensation.set("G42")
         Label(self.frmButtonsIndividualContent, text='Tool movement').grid(row=row, column=0, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="on contour", variable=self.__cuttercompensation,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="on contour", variable=self.__cuttercompensation,
             value="G40").grid(row=row, column=1, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="left from contour", variable=self.__cuttercompensation,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="left from contour", variable=self.__cuttercompensation,
             value="G41").grid(row=row, column=2, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="right from contour", variable=self.__cuttercompensation,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="right from contour", variable=self.__cuttercompensation,
             value="G42").grid(row=row, column=3, sticky=W)
 
         row += 1
-        self.__tooldia = StringVar(value="3.0")
+        self.tooldia = StringVar(value="3.0")
         self.__numberOfHoles = StringVar(value="4")
         #vcmd = (self.frmButtonsIndividualContent.register(self._updateAngle), '%s', '%S')
 
         Label(self.frmButtonsIndividualContent, text="Tool diameter").grid(row=row, column=0, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=False,
-            textvariable=self.__tooldia).grid(row=row, column=1, sticky=W)
+            textvariable=self.tooldia).grid(row=row, column=1, sticky=W)
         Label(self.frmButtonsIndividualContent, text="Number of Holes").grid(row=row, column=2, sticky=W)
         IntegerEntry(self.frmButtonsIndividualContent, width=10,
             mandatory=True, validate="focusout",
@@ -170,15 +173,15 @@ class ContourHoles(GeometricalFrame):
             textvariable=self.__speed_Z_G00, mandatory=False).grid(row=row, column=3, sticky=W)
 
         row += 1
-        self.__speed_XY_G02G03 = StringVar(value="100.0")
-        self.__speed_Z_G01 = StringVar(value="80.0")
+        self.speed_XY_G02G03 = StringVar(value="100.0")
+        self.speed_Z_G01 = StringVar(value="80.0")
         Label(self.frmButtonsIndividualContent, text="Feed (G02/G03 X/Y)").grid(row=row, column=0, sticky=W)
         Label(self.frmButtonsIndividualContent, text="Feed (G01 Z)").grid(row=row, column=2, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.__speed_XY_G02G03, mandatory=False).grid(
+            textvariable=self.speed_XY_G02G03, mandatory=False).grid(
             row=row, column=1, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.__speed_Z_G01, mandatory=False).grid(
+            textvariable=self.speed_Z_G01, mandatory=False).grid(
             row=row, column=3, sticky=W)
 
         row += 1
@@ -195,8 +198,7 @@ class ContourHoles(GeometricalFrame):
             textvariable=self.__safety_Z, mandatory=False).grid(
             row=row, column=3, sticky=W)
 
-        #-----------------------------------------------------
-        self._updateAngle(self.__numberOfHoles.get())
+        self.upateMaterialFields(self.selectedMaterial.get())            
         self.frmButtonsIndividualContent.pack(expand=True, fill=BOTH)
         pass
 
@@ -231,7 +233,7 @@ class ContourHoles(GeometricalFrame):
                 float(self.__holeRadius.get()))
 
         # tool diameter
-        tD = float(self.__tooldia.get())
+        tD = float(self.tooldia.get())
 
         # angles
         startAngle = float(self.__initialStartAngle.get())
@@ -239,9 +241,9 @@ class ContourHoles(GeometricalFrame):
 
         feeds = {
             "XYG0" : float(self.__speed_XY_G00.get()),
-            "XYGn" : float(self.__speed_XY_G02G03.get()),
+            "XYGn" : float(self.speed_XY_G02G03.get()),
             "ZG0" : float(self.__speed_Z_G00.get()),
-            "ZGn" : float(self.__speed_Z_G01.get())
+            "ZGn" : float(self.speed_Z_G01.get())
         }
 
         zPos = {
@@ -338,11 +340,13 @@ class ContourHoles(GeometricalFrame):
         '''
         hcp = []
         r = radii[0]
+        rH = radii[1]
         for x in range (numberOfHoles):
             rad = math.radians(angle)
             # set X point
-            v = (round(math.cos(rad) * r + cPoint[0], 3),
-                round(math.sin(rad) * r + cPoint[1], 3))
+            # bugfix : add radius of hole to start point of hole
+            v = (round(math.cos(rad) * r + cPoint[0] + rH, 3),
+                round(math.sin(rad) * r + cPoint[1] + rH, 3))
             hcp.append(v)
             print "Hole center points {0} on radius {1:05.1f} angle {2:05.1f}".format(
                 v, r, angle)
@@ -494,7 +498,7 @@ class ContourHoles(GeometricalFrame):
     #               round(math.sin(rad) * r + hCPoint[1], 3))
     #     print ("tR {2} hCP {0}, hCPn {1}".format(hCPoint, hCPointNew, hR))
     #
-    #     tR = round((float(self.__tooldia.get()) / 2.0 ),1)
+    #     tR = round((float(self.tooldia.get()) / 2.0 ),1)
     #
     #     if (self.__cuttercompensation.get() == "G40"):
     #         v = (0.0, 0.0)
@@ -522,7 +526,7 @@ class ContourHoles(GeometricalFrame):
         tD = float(self.__depthtotal.get())
         sD = float(self.__depthstep.get())
 
-        tool = float(self.__tooldia.get())
+        tool = float(self.tooldia.get())
         print ("userInputValidation")
 
         if (r <= 0.0 or r1 <= 0.0):

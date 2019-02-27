@@ -57,9 +57,10 @@ from drillHolesGrid import *
 
 from surfaceRectangle import *
 from surfaceCircle import *
+from millingParameters import *
 
 #from toolTable import *
-IN_AXIS = os.environ.has_key("AXIS_PROGRESS_BAR")
+IN_AXIS = os.environ.has_key("py    ")
 CR = '\n'
 
 
@@ -91,14 +92,19 @@ CR = '\n'
             #15, #18 (close Window)
     0.12.4 bugfix-release. Fixed issues
             #10 TooldID, SpindleSpeed, SpindleDir
+    0.12.5-rc1 Tool & material select implemented
+               not editable via gui, only inside json-file
+               bug-fixes cutter compensation
+               bug-fixes window size
+               bug-fixes Mac Mojave, using ttk.<widgets> instead of TKinter
 
 '''
-VERSION = " (0.12.4)"
+VERSION = " (0.12.5-rc1)"
 
 class GCodeGenerator(Frame):
     def __init__(self, master=None, title=""):
         self.frame = Frame.__init__(self, master)
-#        self.master.geometry("800x610")
+        self.master.geometry("300x200")
         self.sourceFont = Font(family="Courier", size=12)
         self.grid()
         pass
@@ -169,7 +175,7 @@ class GCodeGenerator(Frame):
         #--------- Insert engraving shapes here ---------------------#
 
         #------------------------------------------------------#
-        #self.FileMenu.add_command(label="Tool table", command=self.ToolTable)
+        #self.FileMenu.add_command(label="Milling Parameter", command=self.MillingParam)
 
         # Quit
         self.FileMenu.add_command(label="Quit", command=self.quit)
@@ -200,12 +206,12 @@ class GCodeGenerator(Frame):
         pass
 
 
-    def ToolTable(self):
+    def MillingParam(self):
         on_closing()
         self.master.deiconify()
-        print "Tool table"
-        title = "Tool table" + VERSION
-        self.myApp = ToolTable(self.app, self.master, self.frame, title)
+        print "Milling Parameters"
+        title = "Milling Parameters" + VERSION
+        self.myApp = MillingParameters(self.app, self.master, self.frame, title)
         self.myApp.init()
         self.myApp.show(showImage=False,
             showStandardContent=False,

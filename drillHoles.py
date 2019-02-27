@@ -59,6 +59,9 @@ class DrillHoles(GeometricalFrame):
         self.__CC = StringVar()
         self.__CC.set(choices[4])
         self._changeImage(self.__CC.get())
+        # new in V012.5 --
+        self.setMaterialDict(self.selectedMaterial.get())       
+        #-----------------
         Label(self.frmButtonsIndividualContent, text='Coordinate Center').grid(
             row=row, column=0, sticky=W)
         OptionMenu(self.frmButtonsIndividualContent,
@@ -70,9 +73,9 @@ class DrillHoles(GeometricalFrame):
         self.__unit.set("G21")
         Label(self.frmButtonsIndividualContent, text='Unit').grid(
             row=row, column=0, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="mm", variable=self.__unit,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="mm", variable=self.__unit,
                     value="G21").grid(row=row, column=1, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="inch", variable=self.__unit,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="inch", variable=self.__unit,
                     value="G20").grid(row=row, column=2, sticky=W)
 
         # row += 1
@@ -80,9 +83,9 @@ class DrillHoles(GeometricalFrame):
         # self.__dir.set("G02")
         # Label(self.frmButtonsIndividualContent, text='Contour direction').grid(
         #     row=row, column=0, sticky=W)
-        # Radiobutton(self.frmButtonsIndividualContent, text="CW (G02)", variable=self.__dir,
+        # ttk.Radiobutton(self.frmButtonsIndividualContent, text="CW (G02)", variable=self.__dir,
         #             value="G02").grid(row=row, column=1, sticky=W)
-        # Radiobutton(self.frmButtonsIndividualContent, text="CCW (G03)", variable=self.__dir,
+        # ttk.Radiobutton(self.frmButtonsIndividualContent, text="CCW (G03)", variable=self.__dir,
         #             value="G03").grid(row=row, column=2, sticky=W)
 
         row += 1
@@ -90,22 +93,22 @@ class DrillHoles(GeometricalFrame):
         # self.__cuttercompensation.set("G42")
         # Label(self.frmButtonsIndividualContent, text='Tool movement').grid(
         #     row=row, column=0, sticky=W)
-        # Radiobutton(self.frmButtonsIndividualContent, text="on contour", variable=self.__cuttercompensation,
+        # ttk.Radiobutton(self.frmButtonsIndividualContent, text="on contour", variable=self.__cuttercompensation,
         #     value="G40").grid(row=row, column=1, sticky=W)
-        # Radiobutton(self.frmButtonsIndividualContent, text="left from contour", variable=self.__cuttercompensation,
+        # ttk.Radiobutton(self.frmButtonsIndividualContent, text="left from contour", variable=self.__cuttercompensation,
         #     value="G41").grid(row=row, column=2, sticky=W)
-        # Radiobutton(self.frmButtonsIndividualContent, text="right from contour", variable=self.__cuttercompensation,
+        # ttk.Radiobutton(self.frmButtonsIndividualContent, text="right from contour", variable=self.__cuttercompensation,
         #     value="G42").grid(row=row, column=3, sticky=W)
         #
         row += 1
-        self.__tooldia = StringVar(value="6.0")
+        self.tooldia = StringVar(value="6.0")
         self.__numberOfHoles = StringVar(value="4")
         #vcmd = (self.frmButtonsIndividualContent.register(self._updateAngle), '%s', '%S')
 
         Label(self.frmButtonsIndividualContent, text="Tool diameter").grid(
             row=row, column=0, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=False,
-            textvariable=self.__tooldia).grid(row=row, column=1, sticky=W)
+            textvariable=self.tooldia).grid(row=row, column=1, sticky=W)
         Label(self.frmButtonsIndividualContent, text="Number of Holes").grid(
             row=row, column=2, sticky=W)
         IntegerEntry(self.frmButtonsIndividualContent, width=10,
@@ -181,15 +184,15 @@ class DrillHoles(GeometricalFrame):
             textvariable=self.__speed_Z_G00, mandatory=False).grid(row=row, column=3, sticky=W)
 
         row += 1
-        self.__speed_XY_G02G03 = StringVar(value="250.0")
-        self.__speed_Z_G01 = StringVar(value="150.0")
+        self.speed_XY_G02G03 = StringVar(value="250.0")
+        self.speed_Z_G01 = StringVar(value="150.0")
         Label(self.frmButtonsIndividualContent, text="Feed (G02/G03 X/Y)").grid(row=row, column=0, sticky=W)
         Label(self.frmButtonsIndividualContent, text="Feed (G01 Z)").grid(row=row, column=2, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.__speed_XY_G02G03, mandatory=False).grid(
+            textvariable=self.speed_XY_G02G03, mandatory=False).grid(
             row=row, column=1, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.__speed_Z_G01, mandatory=False).grid(
+            textvariable=self.speed_Z_G01, mandatory=False).grid(
             row=row, column=3, sticky=W)
 
         row += 1
@@ -242,16 +245,16 @@ class DrillHoles(GeometricalFrame):
         peckCycle = float(self.__retraction.get())
 
         # tool diameter
-        tD = float(self.__tooldia.get())
+        tD = float(self.tooldia.get())
 
         # angles
         startAngle = float(self.__initialStartAngle.get())
         deg = float(self.__holeAngle.get())
         feeds = {
             "XYG0" : float(self.__speed_XY_G00.get()),
-            "XYGn" : float(self.__speed_XY_G02G03.get()),
+            "XYGn" : float(self.speed_XY_G02G03.get()),
             "ZG0" : float(self.__speed_Z_G00.get()),
-            "ZGn" : float(self.__speed_Z_G01.get())
+            "ZGn" : float(self.speed_Z_G01.get())
         }
 
         zPos = {
@@ -447,7 +450,7 @@ class DrillHoles(GeometricalFrame):
 
         pC = float(self.__retraction.get())
 
-        tool = float(self.__tooldia.get())
+        tool = float(self.tooldia.get())
         print ("userInputValidation")
 
         if (r <= 0.0 ):

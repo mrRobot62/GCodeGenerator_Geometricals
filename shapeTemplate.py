@@ -84,9 +84,9 @@ class shapeTemplate(GeometricalFrame):
         self.__unit = StringVar()
         self.__unit.set("G21")
         Label(self.frmButtonsIndividualContent, text='Unit').grid(row=row, column=0, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="mm", variable=self.__unit,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="mm", variable=self.__unit,
                     value="G21").grid(row=row, column=1, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="inch", variable=self.__unit,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="inch", variable=self.__unit,
                     value="G20").grid(row=row, column=2, sticky=W)
 
         row += 1
@@ -94,29 +94,29 @@ class shapeTemplate(GeometricalFrame):
         self.__dir.set("G02")
         Label(self.frmButtonsIndividualContent, text='Contour direction').grid(
             row=row, column=0, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="CW (G02)", variable=self.__dir,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="CW (G02)", variable=self.__dir,
                     value="G02").grid(row=row, column=1, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="CCW (G03)", variable=self.__dir,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="CCW (G03)", variable=self.__dir,
                     value="G03").grid(row=row, column=2, sticky=W)
 
         row += 1
         self.__cuttercompensation = StringVar()
         self.__cuttercompensation.set("G42")
         Label(self.frmButtonsIndividualContent, text='Tool movement').grid(row=row, column=0, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="on contour", variable=self.__cuttercompensation,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="on contour", variable=self.__cuttercompensation,
             value="G40").grid(row=row, column=1, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="left from contour", variable=self.__cuttercompensation,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="left from contour", variable=self.__cuttercompensation,
             value="G41").grid(row=row, column=2, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="right from contour", variable=self.__cuttercompensation,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="right from contour", variable=self.__cuttercompensation,
             value="G42").grid(row=row, column=3, sticky=W)
 
         row += 1
-        self.__tooldia = StringVar(value="3.0")
+        self.tooldia = StringVar(value="3.0")
         #vcmd = (self.frmButtonsIndividualContent.register(self._updateAngle), '%s', '%S')
 
         Label(self.frmButtonsIndividualContent, text="Tool diameter").grid(row=row, column=0, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=False,
-            textvariable=self.__tooldia).grid(row=row, column=1, sticky=W)
+            textvariable=self.tooldia).grid(row=row, column=1, sticky=W)
 
         row += 1
         self.__centerX = StringVar(value="0.0")
@@ -164,15 +164,15 @@ class shapeTemplate(GeometricalFrame):
             textvariable=self.__speed_Z_G00, mandatory=False).grid(row=row, column=3, sticky=W)
 
         row += 1
-        self.__speed_XY_G02G03 = StringVar(value="100.0")
-        self.__speed_Z_G01 = StringVar(value="80.0")
+        self.speed_XY_G02G03 = StringVar(value="100.0")
+        self.speed_Z_G01 = StringVar(value="80.0")
         Label(self.frmButtonsIndividualContent, text="Feed (G02/G03 X/Y)").grid(row=row, column=0, sticky=W)
         Label(self.frmButtonsIndividualContent, text="Feed (G01 Z)").grid(row=row, column=2, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.__speed_XY_G02G03, mandatory=False).grid(
+            textvariable=self.speed_XY_G02G03, mandatory=False).grid(
             row=row, column=1, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.__speed_Z_G01, mandatory=False).grid(
+            textvariable=self.speed_Z_G01, mandatory=False).grid(
             row=row, column=3, sticky=W)
 
         row += 1
@@ -246,11 +246,11 @@ class shapeTemplate(GeometricalFrame):
         if (self.__cuttercompensation.get() == "G41"):
             gc += CR + "(-- Cutter compensation LEFT --){}".format(CR)
             gc += "{} {}".format(self.__cuttercompensation.get(),CR)
-            X -= (float(self.__tooldia) / 2.0)
+            X -= (float(self.tooldia) / 2.0)
         if (self.__cuttercompensation.get() == "G41"):
             gc += CR + "(-- Cutter compensation RIGHT --){}".format(CR)
             gc += "{} {}".format(self.__cuttercompensation.get(),CR)
-            X += (float(self.__tooldia) / 2.0)
+            X += (float(self.tooldia) / 2.0)
 
         # set start postion X/Y
         gc += "G00 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
@@ -302,7 +302,7 @@ class shapeTemplate(GeometricalFrame):
             loop += CR + "(set new Z {0:05.2f} position)".format(z) + CR
             loop += "G01 Z{0:08.3f} F{1:05.1f} {2}".format(
                 float(z),
-                float(self.__speed_Z_G01.get()), CR)
+                float(self.speed_Z_G01.get()), CR)
             # set direction G02/G03
             #
             loop += self.__dir.get()

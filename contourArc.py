@@ -46,25 +46,28 @@ class ContourArc(GeometricalFrame):
         self.__CC = StringVar()
         self.__CC.set("5")
         self._changeImage()
+        # new in V012.5 --
+        self.setMaterialDict(self.selectedMaterial.get())       
+        #-----------------
         Label(self.frmButtonsIndividualContent, text='Coordinate Center').grid(row=row, column=0, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="1", variable=self.__CC,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="1", variable=self.__CC,
                     value=1, command=self._changeImage).grid(row=row, column=1, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="2", variable=self.__CC,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="2", variable=self.__CC,
                     value=2, command=self._changeImage).grid(row=row, column=2, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="3", variable=self.__CC,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="3", variable=self.__CC,
                     value=3, command=self._changeImage).grid(row=row, column=3, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="4", variable=self.__CC,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="4", variable=self.__CC,
                     value=4, command=self._changeImage).grid(row=row, column=4, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="5", variable=self.__CC,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="5", variable=self.__CC,
                     value=5, command=self._changeImage).grid(row=row, column=5, sticky=W)
 
         row += 1
         self.__unit = StringVar()
         self.__unit.set("G21")
         Label(self.frmButtonsIndividualContent, text='Unit').grid(row=row, column=0, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="mm", variable=self.__unit,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="mm", variable=self.__unit,
                     value="G21").grid(row=row, column=1, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="inch", variable=self.__unit,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="inch", variable=self.__unit,
                     value="G20").grid(row=row, column=2, sticky=W)
 
         row += 1
@@ -72,9 +75,9 @@ class ContourArc(GeometricalFrame):
         self.__dir.set("G02")
         Label(self.frmButtonsIndividualContent, text='Contour direction').grid(
             row=row, column=0, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="CW (G02)", variable=self.__dir,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="CW (G02)", variable=self.__dir,
                     value="G02").grid(row=row, column=1, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="CCW (G03)", variable=self.__dir,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="CCW (G03)", variable=self.__dir,
                     value="G03").grid(row=row, column=2, sticky=W)
 
         row += 1
@@ -82,19 +85,21 @@ class ContourArc(GeometricalFrame):
         self.__cuttercompensation.set("G40")
         Label(self.frmButtonsIndividualContent, text='Tool movement').grid(
             row=row, column=0, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="on contour", variable=self.__cuttercompensation,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="on contour", variable=self.__cuttercompensation,
             value="G40").grid(row=row, column=1, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="left from contour", variable=self.__cuttercompensation,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="left from contour", variable=self.__cuttercompensation,
             value="G41").grid(row=row, column=2, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="right from contour", variable=self.__cuttercompensation,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="right from contour", variable=self.__cuttercompensation,
             value="G42").grid(row=row, column=3, sticky=W)
 
         row += 1
-        self.__tooldia = StringVar(value="3.0")
+        td = self.dicSelectedMaterial["Tool dia"]
+        print ("ToolDia: " + str(td))
+        self.tooldia = StringVar(value = str(td))
         Label(self.frmButtonsIndividualContent, text="Tool diameter").grid(
             row=row, column=0, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=False,
-            textvariable=self.__tooldia).grid(row=row, column=1, sticky=W)
+            textvariable=self.tooldia).grid(row=row, column=1, sticky=W)
 
         row += 1
         self.__centerX = StringVar(value="0.0")
@@ -159,17 +164,17 @@ class ContourArc(GeometricalFrame):
                 row=row, column=3, sticky=W)
 
         row += 1
-        self.__speed_XY_G02G03 = StringVar(value="100.0")
-        self.__speed_Z_G01 = StringVar(value="80.0")
+        self.speed_XY_G02G03 = StringVar(value="100.0")
+        self.speed_Z_G01 = StringVar(value="80.0")
         Label(self.frmButtonsIndividualContent, text="Feed (G02/G03 X/Y)").grid(
             row=row, column=0, sticky=W)
         Label(self.frmButtonsIndividualContent, text="Feed (G01 Z)").grid(
             row=row, column=2, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.__speed_XY_G02G03, mandatory=False).grid(
+            textvariable=self.speed_XY_G02G03, mandatory=False).grid(
             row=row, column=1, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.__speed_Z_G01, mandatory=False).grid(
+            textvariable=self.speed_Z_G01, mandatory=False).grid(
             row=row, column=3, sticky=W)
 
         row += 1
@@ -188,7 +193,7 @@ class ContourArc(GeometricalFrame):
             textvariable=self.__safety_Z, mandatory=False).grid(
             row=row, column=1, sticky=W)
 
-        #-----------------------------------------------------
+        self.upateMaterialFields(self.selectedMaterial.get())            
         self.frmButtonsIndividualContent.pack(expand=True, fill=BOTH)
         pass
 
@@ -205,7 +210,7 @@ class ContourArc(GeometricalFrame):
                 text="Diameter should be greater than 0.0")
             return False
 
-        if (float(self.__tooldia.get()) >= float(self.__dia.get())):
+        if (float(self.tooldia.get()) >= float(self.__dia.get())):
             self.MessageBox(state="ERROR",
                 title="ERROR",
                 text="Tooldiamter should be less than arc diameter")
@@ -235,7 +240,7 @@ class ContourArc(GeometricalFrame):
                 title="ERROR",
                 text="Z parameter values should be greater than 0.0")
             return False
-        if (float(self.__tooldia.get()) <= 0.0):
+        if (float(self.tooldia.get()) <= 0.0):
             self.MessageBox(state="ERROR",
                 title="ERROR",
                 text="Tooldiamter should greater than 0.0")
@@ -247,13 +252,8 @@ class ContourArc(GeometricalFrame):
         gc += self.getGCode_Preamble()
         # set Unit
         gc += self.__unit.get() + CR
-        # set Z axis
-        gc += CR + "(set Z saftey position)" + CR
-        gc += "G00 Z{0:08.3f} F{1:05.1f} {2}".format(
-            float(self.__safety_Z.get()),
-            float(self.__speed_Z_G00.get()), CR)
 
-        toolDia = float(self.__tooldia.get())
+        toolDia = float(self.tooldia.get())
 
         X = xoffset = float(0.0)
         Y = yoffset = float(0.0)
@@ -289,20 +289,48 @@ class ContourArc(GeometricalFrame):
         # J
         J = -0.0
 
+        # set Z axis to saftey
+        gc += CR + "(set Z saftey position)" + CR
+        gc += "G00 Z{0:08.3f} F{1:05.1f} {2}".format(
+            float(self.__safety_Z.get()),
+            float(self.__speed_Z_G00.get()), CR)
+
         # set start postion X/Y
         # for milling an arc, we move to 3clock position and start from
-        # this position
+        # this position.
+        # if cutter compensation is used please remember:
+        #   G41 is LEFT from path
+        #   G42 is RIGHT from path
+        #
+        #   Our start position is at 3-clock. If G41 is used, tool is inside
+        #   arc (circle)
+        #   if G42 is used, tool is outside of arc (circle)
+        #
+        #   this behaviour depends on general turn (CW or CCW)
+        #   CW => above behaviour
+        #   CCW => G41 is RIGHT, G42 is LEFT
+        #
+        #
         gc += "G00 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
             float(X+R),
             float(Y),
             float(self.__speed_XY_G00.get()),
             CR)
 
-        # start with circel
+        # cutter compensation
+        #
+        gc += self.getGCodeCutterComp(
+            self.__cuttercompensation.get(),
+            x=(X+R), y=Y, toolDia=toolDia
+        )
+
+        # set to Z-start position
         gc += CR + "(move Z-axis to start postion near surface)" + CR
         gc += "G01 Z{0:08.3f} F{1:05.1f} {2}".format(
             float(self.__start_Z.get()),
-            float(self.__speed_Z_G01.get()), CR)
+            float(self.speed_Z_G01.get()), CR)
+
+        # start with circel
         #
         # generate as many circle steps as needed until depthtotal is reached
         # cut an Arc
@@ -323,12 +351,6 @@ class ContourArc(GeometricalFrame):
             CR
         )
         gc += "(-- LOOP --)" + CR + CR
-        # cutter compensation
-        #
-        gc += self.getGCodeCutterComp(
-            self.__cuttercompensation.get(),
-            toolDia
-        )
         while (abs(z) < abs(depth)):
             # set next Z depth
             if ((abs(depth) - abs(z)) < abs(step)):
@@ -342,12 +364,12 @@ class ContourArc(GeometricalFrame):
             loop += intend + "(set new Z {0:05.2f} position)".format(z) + CR
             loop += intend + "G01 Z{0:08.3f} F{1:05.1f} {2}".format(
                 float(z),
-                float(self.__speed_Z_G01.get()), CR)
+                float(self.speed_Z_G01.get()), CR)
             # set direction G02/G03
             #
             loop += intend + self.__dir.get()
             loop += " X{0:08.3f} Y{1:08.3f} I{2:08.3f} J{3:08.3f} F{4:05.1f} {5}".format(
-                X+R, Y, I, J, float(self.__speed_XY_G02G03.get()), CR
+                X+R, Y, I, J, float(self.speed_XY_G02G03.get()), CR
             )
             loop += CR
             #

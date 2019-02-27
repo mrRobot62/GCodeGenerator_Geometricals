@@ -1,0 +1,163 @@
+{
+  "Plastic" : [
+                {
+                  "Material" : "Polystyrol",
+                  "Tool" : "Single cutter",
+                  "ToolID" : 11,
+                  "Tool dia" : 1.0,
+                  "Feed rate mm/sec" : 10,
+                  "Feed rate mm/min" : 600,
+                  "Infeed rate mm/min" : 60.0,
+                  "Spindel-RPM" : 20000,
+                  "Info" : "Einschneid Fraeser"
+                },
+                {
+                  "Material" : "PMMA (Plexiglas)",
+                  "Tool" : "Single cutter",
+                  "ToolID" : 12,
+                  "Tool dia" : 2.0,
+                  "Feed rate mm/sec" : 25,
+                  "Feed rate mm/min" : 1500,
+                  "Infeed rate mm/min" : 25.0,
+                  "Spindel-RPM" : 20000,
+                  "Info" : "Einschneid Fraeser"
+                }
+            ],
+
+    "Metal" : [
+                {
+                  "Material" : "Aluminium (Al Cu Mg1)",
+                  "Tool" : "Dual cutter",
+                  "ToolID" : 23,
+                  "Tool dia" : 3.0,
+                  "Feed rate mm/sec" : 5,
+                  "Feed rate mm/min" : 300,
+                  "Infeed rate mm/min" : 15.0,
+                  "Spindel-RPM" : 20000,
+                  "Info" : "2-Schneid Fraeser"
+
+                },
+                {
+                  "Material" : "Aluminium (Baumarktalu)",
+                  "Tool" : "Dual cutter",
+                  "ToolID" : 22,
+                  "Tool dia" : 2.0,
+                  "Feed rate mm/sec" : 10,
+                  "Feed rate mm/min" : 600,
+                  "Infeed rate mm/min" : 12.0,
+                  "Spindel-RPM" : 20000,
+                  "Info" : "2-Schneid Fraeser, "
+                },
+              {
+                "Material" : "Aluminium (Al Mg 3)",
+                "Tool" : "Tripple cutter",
+                "ToolID" : 32,
+                "Tool dia" : 2,
+                "Feed rate mm/sec" : 2.5,
+                "Feed rate mm/min" : 150,
+                "Infeed rate mm/min" : 30.0,
+                "Spindel-RPM" : 20000,
+                "Info" : "3-Schneid Fraeser "
+              },
+              {
+                "Material" : "Drill 2mm",
+                "Tool" : "2mm HSS drill",
+                "ToolID" : 62,
+                "Tool dia" : 2,
+                "Feed rate mm/sec" : 0,
+                "Feed rate mm/min" : 0,
+                "Infeed rate mm/min" : 40.0,
+                "Spindel-RPM" : 10000,
+                "Info" : "2mm HSS drill"
+              },
+              {
+                "Material" : "Drill 3mm",
+                "Tool" : "3mm HSS drill",
+                "ToolID" : 63,
+                "Tool dia" : 3,
+                "Feed rate mm/sec" : 0,
+                "Feed rate mm/min" : 0,
+                "Infeed rate mm/min" : 40.0,
+                "Spindel-RPM" : 10000,
+                "Info" : "4mm HSS drill"
+              },
+              {
+                "Material" : "Drill 4mm",
+                "Tool" : "4mm HSS drill",
+                "ToolID" : 64,
+                "Tool dia" : 4,
+                "Feed rate mm/sec" : 0,
+                "Feed rate mm/min" : 0,
+                "Infeed rate mm/min" : 60.0,
+                "Spindel-RPM" : 10000,
+                "Info" : "4mm HSS drill"
+              },
+              {
+                "Material" : "Drill 6mm",
+                "Tool" : "6mm HSS drill",
+                "ToolID" : 66,
+                "Tool dia" : 6,
+                "Feed rate mm/sec" : 0,
+                "Feed rate mm/min" : 0,
+                "Infeed rate mm/min" : 60.0,
+                "Spindel-RPM" : 10000,
+                "Info" : "6mm HSS drill"
+              }
+              ],
+    "Wood" :  [
+                {
+                  "Material" : "Beech plywood",
+                  "Tool" : "Shank-type cutters",
+                  "ToolID" : 53,
+                  "Tool dia" : 3.0,
+                  "Feed rate mm/sec" : 5,
+                  "Feed rate mm/min" : 300,
+                  "Infeed rate mm/min" : 180.0,
+                  "Spindel-RPM" : 8000,
+                  "Info" : "Spiralverzahnter Fraeser"
+                },
+                {
+                  "Material" : "MDF",
+                  "Tool" : "Dual cutters",
+                  "ToolID" : 22,
+                  "Tool dia" : 2.0,
+                  "Feed rate mm/sec" : 10,
+                  "Feed rate mm/min" : 600,
+                  "Infeed rate mm/min" : 120.0,
+                  "Spindel-RPM" : 20000,
+                  "Info" : "2-Schneid Fraeser"
+                },
+                {
+                  "Material" : "HDF",
+                  "Tool" : "Single cutters",
+                  "ToolID" : 12,
+                  "Tool dia" : 2.0,
+                  "Feed rate mm/sec" : 20,
+                  "Feed rate mm/min" : 1200,
+                  "Infeed rate mm/min" : 90.0,
+                  "Spindel-RPM" : 25000,
+                  "Info" : "1-Schneid Fraeser"
+                },
+                {
+                  "Material" : "Balsa",
+                  "Tool" : "Shank-type cutters",
+                  "ToolID" : 51,
+                  "Tool dia" : 1.0,
+                  "Feed rate mm/sec" : 5,
+                  "Feed rate mm/min" : 300,
+                  "Infeed rate mm/min" : 120,
+                  "Spindel-RPM" : 25000,
+                  "Info" : "Spiralverzahnter Fraeser"
+               },
+               {
+                 "Material" : "Poplar plywood",
+                 "ToolID" : 53,
+                 "Tool dia" : 3.0,
+                 "Feed rate mm/sec" : 5,
+                 "Feed rate mm/min" : 300,
+                 "Infeed rate mm/min" : 130,
+                 "Spindel-RPM" : 20000,
+                 "Info" : "Spiralverzahnter Fraeser"
+               }
+              ]
+}

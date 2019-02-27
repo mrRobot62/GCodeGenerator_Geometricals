@@ -70,6 +70,9 @@ class PocketRectangle(GeometricalFrame):
         self.__CC = StringVar()
         self.__CC.set(choices[0])
         self._changeImage(self.__CC.get())
+        # new in V012.5 --
+        self.setMaterialDict(self.selectedMaterial.get())       
+        #-----------------
         Label(self.frmButtonsIndividualContent, text='Coordinate Center').grid(row=row, column=0, sticky=W)
         OptionMenu(self.frmButtonsIndividualContent,
             self.__CC, *choices, command=self._changeImage).grid(
@@ -80,9 +83,9 @@ class PocketRectangle(GeometricalFrame):
         self.__unit = StringVar()
         self.__unit.set("G21")
         Label(self.frmButtonsIndividualContent, text='Unit').grid(row=row, column=0, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="mm", variable=self.__unit,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="mm", variable=self.__unit,
                     value="G21").grid(row=row, column=1, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="inch", variable=self.__unit,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="inch", variable=self.__unit,
                     value="G20").grid(row=row, column=2, sticky=W)
 
         row += 1
@@ -90,17 +93,18 @@ class PocketRectangle(GeometricalFrame):
         self.__dir.set("G02")
         Label(self.frmButtonsIndividualContent, text='Contour direction').grid(
             row=row, column=0, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="CW (G02)", variable=self.__dir,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="CW (G02)", variable=self.__dir,
                     value="G02").grid(row=row, column=1, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="CCW (G03)", variable=self.__dir,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="CCW (G03)", variable=self.__dir,
                     value=1).grid(row=row, column=2, sticky=W)
 
-        row += 1
-        self.__tooldia = StringVar(value="6.0")
+        td = self.dicSelectedMaterial["Tool dia"]
+        print ("ToolDia: " + str(td))
+        self.tooldia = StringVar(value = str(td))
         Label(self.frmButtonsIndividualContent, text="Tool diameter").grid(
             row=row, column=0, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=False,
-            textvariable=self.__tooldia).grid(row=row, column=1, sticky=W)
+            textvariable=self.tooldia).grid(row=row, column=1, sticky=W)
         #
         # default forward feed inside pocket (from track to track)
         # row += 1
@@ -158,15 +162,15 @@ class PocketRectangle(GeometricalFrame):
             textvariable=self.__speed_Z_G00, mandatory=False).grid(row=row, column=3, sticky=W)
 
         row += 1
-        self.__speed_XY_G02G03 = StringVar(value="80.0")
-        self.__speed_Z_G01 = StringVar(value="50.0")
+        self.speed_XY_G02G03 = StringVar(value="80.0")
+        self.speed_Z_G01 = StringVar(value="50.0")
         Label(self.frmButtonsIndividualContent, text="Feed (G01 X/Y)").grid(row=row, column=0, sticky=W)
         Label(self.frmButtonsIndividualContent, text="Feed (G01 Z)").grid(row=row, column=2, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.__speed_XY_G02G03, mandatory=False).grid(
+            textvariable=self.speed_XY_G02G03, mandatory=False).grid(
             row=row, column=1, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.__speed_Z_G01, mandatory=False).grid(
+            textvariable=self.speed_Z_G01, mandatory=False).grid(
             row=row, column=3, sticky=W)
 
         row += 1
@@ -186,6 +190,7 @@ class PocketRectangle(GeometricalFrame):
             row=row, column=3, sticky=W)
 
         #-----------------------------------------------------
+        self.upateMaterialFields(self.selectedMaterial.get())            
         self.frmButtonsIndividualContent.pack(expand=True, fill=BOTH)
         pass
 
@@ -197,7 +202,7 @@ class PocketRectangle(GeometricalFrame):
         a = float(self.__distanceA.get())
         b = float(self.__distanceB.get())
 
-        toolDia = float(self.__tooldia.get())
+        toolDia = float(self.tooldia.get())
         forwardstep = float(self.__forwardfeed.get())
 
         if (a <= 0.0 or b <= 0.0):
@@ -236,7 +241,7 @@ class PocketRectangle(GeometricalFrame):
                 text="Z parameter values should be greater than 0.0")
             return False
 
-        if (float(self.__tooldia.get()) <= 0.0):
+        if (float(self.tooldia.get()) <= 0.0):
             self.MessageBox(state="ERROR",
                 title="ERROR",
                 text="Tooldiamter should greater than 0.0")
@@ -259,7 +264,7 @@ class PocketRectangle(GeometricalFrame):
                   float(self.__centerY.get()))
         sizeAB = (float(self.__distanceA.get()),
                   float(self.__distanceB.get()))
-        toolDia = float(self.__tooldia.get())
+        toolDia = float(self.tooldia.get())
 
         pWidth = sizeAB[1]
         forwardstep = float(self.__forwardfeed.get())
@@ -278,9 +283,9 @@ class PocketRectangle(GeometricalFrame):
 
         feeds = {
             "XYG0" : float(self.__speed_XY_G00.get()),
-            "XYGn" : float(self.__speed_XY_G02G03.get()),
+            "XYGn" : float(self.speed_XY_G02G03.get()),
             "ZG0" : float(self.__speed_Z_G00.get()),
-            "ZGn" : float(self.__speed_Z_G01.get())
+            "ZGn" : float(self.speed_Z_G01.get())
         }
         gc = ""
         gc += self.getGCode_Preamble()

@@ -67,6 +67,9 @@ class PocketCircle(GeometricalFrame):
         self.__CC = StringVar()
         self.__CC.set(choices[0])
         self._changeImage(self.__CC.get())
+        # new in V012.5 --
+        self.setMaterialDict(self.selectedMaterial.get())       
+        #-----------------
         Label(self.frmButtonsIndividualContent, text='Coordinate Center').grid(row=row, column=0, sticky=W)
         OptionMenu(self.frmButtonsIndividualContent,
             self.__CC, *choices, command=self._changeImage).grid(
@@ -77,9 +80,9 @@ class PocketCircle(GeometricalFrame):
         self.__unit = StringVar()
         self.__unit.set("G21")
         Label(self.frmButtonsIndividualContent, text='Unit').grid(row=row, column=0, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="mm", variable=self.__unit,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="mm", variable=self.__unit,
                     value="G21").grid(row=row, column=1, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="inch", variable=self.__unit,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="inch", variable=self.__unit,
                     value="G20").grid(row=row, column=2, sticky=W)
 
         row += 1
@@ -87,18 +90,18 @@ class PocketCircle(GeometricalFrame):
         self.__dir.set("G02")
         Label(self.frmButtonsIndividualContent, text='Contour direction').grid(
             row=row, column=0, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="CW (G02)", variable=self.__dir,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="CW (G02)", variable=self.__dir,
                     value="G02").grid(row=row, column=1, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="CCW (G03)", variable=self.__dir,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="CCW (G03)", variable=self.__dir,
                     value=1).grid(row=row, column=2, sticky=W)
 
         row += 1
-        self.__tooldia = StringVar(value="6.0")
+        self.tooldia = StringVar(value="6.0")
         self.__stepover = StringVar(value="50")
         Label(self.frmButtonsIndividualContent, text="Tool diameter").grid(
             row=row, column=0, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=False,
-            textvariable=self.__tooldia).grid(row=row, column=1, sticky=W)
+            textvariable=self.tooldia).grid(row=row, column=1, sticky=W)
         Label(self.frmButtonsIndividualContent, text="Stepover tooldia %").grid(
             row=row, column=2, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=10,
@@ -160,15 +163,15 @@ class PocketCircle(GeometricalFrame):
             textvariable=self.__speed_Z_G00, mandatory=False).grid(row=row, column=3, sticky=W)
 
         row += 1
-        self.__speed_XY_G02G03 = StringVar(value="80.0")
-        self.__speed_Z_G01 = StringVar(value="50.0")
+        self.speed_XY_G02G03 = StringVar(value="80.0")
+        self.speed_Z_G01 = StringVar(value="50.0")
         Label(self.frmButtonsIndividualContent, text="Feed (G01 X/Y)").grid(row=row, column=0, sticky=W)
         Label(self.frmButtonsIndividualContent, text="Feed (G01 Z)").grid(row=row, column=2, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.__speed_XY_G02G03, mandatory=False).grid(
+            textvariable=self.speed_XY_G02G03, mandatory=False).grid(
             row=row, column=1, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.__speed_Z_G01, mandatory=False).grid(
+            textvariable=self.speed_Z_G01, mandatory=False).grid(
             row=row, column=3, sticky=W)
 
         row += 1
@@ -188,6 +191,7 @@ class PocketCircle(GeometricalFrame):
             row=row, column=3, sticky=W)
 
         #-----------------------------------------------------
+        self.upateMaterialFields(self.selectedMaterial.get())            
         self.frmButtonsIndividualContent.pack(expand=True, fill=BOTH)
         pass
 
@@ -198,7 +202,7 @@ class PocketCircle(GeometricalFrame):
         print ("userInputValidation")
         radii = (float(self.__radiusOuter.get()),
                  float(self.__radiusInner.get()))
-        toolDia = float(self.__tooldia.get())
+        toolDia = float(self.tooldia.get())
         stepover = float(self.__stepover.get())
 
         if (radii[0] <= 0.0):
@@ -243,7 +247,7 @@ class PocketCircle(GeometricalFrame):
                 text="Z parameter values should be greater than 0.0")
             return False
 
-        if (float(self.__tooldia.get()) <= 0.0):
+        if (float(self.tooldia.get()) <= 0.0):
             self.MessageBox(state="ERROR",
                 title="ERROR",
                 text="Tooldiamter should greater than 0.0")
@@ -267,7 +271,7 @@ class PocketCircle(GeometricalFrame):
         radii = (float(self.__radiusOuter.get()),
                  float(self.__radiusInner.get()))
 
-        toolDia = float(self.__tooldia.get())
+        toolDia = float(self.tooldia.get())
 
         stepover = float(self.__stepover.get())
         stepover = round(toolDia - (float(toolDia * stepover) / 100), 1)
@@ -286,9 +290,9 @@ class PocketCircle(GeometricalFrame):
 
         feeds = {
             "XYG0" : float(self.__speed_XY_G00.get()),
-            "XYGn" : float(self.__speed_XY_G02G03.get()),
+            "XYGn" : float(self.speed_XY_G02G03.get()),
             "ZG0" : float(self.__speed_Z_G00.get()),
-            "ZGn" : float(self.__speed_Z_G01.get())
+            "ZGn" : float(self.speed_Z_G01.get())
         }
         gc = ""
         gc += self.getGCode_Preamble()

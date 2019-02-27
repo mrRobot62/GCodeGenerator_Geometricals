@@ -73,6 +73,9 @@ class ContourRectangle(GeometricalFrame):
         self.__CC = StringVar()
         self.__CC.set(choices[8])
         self._changeImage(self.__CC.get())
+        # new in V012.5 --
+        self.setMaterialDict(self.selectedMaterial.get())       
+        #-----------------
         Label(self.frmButtonsIndividualContent, text='Coordinate Center').grid(row=row, column=0, sticky=W)
         OptionMenu(self.frmButtonsIndividualContent,
             self.__CC, *choices, command=self._changeImage).grid(
@@ -82,9 +85,9 @@ class ContourRectangle(GeometricalFrame):
         self.__unit = StringVar()
         self.__unit.set("G21")
         Label(self.frmButtonsIndividualContent, text='Unit').grid(row=row, column=0, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="mm", variable=self.__unit,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="mm", variable=self.__unit,
                     value="G21").grid(row=row, column=1, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="inch", variable=self.__unit,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="inch", variable=self.__unit,
                     value="G20").grid(row=row, column=2, sticky=W)
 
         row += 1
@@ -92,27 +95,29 @@ class ContourRectangle(GeometricalFrame):
         self.__dir.set("0")
         Label(self.frmButtonsIndividualContent, text='Contour direction').grid(
             row=row, column=0, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="CW", variable=self.__dir,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="CW", variable=self.__dir,
                     value=0).grid(row=row, column=1, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="CCW", variable=self.__dir,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="CCW", variable=self.__dir,
                     value=1).grid(row=row, column=2, sticky=W)
 
         row += 1
         self.__cuttercompensation = StringVar()
         self.__cuttercompensation.set("G40")
         Label(self.frmButtonsIndividualContent, text='Tool movement').grid(row=row, column=0, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="on contour", variable=self.__cuttercompensation,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="on contour", variable=self.__cuttercompensation,
             value="G40").grid(row=row, column=1, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="left from contour", variable=self.__cuttercompensation,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="left from contour", variable=self.__cuttercompensation,
             value="G41").grid(row=row, column=2, sticky=W)
-        Radiobutton(self.frmButtonsIndividualContent, text="right from contour", variable=self.__cuttercompensation,
+        ttk.Radiobutton(self.frmButtonsIndividualContent, text="right from contour", variable=self.__cuttercompensation,
             value="G42").grid(row=row, column=3, sticky=W)
 
-        row += 1
-        self.__tooldia = StringVar(value="3.0")
-        Label(self.frmButtonsIndividualContent, text="Tool diameter").grid(row=row, column=0, sticky=W)
+        td = self.dicSelectedMaterial["Tool dia"]
+        print ("ToolDia: " + str(td))
+        self.tooldia = StringVar(value = str(td))
+        Label(self.frmButtonsIndividualContent, text="Tool diameter").grid(
+            row=row, column=0, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=False,
-            textvariable=self.__tooldia).grid(row=row, column=1, sticky=W)
+            textvariable=self.tooldia).grid(row=row, column=1, sticky=W)
 
         row += 1
         self.__centerX = StringVar(value="0.0")
@@ -160,15 +165,15 @@ class ContourRectangle(GeometricalFrame):
             textvariable=self.__speed_Z_G00, mandatory=False).grid(row=row, column=3, sticky=W)
 
         row += 1
-        self.__speed_XY_G02G03 = StringVar(value="80.0")
-        self.__speed_Z_G01 = StringVar(value="50.0")
+        self.speed_XY_G02G03 = StringVar(value="80.0")
+        self.speed_Z_G01 = StringVar(value="50.0")
         Label(self.frmButtonsIndividualContent, text="Feed (G01 X/Y)").grid(row=row, column=0, sticky=W)
         Label(self.frmButtonsIndividualContent, text="Feed (G01 Z)").grid(row=row, column=2, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.__speed_XY_G02G03, mandatory=False).grid(
+            textvariable=self.speed_XY_G02G03, mandatory=False).grid(
             row=row, column=1, sticky=W)
         FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.__speed_Z_G01, mandatory=False).grid(
+            textvariable=self.speed_Z_G01, mandatory=False).grid(
             row=row, column=3, sticky=W)
 
         row += 1
@@ -186,6 +191,7 @@ class ContourRectangle(GeometricalFrame):
             row=row, column=1, sticky=W)
 
         #-----------------------------------------------------
+        self.upateMaterialFields(self.selectedMaterial.get())            
         self.frmButtonsIndividualContent.pack(expand=True, fill=BOTH)
         pass
 
@@ -215,9 +221,9 @@ class ContourRectangle(GeometricalFrame):
 
         feeds = {
             "XYG0" : float(self.__speed_XY_G00.get()),
-            "XYGn" : float(self.__speed_XY_G02G03.get()),
+            "XYGn" : float(self.speed_XY_G02G03.get()),
             "ZG0" : float(self.__speed_Z_G00.get()),
-            "ZGn" : float(self.__speed_Z_G01.get())
+            "ZGn" : float(self.speed_Z_G01.get())
         }
 
 
@@ -304,15 +310,15 @@ class ContourRectangle(GeometricalFrame):
             gc += CR + "(-- Cutter compensation LEFT --){}".format(CR)
             gc += "{} {}".format(self.__cuttercompensation.get(),CR)
             cutterComp = (
-                -(float(self.__tooldia.get()) / 2.0),
-                -(float(self.__tooldia.get()) / 2.0)
+                -(float(self.tooldia.get()) / 2.0),
+                -(float(self.tooldia.get()) / 2.0)
             )
         if (self.__cuttercompensation.get() == "G42"):
             gc += CR + "(-- Cutter compensation RIGHT --){}".format(CR)
             gc += "{} {}".format(self.__cuttercompensation.get(),CR)
             cutterComp = (
-                (float(self.__tooldia.get()) / 2.0),
-                (float(self.__tooldia.get()) / 2.0)
+                (float(self.tooldia.get()) / 2.0),
+                (float(self.tooldia.get()) / 2.0)
             )
 
         dir = int(self.__dir.get())
