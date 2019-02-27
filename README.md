@@ -28,10 +28,10 @@ Status October 2018 - under development **
 |0.12.3 | bugfix #15, #18(close window, VersionNumber|
 |0.12.4 | bugfix #10, ToolID, SpindleSpeed, SpindleDir(CW/CCW|
 |0.12.5 | 0.12.5-rc1 Tool & material select implemented 
-not editable via gui, only inside json-file
-bug-fixes cutter compensation
-bug-fixes window size
-bug-fixes Mac Mojave, using ttk.<widgets> instead of TKinter|
+||not editable via gui, only inside json-file
+||bug-fixes cutter compensation
+||bug-fixes window size
+||bug-fixes Mac Mojave, using ttk.<widgets> instead of TKinter|
 
 ## more details in our WIKI
 [Wiki](https://github.com/mrRobot62/GCodeGenerator_Geometricals/wiki)
