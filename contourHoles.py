@@ -43,9 +43,9 @@ class ContourHoles(GeometricalFrame):
         p = self.__imageNames[i]
         self.img = PIL.Image.open(p)
         self.photo = PIL.ImageTk.PhotoImage(self.img)
-        Label(self.frmImage, image=self.photo).grid(
-            row=0, column=0, sticky=W+E+N+S, columnspan=2
-        )
+        Label(
+            self.frmImage, image=self.photo).grid(
+                row=0, column=0, sticky=W + E + N + S, columnspan=2)
 
     #-------------------------------------------------------------
     # her you should insert your own widgets which are important
@@ -54,151 +54,274 @@ class ContourHoles(GeometricalFrame):
     def _frmIndividualContent(self):
         self.init()
         row = 0
-        choices = [1,2,3,4,5]
+        choices = [1, 2, 3, 4, 5]
 
         self.__CC = StringVar()
         self.__CC.set(choices[4])
         self._changeImage(self.__CC.get())
         # new in V012.5 --
-        self.setMaterialDict(self.selectedMaterial.get())       
+        self.setMaterialDict(self.selectedMaterial.get())
         #-----------------
-        Label(self.frmButtonsIndividualContent, text='Coordinate Center').grid(row=row, column=0, sticky=W)
-        OptionMenu(self.frmButtonsIndividualContent,
-            self.__CC, *choices, command=self._changeImage).grid(
-            row=row, column=1)
+        Label(
+            self.frmButtonsIndividualContent, text='Coordinate Center').grid(
+                row=row, column=0, sticky=W)
+        OptionMenu(
+            self.frmButtonsIndividualContent,
+            self.__CC,
+            *choices,
+            command=self._changeImage).grid(
+                row=row, column=1)
 
         row += 1
         self.__unit = StringVar()
         self.__unit.set("G21")
-        Label(self.frmButtonsIndividualContent, text='Unit').grid(row=row, column=0, sticky=W)
-        ttk.Radiobutton(self.frmButtonsIndividualContent, text="mm", variable=self.__unit,
-                    value="G21").grid(row=row, column=1, sticky=W)
-        ttk.Radiobutton(self.frmButtonsIndividualContent, text="inch", variable=self.__unit,
-                    value="G20").grid(row=row, column=2, sticky=W)
+        Label(
+            self.frmButtonsIndividualContent, text='Unit').grid(
+                row=row, column=0, sticky=W)
+        ttk.Radiobutton(
+            self.frmButtonsIndividualContent,
+            text="mm",
+            variable=self.__unit,
+            value="G21").grid(
+                row=row, column=1, sticky=W)
+        ttk.Radiobutton(
+            self.frmButtonsIndividualContent,
+            text="inch",
+            variable=self.__unit,
+            value="G20").grid(
+                row=row, column=2, sticky=W)
 
         row += 1
         self.__dir = StringVar()
         self.__dir.set("G02")
-        Label(self.frmButtonsIndividualContent, text='Contour direction').grid(
-            row=row, column=0, sticky=W)
-        ttk.Radiobutton(self.frmButtonsIndividualContent, text="CW (G02)", variable=self.__dir,
-                    value="G02").grid(row=row, column=1, sticky=W)
-        ttk.Radiobutton(self.frmButtonsIndividualContent, text="CCW (G03)", variable=self.__dir,
-                    value="G03").grid(row=row, column=2, sticky=W)
+        Label(
+            self.frmButtonsIndividualContent, text='Contour direction').grid(
+                row=row, column=0, sticky=W)
+        ttk.Radiobutton(
+            self.frmButtonsIndividualContent,
+            text="CW (G02)",
+            variable=self.__dir,
+            value="G02").grid(
+                row=row, column=1, sticky=W)
+        ttk.Radiobutton(
+            self.frmButtonsIndividualContent,
+            text="CCW (G03)",
+            variable=self.__dir,
+            value="G03").grid(
+                row=row, column=2, sticky=W)
 
         row += 1
         self.__cuttercompensation = StringVar()
         self.__cuttercompensation.set("G42")
-        Label(self.frmButtonsIndividualContent, text='Tool movement').grid(row=row, column=0, sticky=W)
-        ttk.Radiobutton(self.frmButtonsIndividualContent, text="on contour", variable=self.__cuttercompensation,
-            value="G40").grid(row=row, column=1, sticky=W)
-        ttk.Radiobutton(self.frmButtonsIndividualContent, text="left from contour", variable=self.__cuttercompensation,
-            value="G41").grid(row=row, column=2, sticky=W)
-        ttk.Radiobutton(self.frmButtonsIndividualContent, text="right from contour", variable=self.__cuttercompensation,
-            value="G42").grid(row=row, column=3, sticky=W)
+        Label(
+            self.frmButtonsIndividualContent, text='Tool movement').grid(
+                row=row, column=0, sticky=W)
+        ttk.Radiobutton(
+            self.frmButtonsIndividualContent,
+            text="on contour",
+            variable=self.__cuttercompensation,
+            value="G40").grid(
+                row=row, column=1, sticky=W)
+        ttk.Radiobutton(
+            self.frmButtonsIndividualContent,
+            text="left from contour",
+            variable=self.__cuttercompensation,
+            value="G41").grid(
+                row=row, column=2, sticky=W)
+        ttk.Radiobutton(
+            self.frmButtonsIndividualContent,
+            text="right from contour",
+            variable=self.__cuttercompensation,
+            value="G42").grid(
+                row=row, column=3, sticky=W)
 
         row += 1
         self.tooldia = StringVar(value="3.0")
         self.__numberOfHoles = StringVar(value="4")
         #vcmd = (self.frmButtonsIndividualContent.register(self._updateAngle), '%s', '%S')
 
-        Label(self.frmButtonsIndividualContent, text="Tool diameter").grid(row=row, column=0, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=False,
-            textvariable=self.tooldia).grid(row=row, column=1, sticky=W)
-        Label(self.frmButtonsIndividualContent, text="Number of Holes").grid(row=row, column=2, sticky=W)
-        IntegerEntry(self.frmButtonsIndividualContent, width=10,
-            mandatory=True, validate="focusout",
+        Label(
+            self.frmButtonsIndividualContent, text="Tool diameter").grid(
+                row=row, column=0, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=10,
+            mandatory=False,
+            textvariable=self.tooldia).grid(
+                row=row, column=1, sticky=W)
+        Label(
+            self.frmButtonsIndividualContent, text="Number of Holes").grid(
+                row=row, column=2, sticky=W)
+        IntegerEntry(
+            self.frmButtonsIndividualContent,
+            width=10,
+            mandatory=True,
+            validate="focusout",
             vcmd=self._updateAngle,
-            textvariable=self.__numberOfHoles).grid(row=row, column=3, sticky=W)
+            textvariable=self.__numberOfHoles).grid(
+                row=row, column=3, sticky=W)
 
         row += 1
         self.__centerX = StringVar(value="0.0")
         self.__centerY = StringVar(value="0.0")
-        Label(self.frmButtonsIndividualContent, text='Center X').grid(row=row, column=0, sticky=W)
-        Label(self.frmButtonsIndividualContent, text="Center Y").grid(row=row, column=2, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=True,
-            textvariable=self.__centerX).grid(row=row, column=1, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=True,
-            textvariable=self.__centerY).grid(row=row, column=3, sticky=W)
+        Label(
+            self.frmButtonsIndividualContent, text='Center X').grid(
+                row=row, column=0, sticky=W)
+        Label(
+            self.frmButtonsIndividualContent, text="Center Y").grid(
+                row=row, column=2, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=10,
+            mandatory=True,
+            textvariable=self.__centerX).grid(
+                row=row, column=1, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=10,
+            mandatory=True,
+            textvariable=self.__centerY).grid(
+                row=row, column=3, sticky=W)
 
         row += 1
-        self.__holeRadius = StringVar(value = "10.0")
-        self.__circleRadius = StringVar(value = "100.0")
-        Label(self.frmButtonsIndividualContent, text="Hole radius (R1)").grid(row=row, column=0, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=10,  mandatory=True,
+        self.__holeRadius = StringVar(value="10.0")
+        self.__circleRadius = StringVar(value="100.0")
+        Label(
+            self.frmButtonsIndividualContent, text="Hole radius (R1)").grid(
+                row=row, column=0, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=10,
+            mandatory=True,
             textvariable=self.__holeRadius,
-            background="Red").grid(row=row, column=1, sticky=W)
-        Label(self.frmButtonsIndividualContent, text="Circle radius (R)").grid(row=row, column=2, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=10,  mandatory=True,
+            background="Red").grid(
+                row=row, column=1, sticky=W)
+        Label(
+            self.frmButtonsIndividualContent, text="Circle radius (R)").grid(
+                row=row, column=2, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=10,
+            mandatory=True,
             textvariable=self.__circleRadius,
-            background="Red").grid(row=row, column=3, sticky=W)
+            background="Red").grid(
+                row=row, column=3, sticky=W)
 
         row += 1
         self.__angle = 0
         self.__initialStartAngle = StringVar(value=self.__angle)
         # this field is self calculated
-        self.__holeAngle = StringVar(value = self.__initialStartAngle.get())
-        Label(self.frmButtonsIndividualContent, text="Initial start angle").grid(
-            row=row, column=0, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5,
+        self.__holeAngle = StringVar(value=self.__initialStartAngle.get())
+        Label(
+            self.frmButtonsIndividualContent, text="Initial start angle").grid(
+                row=row, column=0, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=5,
             textvariable=self.__initialStartAngle).grid(
-            row=row, column=1, sticky=W)
-        Label(self.frmButtonsIndividualContent, text="Angle between holes").grid(
-            row=row, column=2, sticky=W)
-        Label(self.frmButtonsIndividualContent, textvariable=self.__holeAngle).grid(
-            row=row, column=3, sticky=W)
+                row=row, column=1, sticky=W)
+        Label(
+            self.frmButtonsIndividualContent, text="Angle between holes").grid(
+                row=row, column=2, sticky=W)
+        Label(
+            self.frmButtonsIndividualContent,
+            textvariable=self.__holeAngle).grid(
+                row=row, column=3, sticky=W)
 
         row += 1
         self.__depthtotal = StringVar(value="-0.5")
         self.__depthstep = StringVar(value="-0.5")
-        Label(self.frmButtonsIndividualContent, text="Total depth").grid(row=row, column=0, sticky=W)
-        Label(self.frmButtonsIndividualContent, text="depth cutting per step").grid(
-            row=row, column=2, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.__depthtotal, mandatory=True).grid(
-            row=row, column=1, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.__depthstep, mandatory=True).grid(
-            row=row, column=3, sticky=W)
+        Label(
+            self.frmButtonsIndividualContent, text="Total depth").grid(
+                row=row, column=0, sticky=W)
+        Label(
+            self.frmButtonsIndividualContent,
+            text="depth cutting per step").grid(
+                row=row, column=2, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=5,
+            textvariable=self.__depthtotal,
+            mandatory=True).grid(
+                row=row, column=1, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=5,
+            textvariable=self.__depthstep,
+            mandatory=True).grid(
+                row=row, column=3, sticky=W)
 
         row += 1
-        self.__speed_XY_G00 = StringVar(value="200.0")
-        self.__speed_Z_G00 = StringVar(value="100.0")
-        Label(self.frmButtonsIndividualContent, text="Feed (G00 X/Y)").grid(row=row, column=0, sticky=W)
-        Label(self.frmButtonsIndividualContent, text="Feed (G00 Z)").grid(row=row, column=2, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.__speed_XY_G00, mandatory=False).grid(
-            row=row, column=1, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.__speed_Z_G00, mandatory=False).grid(row=row, column=3, sticky=W)
+        self.__speed_XY_G00 = StringVar(
+            value=self._standardGCodeSeq["TRAVEL_SPEEDXYZ"][0])
+        self.__speed_Z_G00 = StringVar(
+            value=self._standardGCodeSeq["TRAVEL_SPEEDXYZ"][2])
+        Label(
+            self.frmButtonsIndividualContent, text="Feed (G00 X/Y)").grid(
+                row=row, column=0, sticky=W)
+        Label(
+            self.frmButtonsIndividualContent, text="Feed (G00 Z)").grid(
+                row=row, column=2, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=5,
+            textvariable=self.__speed_XY_G00,
+            mandatory=False).grid(
+                row=row, column=1, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=5,
+            textvariable=self.__speed_Z_G00,
+            mandatory=False).grid(
+                row=row, column=3, sticky=W)
 
         row += 1
         self.speed_XY_G02G03 = StringVar(value="100.0")
         self.speed_Z_G01 = StringVar(value="80.0")
-        Label(self.frmButtonsIndividualContent, text="Feed (G02/G03 X/Y)").grid(row=row, column=0, sticky=W)
-        Label(self.frmButtonsIndividualContent, text="Feed (G01 Z)").grid(row=row, column=2, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.speed_XY_G02G03, mandatory=False).grid(
-            row=row, column=1, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.speed_Z_G01, mandatory=False).grid(
-            row=row, column=3, sticky=W)
+        Label(
+            self.frmButtonsIndividualContent, text="Feed (G02/G03 X/Y)").grid(
+                row=row, column=0, sticky=W)
+        Label(
+            self.frmButtonsIndividualContent, text="Feed (G01 Z)").grid(
+                row=row, column=2, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=5,
+            textvariable=self.speed_XY_G02G03,
+            mandatory=False).grid(
+                row=row, column=1, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=5,
+            textvariable=self.speed_Z_G01,
+            mandatory=False).grid(
+                row=row, column=3, sticky=W)
 
         row += 1
-        self.__start_Z = StringVar(value="3.0")
-        Label(self.frmButtonsIndividualContent, text="Start Z").grid(row=row, column=0, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=10,
-            textvariable=self.__start_Z, mandatory=False).grid(
-            row=row, column=1, sticky=W)
+        self.__start_Z = StringVar(value=self._standardGCodeSeq["ZAXIS"][0])
+        Label(
+            self.frmButtonsIndividualContent, text="Start Z").grid(
+                row=row, column=0, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=10,
+            textvariable=self.__start_Z,
+            mandatory=False).grid(
+                row=row, column=1, sticky=W)
 
         #row += 1
-        self.__safety_Z = StringVar(value="10.0")
-        Label(self.frmButtonsIndividualContent, text="Safety Z:").grid(row=row, column=2, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=10,
-            textvariable=self.__safety_Z, mandatory=False).grid(
-            row=row, column=3, sticky=W)
+        self.__safety_Z = StringVar(value=self._standardGCodeSeq["ZAXIS"][1])
+        Label(
+            self.frmButtonsIndividualContent, text="Safety Z:").grid(
+                row=row, column=2, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=10,
+            textvariable=self.__safety_Z,
+            mandatory=False).grid(
+                row=row, column=3, sticky=W)
 
-        self.upateMaterialFields(self.selectedMaterial.get())            
+        self.upateMaterialFields(self.selectedMaterial.get())
         self.frmButtonsIndividualContent.pack(expand=True, fill=BOTH)
         pass
 
@@ -208,14 +331,12 @@ class ContourHoles(GeometricalFrame):
         '''
         if (self.__numberOfHoles.get() > 0):
             # pre set of
-            holeAngle = round(360.0 / float(numberOfHoles),1)
-            print ("update angle between holes {0:5.2f} Holes {1}".format(
-                holeAngle, numberOfHoles
-            ))
+            holeAngle = round(360.0 / float(numberOfHoles), 1)
+            print("update angle between holes {0:5.2f} Holes {1}".format(
+                holeAngle, numberOfHoles))
             self.__holeAngle.set(str(holeAngle))
 
         return True
-
 
     #-------------------------------------------------------------
     # here you generate your GCode.
@@ -225,12 +346,12 @@ class ContourHoles(GeometricalFrame):
     def generateGCode(self):
 
         # x/y position for circle
-        cPoint = (0.0, 0.0) # X/Y entire circle
+        cPoint = (0.0, 0.0)  # X/Y entire circle
         numberOfHoles = int(self.__numberOfHoles.get())
 
         # radius r = entire Circle, r1= radius per hole
         radii = (float(self.__circleRadius.get()),
-                float(self.__holeRadius.get()))
+                 float(self.__holeRadius.get()))
 
         # tool diameter
         tD = float(self.tooldia.get())
@@ -240,22 +361,22 @@ class ContourHoles(GeometricalFrame):
         holeAngle = float(self.__holeAngle.get())
 
         feeds = {
-            "XYG0" : float(self.__speed_XY_G00.get()),
-            "XYGn" : float(self.speed_XY_G02G03.get()),
-            "ZG0" : float(self.__speed_Z_G00.get()),
-            "ZGn" : float(self.speed_Z_G01.get())
+            "XYG0": float(self.__speed_XY_G00.get()),
+            "XYGn": float(self.speed_XY_G02G03.get()),
+            "ZG0": float(self.__speed_Z_G00.get()),
+            "ZGn": float(self.speed_Z_G01.get())
         }
 
         zPos = {
-            "safetyZ" : float(self.__safety_Z.get()),
-            "startZ" : float(self.__start_Z.get())
+            "safetyZ": float(self.__safety_Z.get()),
+            "startZ": float(self.__start_Z.get())
         }
 
         # dir
         if (self.__dir.get() == "G02"):
-            dir = 0 #CW G02
-        else :
-            dir = 1 #CCW G03
+            dir = 0  #CW G02
+        else:
+            dir = 1  #CCW G03
 
         #
         # to make it easier, we calculate everything on center of
@@ -264,29 +385,24 @@ class ContourHoles(GeometricalFrame):
         if (int(self.__CC.get()) == 1):
             cPoint = (float(self.__centerX.get()), float(self.__centerY.get()))
         elif (int(self.__CC.get()) == 2):
-            cPoint = (float(self.__centerX.get()), -float(self.__centerY.get()))
+            cPoint = (float(self.__centerX.get()),
+                      -float(self.__centerY.get()))
         elif (int(self.__CC.get()) == 3):
-            cPoint = (-float(self.__centerX.get()), -float(self.__centerY.get()))
+            cPoint = (-float(self.__centerX.get()),
+                      -float(self.__centerY.get()))
         elif (int(self.__CC.get()) == 4):
-            cPoint = (-float(self.__centerX.get()), float(self.__centerY.get()))
+            cPoint = (-float(self.__centerX.get()),
+                      float(self.__centerY.get()))
         elif (int(self.__CC.get()) == 5):
-            cPoint = (float(0.0),float(0.0)) # ignore user input
+            cPoint = (float(0.0), float(0.0))  # ignore user input
         else:
-            print ("unknown center point choose ({})".format(self.__CC.get()))
+            print("unknown center point choose ({})".format(self.__CC.get()))
             cPoint = (0.0, 0.0)
 
+        hCPoint = self.__calculateHoleCPoints(numberOfHoles, cPoint, radii,
+                                              startAngle, holeAngle)
 
-        hCPoint = self.__calculateHoleCPoints(
-            numberOfHoles,
-            cPoint,
-            radii,
-            startAngle,
-            holeAngle
-        )
-
-        hCPoint = self.__addCutterCompensation(
-            hCPoint, radii, tD, dir
-        )
+        hCPoint = self.__addCutterCompensation(hCPoint, radii, tD, dir)
 
         gc = ""
         loop = ""
@@ -296,28 +412,24 @@ class ContourHoles(GeometricalFrame):
         # set Z axis
         gc += CR + "(set Z saftey position)" + CR
         gc += "G00 Z{0:08.3f} F{1:05.1f} {2}".format(
-             float(self.__safety_Z.get()),
-             float(self.__speed_Z_G00.get()), CR)
+            float(self.__safety_Z.get()), float(self.__speed_Z_G00.get()), CR)
         gc += "(--- START HOLES ---)" + CR
         indent = "".ljust(2)
         dir = self.__dir.get()
         h = 0
         for v in hCPoint:
-            loop += self.__generateSubHole(h, v, radii, feeds, dir, indent, retraction="0.0" )
+            loop += self.__generateSubHole(
+                h, v, radii, feeds, dir, indent, retraction="0.0")
             h += 1
 
         gc += loop
         gc += "(--- END HOLES ---)" + CR
 
-        gc += self.getGCode_Homeing(
-            cPoint[0],
-            cPoint[1],
-            zPos["safetyZ"],
-            feeds["XYG0"]
-        )
+        gc += self.getGCode_Homeing(cPoint[0], cPoint[1], zPos["safetyZ"],
+                                    feeds["XYG0"])
         gc += self.getGCode_Postamble()
         gc += CR
-        return  gc
+        return gc
 
     def __calculateHoleCPoints(self, numberOfHoles, cPoint, radii, angle, deg):
         '''
@@ -341,12 +453,12 @@ class ContourHoles(GeometricalFrame):
         hcp = []
         r = radii[0]
         rH = radii[1]
-        for x in range (numberOfHoles):
+        for x in range(numberOfHoles):
             rad = math.radians(angle)
             # set X point
             # bugfix : add radius of hole to start point of hole
             v = (round(math.cos(rad) * r + cPoint[0] + rH, 3),
-                round(math.sin(rad) * r + cPoint[1] + rH, 3))
+                 round(math.sin(rad) * r + cPoint[1] + rH, 3))
             hcp.append(v)
             print "Hole center points {0} on radius {1:05.1f} angle {2:05.1f}".format(
                 v, r, angle)
@@ -367,7 +479,7 @@ class ContourHoles(GeometricalFrame):
             G42 is right from this contour. If used, we set the tool inside
         '''
         hcp = []
-        tR = (toolDia / 2.0 )
+        tR = (toolDia / 2.0)
         hR = radii[1]
         cutterComp = 0
         if (self.__cuttercompensation.get() == "G41"):
@@ -389,43 +501,48 @@ class ContourHoles(GeometricalFrame):
                 v = (v[0] - hR + tR, v[1])
 
             hcp.append(v)
-            print "Set cutter compensation #{0} XY{1}".format(h,v)
+            print "Set cutter compensation #{0} XY{1}".format(h, v)
             h += 1
         return hcp
 
-    def __generateSubHole(self, nr, vec, radii, feeds, dir, indent = "", retraction="0.5"):
+    def __generateSubHole(self,
+                          nr,
+                          vec,
+                          radii,
+                          feeds,
+                          dir,
+                          indent="",
+                          retraction="0.5"):
         '''
             create gCode for hole "nr" at point "hCPoint"
             direction of cut is set in "cDir"
 
         '''
         # gc is local !
-        gc = indent + "(--Hole #{0:02d} at pos {1} --){2}".format(
-            nr, vec, CR)
+        gc = indent + "(--Hole #{0:02d} at pos {1} --){2}".format(nr, vec, CR)
 
-        depthZ = (float(self.__depthtotal.get()), float(self.__depthstep.get()))
+        depthZ = (float(self.__depthtotal.get()),
+                  float(self.__depthstep.get()))
         dZ = 0.0
 
         zPos = {
-            "safetyZ"   : float(self.__safety_Z.get()),
-            "startZ"    : float(self.__start_Z.get())
+            "safetyZ": float(self.__safety_Z.get()),
+            "startZ": float(self.__start_Z.get())
         }
-
 
         # radii[0] = center radius
         # radii[1] = hole radius
-        I = radii[1] * -1.0 # X-Offset (radius)
-        J = 0.0 # Y-offset
+        I = radii[1] * -1.0  # X-Offset (radius)
+        J = 0.0  # Y-offset
 
         #
         # set start X/Y position
         gc += indent + "G01 Z{0:08.3f} F{1:05.1f} {2}".format(
-            zPos["startZ"], feeds["XYGn"],CR)
+            zPos["startZ"], feeds["XYGn"], CR)
         gc += indent + "G01 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
-            vec[0], vec[1], feeds["XYGn"],CR)
+            vec[0], vec[1], feeds["XYGn"], CR)
         gc += indent + "(-- start Z loop total {0} step {1}--) {2}".format(
-            depthZ[0], depthZ[1], CR
-        )
+            depthZ[0], depthZ[1], CR)
         lgc = ""
         indent2 = indent.ljust(2)
         if (retraction == ""):
@@ -448,10 +565,7 @@ class ContourHoles(GeometricalFrame):
             lgc += indent2 + "(-- new Z {0:08.3f} --) {1}".format(dZ, CR)
             lgc += indent2 + "(retraction)" + CR
             lgc += indent2 + "G01 Z{0:08.3f} F{1:04.0f} {2}".format(
-                dZ + float(retraction),
-                feeds["ZG0"],
-                CR
-            )
+                dZ + float(retraction), feeds["ZG0"], CR)
             #
             # set new Z
             lgc += indent2 + "G01 Z{0:08.3f} F{1:04.0f} {2}".format(
@@ -527,36 +641,37 @@ class ContourHoles(GeometricalFrame):
         sD = float(self.__depthstep.get())
 
         tool = float(self.tooldia.get())
-        print ("userInputValidation")
+        print("userInputValidation")
 
         if (r <= 0.0 or r1 <= 0.0):
             self.MessageBox("ERROR", "Radius error",
-                "radius hove to be greater than 0.0")
+                            "radius hove to be greater than 0.0")
             return False
 
         if (r1 > r):
             self.MessageBox("ERROR", "Radius error",
-                "Hole diameter bigger than circle diameter")
+                            "Hole diameter bigger than circle diameter")
             return False
 
         if (r1 < tool):
             self.MessageBox("ERROR", "Radius error",
-            "Hole diameter smaller than tool diameter")
+                            "Hole diameter smaller than tool diameter")
             return False
 
         if (tool <= 1.0):
             self.MessageBox("ERROR", "Tool error",
-            "Too diamater have to be greater as 1.0")
+                            "Too diamater have to be greater as 1.0")
             return False
 
         if (tD >= 0.0 or sD > 0.0):
-            self.MessageBox("ERROR", "Depth error",
-            "Total depth and depth step should be a negative value")
+            self.MessageBox(
+                "ERROR", "Depth error",
+                "Total depth and depth step should be a negative value")
             return False
 
         if (abs(tD) < abs(sD)):
             self.MessageBox("ERROR", "Depth error",
-            "Total depth should be greater than depth step")
+                            "Total depth should be greater than depth step")
             return False
 
         # nothing happens

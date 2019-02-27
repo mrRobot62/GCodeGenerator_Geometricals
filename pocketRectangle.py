@@ -53,9 +53,9 @@ class PocketRectangle(GeometricalFrame):
         p = self.__imageNames[i]
         self.img = PIL.Image.open(p)
         self.photo = PIL.ImageTk.PhotoImage(self.img)
-        Label(self.frmImage, image=self.photo).grid(
-            row=0, column=0, sticky=W+E+N+S, columnspan=2
-        )
+        Label(
+            self.frmImage, image=self.photo).grid(
+                row=0, column=0, sticky=W + E + N + S, columnspan=2)
 
     #-------------------------------------------------------------
     # her you should insert your own widgets which are important
@@ -71,126 +71,219 @@ class PocketRectangle(GeometricalFrame):
         self.__CC.set(choices[0])
         self._changeImage(self.__CC.get())
         # new in V012.5 --
-        self.setMaterialDict(self.selectedMaterial.get())       
+        self.setMaterialDict(self.selectedMaterial.get())
         #-----------------
-        Label(self.frmButtonsIndividualContent, text='Coordinate Center').grid(row=row, column=0, sticky=W)
-        OptionMenu(self.frmButtonsIndividualContent,
-            self.__CC, *choices, command=self._changeImage).grid(
-            row=row, column=1)
-
+        Label(
+            self.frmButtonsIndividualContent, text='Coordinate Center').grid(
+                row=row, column=0, sticky=W)
+        OptionMenu(
+            self.frmButtonsIndividualContent,
+            self.__CC,
+            *choices,
+            command=self._changeImage).grid(
+                row=row, column=1)
 
         row += 1
         self.__unit = StringVar()
         self.__unit.set("G21")
-        Label(self.frmButtonsIndividualContent, text='Unit').grid(row=row, column=0, sticky=W)
-        ttk.Radiobutton(self.frmButtonsIndividualContent, text="mm", variable=self.__unit,
-                    value="G21").grid(row=row, column=1, sticky=W)
-        ttk.Radiobutton(self.frmButtonsIndividualContent, text="inch", variable=self.__unit,
-                    value="G20").grid(row=row, column=2, sticky=W)
+        Label(
+            self.frmButtonsIndividualContent, text='Unit').grid(
+                row=row, column=0, sticky=W)
+        ttk.Radiobutton(
+            self.frmButtonsIndividualContent,
+            text="mm",
+            variable=self.__unit,
+            value="G21").grid(
+                row=row, column=1, sticky=W)
+        ttk.Radiobutton(
+            self.frmButtonsIndividualContent,
+            text="inch",
+            variable=self.__unit,
+            value="G20").grid(
+                row=row, column=2, sticky=W)
 
         row += 1
         self.__dir = StringVar()
         self.__dir.set("G02")
-        Label(self.frmButtonsIndividualContent, text='Contour direction').grid(
-            row=row, column=0, sticky=W)
-        ttk.Radiobutton(self.frmButtonsIndividualContent, text="CW (G02)", variable=self.__dir,
-                    value="G02").grid(row=row, column=1, sticky=W)
-        ttk.Radiobutton(self.frmButtonsIndividualContent, text="CCW (G03)", variable=self.__dir,
-                    value=1).grid(row=row, column=2, sticky=W)
+        Label(
+            self.frmButtonsIndividualContent, text='Contour direction').grid(
+                row=row, column=0, sticky=W)
+        ttk.Radiobutton(
+            self.frmButtonsIndividualContent,
+            text="CW (G02)",
+            variable=self.__dir,
+            value="G02").grid(
+                row=row, column=1, sticky=W)
+        ttk.Radiobutton(
+            self.frmButtonsIndividualContent,
+            text="CCW (G03)",
+            variable=self.__dir,
+            value=1).grid(
+                row=row, column=2, sticky=W)
 
         td = self.dicSelectedMaterial["Tool dia"]
-        print ("ToolDia: " + str(td))
-        self.tooldia = StringVar(value = str(td))
-        Label(self.frmButtonsIndividualContent, text="Tool diameter").grid(
-            row=row, column=0, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=False,
-            textvariable=self.tooldia).grid(row=row, column=1, sticky=W)
+        print("ToolDia: " + str(td))
+        self.tooldia = StringVar(value=str(td))
+        Label(
+            self.frmButtonsIndividualContent, text="Tool diameter").grid(
+                row=row, column=0, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=10,
+            mandatory=False,
+            textvariable=self.tooldia).grid(
+                row=row, column=1, sticky=W)
         #
         # default forward feed inside pocket (from track to track)
         # row += 1
         self.__forwardfeed = StringVar(value="3.0")
-        Label(self.frmButtonsIndividualContent, text="Forward feed").grid(
-            row=row, column=2, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=10,
-            textvariable=self.__forwardfeed, mandatory=False).grid(
-            row=row, column=3, sticky=W)
+        Label(
+            self.frmButtonsIndividualContent, text="Forward feed").grid(
+                row=row, column=2, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=10,
+            textvariable=self.__forwardfeed,
+            mandatory=False).grid(
+                row=row, column=3, sticky=W)
 
         row += 1
         self.__centerX = StringVar(value="0.0")
         self.__centerY = StringVar(value="0.0")
-        Label(self.frmButtonsIndividualContent, text='Center X').grid(row=row, column=0, sticky=W)
-        Label(self.frmButtonsIndividualContent, text='Center Y').grid(row=row, column=2, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=True,
-            textvariable=self.__centerX).grid(row=row, column=1, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=True,
-            textvariable=self.__centerY).grid(row=row, column=3, sticky=W)
-
+        Label(
+            self.frmButtonsIndividualContent, text='Center X').grid(
+                row=row, column=0, sticky=W)
+        Label(
+            self.frmButtonsIndividualContent, text='Center Y').grid(
+                row=row, column=2, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=10,
+            mandatory=True,
+            textvariable=self.__centerX).grid(
+                row=row, column=1, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=10,
+            mandatory=True,
+            textvariable=self.__centerY).grid(
+                row=row, column=3, sticky=W)
 
         row += 1
         self.__distanceA = StringVar(value="70.0")
         self.__distanceB = StringVar(value="100.0")
-        Label(self.frmButtonsIndividualContent, text="Height (a)").grid(row=row, column=0, sticky=W)
-        Label(self.frmButtonsIndividualContent, text="Width (b)").grid(row=row, column=2, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5,
+        Label(
+            self.frmButtonsIndividualContent, text="Height (a)").grid(
+                row=row, column=0, sticky=W)
+        Label(
+            self.frmButtonsIndividualContent, text="Width (b)").grid(
+                row=row, column=2, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=5,
             textvariable=self.__distanceA).grid(
-            row=row, column=1, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.__distanceB).grid(row=row, column=3, sticky=W)
+                row=row, column=1, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=5,
+            textvariable=self.__distanceB).grid(
+                row=row, column=3, sticky=W)
 
         row += 1
         self.__depthtotal = StringVar(value="-1.5")
         self.__depthstep = StringVar(value="-0.5")
-        Label(self.frmButtonsIndividualContent, text="Total depth").grid(row=row, column=0, sticky=W)
-        Label(self.frmButtonsIndividualContent, text="depth cutting per step").grid(
-            row=row, column=2, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.__depthtotal, mandatory=True).grid(
-            row=row, column=1, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.__depthstep, mandatory=True).grid(
-            row=row, column=3, sticky=W)
+        Label(
+            self.frmButtonsIndividualContent, text="Total depth").grid(
+                row=row, column=0, sticky=W)
+        Label(
+            self.frmButtonsIndividualContent,
+            text="depth cutting per step").grid(
+                row=row, column=2, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=5,
+            textvariable=self.__depthtotal,
+            mandatory=True).grid(
+                row=row, column=1, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=5,
+            textvariable=self.__depthstep,
+            mandatory=True).grid(
+                row=row, column=3, sticky=W)
 
         row += 1
-        self.__speed_XY_G00 = StringVar(value="200.0")
-        self.__speed_Z_G00 = StringVar(value="200.0")
-        Label(self.frmButtonsIndividualContent, text="Feed (G00 X/Y)").grid(row=row, column=0, sticky=W)
-        Label(self.frmButtonsIndividualContent, text="Feed (G00 Z)").grid(row=row, column=2, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.__speed_XY_G00, mandatory=False).grid(
-            row=row, column=1, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.__speed_Z_G00, mandatory=False).grid(row=row, column=3, sticky=W)
+        self.__speed_XY_G00 = StringVar(value=self._standardGCodeSeq[
+            "TRAVEL_SPEEDXYZ"][0])
+        self.__speed_Z_G00 = StringVar(value=self._standardGCodeSeq[
+            "TRAVEL_SPEEDXYZ"][2])
+        Label(
+            self.frmButtonsIndividualContent, text="Feed (G00 X/Y)").grid(
+                row=row, column=0, sticky=W)
+        Label(
+            self.frmButtonsIndividualContent, text="Feed (G00 Z)").grid(
+                row=row, column=2, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=5,
+            textvariable=self.__speed_XY_G00,
+            mandatory=False).grid(
+                row=row, column=1, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=5,
+            textvariable=self.__speed_Z_G00,
+            mandatory=False).grid(
+                row=row, column=3, sticky=W)
 
         row += 1
         self.speed_XY_G02G03 = StringVar(value="80.0")
         self.speed_Z_G01 = StringVar(value="50.0")
-        Label(self.frmButtonsIndividualContent, text="Feed (G01 X/Y)").grid(row=row, column=0, sticky=W)
-        Label(self.frmButtonsIndividualContent, text="Feed (G01 Z)").grid(row=row, column=2, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.speed_XY_G02G03, mandatory=False).grid(
-            row=row, column=1, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.speed_Z_G01, mandatory=False).grid(
-            row=row, column=3, sticky=W)
+        Label(
+            self.frmButtonsIndividualContent, text="Feed (G01 X/Y)").grid(
+                row=row, column=0, sticky=W)
+        Label(
+            self.frmButtonsIndividualContent, text="Feed (G01 Z)").grid(
+                row=row, column=2, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=5,
+            textvariable=self.speed_XY_G02G03,
+            mandatory=False).grid(
+                row=row, column=1, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=5,
+            textvariable=self.speed_Z_G01,
+            mandatory=False).grid(
+                row=row, column=3, sticky=W)
 
         row += 1
-        self.__start_Z = StringVar(value="3.0")
-        Label(self.frmButtonsIndividualContent, text="Start Z").grid(
-            row=row, column=0, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=10,
-            textvariable=self.__start_Z, mandatory=False).grid(
-            row=row, column=1, sticky=W)
+        self.__start_Z = StringVar(value=self._standardGCodeSeq["ZAXIS"][0])
+        Label(
+            self.frmButtonsIndividualContent, text="Start Z").grid(
+                row=row, column=0, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=10,
+            textvariable=self.__start_Z,
+            mandatory=False).grid(
+                row=row, column=1, sticky=W)
 
         #row += 1
-        self.__safety_Z = StringVar(value="10.0")
-        Label(self.frmButtonsIndividualContent, text="Safety Z").grid(
-            row=row, column=2, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=10,
-            textvariable=self.__safety_Z, mandatory=False).grid(
-            row=row, column=3, sticky=W)
+        self.__safety_Z = StringVar(value=self._standardGCodeSeq["ZAXIS"][1])
+        Label(
+            self.frmButtonsIndividualContent, text="Safety Z").grid(
+                row=row, column=2, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=10,
+            textvariable=self.__safety_Z,
+            mandatory=False).grid(
+                row=row, column=3, sticky=W)
 
         #-----------------------------------------------------
-        self.upateMaterialFields(self.selectedMaterial.get())            
+        self.upateMaterialFields(self.selectedMaterial.get())
         self.frmButtonsIndividualContent.pack(expand=True, fill=BOTH)
         pass
 
@@ -198,7 +291,7 @@ class PocketRectangle(GeometricalFrame):
         '''
         this class is used to validate necessary user input fields
         '''
-        print ("userInputValidation")
+        print("userInputValidation")
         a = float(self.__distanceA.get())
         b = float(self.__distanceB.get())
 
@@ -206,43 +299,52 @@ class PocketRectangle(GeometricalFrame):
         forwardstep = float(self.__forwardfeed.get())
 
         if (a <= 0.0 or b <= 0.0):
-            self.MessageBox(state="ERROR",
+            self.MessageBox(
+                state="ERROR",
                 title="ERROR",
                 text="a and b should be greater than 0.0")
             return False
 
         if (toolDia <= 0.0):
-            self.MessageBox(state="ERROR",
+            self.MessageBox(
+                state="ERROR",
                 title="ERROR",
                 text="Tool diamater should be greater than 0.0")
             return False
 
         if (forwardstep > (toolDia)):
-            self.MessageBox(state="ERROR",
+            self.MessageBox(
+                state="ERROR",
                 title="ERROR",
                 text="forward feed is greater than tool diameter.")
             return False
 
         if (forwardstep == (toolDia)):
-            self.MessageBox(state="WARN",
+            self.MessageBox(
+                state="WARN",
                 title="WARN",
                 text="forward feed equal tool diameter - are you shure?")
             return True
 
-        if (abs(float(self.__depthtotal.get())) < abs(float(self.__depthstep.get()))):
-            self.MessageBox(state="ERROR",
+        if (abs(float(self.__depthtotal.get())) < abs(
+                float(self.__depthstep.get()))):
+            self.MessageBox(
+                state="ERROR",
                 title="ERROR",
                 text="Total depth should be deeper or equal depth step")
             return False
 
-        if (float(self.__start_Z.get()) <= 0.0 or float(self.__safety_Z.get())<= 0.0):
-            self.MessageBox(state="ERROR",
+        if (float(self.__start_Z.get()) <= 0.0
+                or float(self.__safety_Z.get()) <= 0.0):
+            self.MessageBox(
+                state="ERROR",
                 title="ERROR",
                 text="Z parameter values should be greater than 0.0")
             return False
 
         if (float(self.tooldia.get()) <= 0.0):
-            self.MessageBox(state="ERROR",
+            self.MessageBox(
+                state="ERROR",
                 title="ERROR",
                 text="Tooldiamter should greater than 0.0")
             return False
@@ -260,18 +362,16 @@ class PocketRectangle(GeometricalFrame):
         recalculate it to inner contour and start with milling on outer line
         of this contour until we touch outer line contour
         '''
-        cPoint = (float(self.__centerX.get()),
-                  float(self.__centerY.get()))
-        sizeAB = (float(self.__distanceA.get()),
-                  float(self.__distanceB.get()))
+        cPoint = (float(self.__centerX.get()), float(self.__centerY.get()))
+        sizeAB = (float(self.__distanceA.get()), float(self.__distanceB.get()))
         toolDia = float(self.tooldia.get())
 
         pWidth = sizeAB[1]
         forwardstep = float(self.__forwardfeed.get())
 
         zPos = {
-            "safetyZ" : float(self.__safety_Z.get()),
-            "startZ" : float(self.__start_Z.get())
+            "safetyZ": float(self.__safety_Z.get()),
+            "startZ": float(self.__start_Z.get())
         }
 
         depth = (
@@ -282,10 +382,10 @@ class PocketRectangle(GeometricalFrame):
         dir = self.__dir.get()
 
         feeds = {
-            "XYG0" : float(self.__speed_XY_G00.get()),
-            "XYGn" : float(self.speed_XY_G02G03.get()),
-            "ZG0" : float(self.__speed_Z_G00.get()),
-            "ZGn" : float(self.speed_Z_G01.get())
+            "XYG0": float(self.__speed_XY_G00.get()),
+            "XYGn": float(self.speed_XY_G02G03.get()),
+            "ZG0": float(self.__speed_Z_G00.get()),
+            "ZGn": float(self.speed_Z_G01.get())
         }
         gc = ""
         gc += self.getGCode_Preamble()
@@ -293,8 +393,8 @@ class PocketRectangle(GeometricalFrame):
         gc += self.__unit.get() + CR
         # set Z axis
         gc += CR + "(set Z saftey position)" + CR
-        gc += "G00 Z{0:08.3f} F{1:05.1f} {2}".format(
-            zPos["safetyZ"], feeds["ZG0"],CR)
+        gc += "G00 Z{0:08.3f} F{1:05.1f} {2}".format(zPos["safetyZ"],
+                                                     feeds["ZG0"], CR)
 
         #
         # even which center point user choosed, we start on
@@ -303,25 +403,20 @@ class PocketRectangle(GeometricalFrame):
         # set start postion X/Y
         gc += CR + "(set center position)" + CR
         gc += "G00 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
-            cPoint[0],
-            cPoint[1],
-            feeds["XYG0"],
-            CR)
+            cPoint[0], cPoint[1], feeds["XYG0"], CR)
         #
         # generate as many shape steps are needed until depthtotal is reached
         # cut an Arc
         step = float(self.__depthstep.get())
-#        depth = float(self.__depthtotal.get())
+        #        depth = float(self.__depthtotal.get())
         z = step
         loop = ""
         gc += CR + "(------- start shape -------------)" + CR
 
         # start with shape
         gc += CR + "(move Z-axis to start postion near surface)" + CR
-        gc += "G00 Z{0:08.3f} F{1:05.1f} {2}".format(
-            zPos["startZ"],
-            feeds["ZG0"],
-            CR)
+        gc += "G00 Z{0:08.3f} F{1:05.1f} {2}".format(zPos["startZ"],
+                                                     feeds["ZG0"], CR)
         spaces = "".ljust(2)
         #----------------------------------------------------------------------
         # This loop asume, that you try to mill into your object.
@@ -333,32 +428,25 @@ class PocketRectangle(GeometricalFrame):
         # we start with inner contour and from this ContourRect
         # left outside - in this case we have an offset of half tool dia
         offset = toolDia / 2.0
-        cWidth = 0.0             # start pocket width = tool diameter
+        cWidth = 0.0  # start pocket width = tool diameter
         pocketMillTracks = []
         x = 1
         finished = False
         #
         # set to left down corner
         gc += "G00 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
-            cPoint[0] - (sizeAB[1] / 2.0),
-            cPoint[1] - (sizeAB[0] / 2.0),
-            feeds["XYG0"],
-            CR)
+            cPoint[0] - (sizeAB[1] / 2.0), cPoint[1] - (sizeAB[0] / 2.0),
+            feeds["XYG0"], CR)
         while (not finished):
             # print ("Width {} cWidth {} offset {}".format(
             #     pWidth, cWidth, offset
             # ))
-            if ( (cWidth / 2.0) > (sizeAB[0] / 2.0) or
-                 (cWidth / 2.0) > (sizeAB[1] / 2.0)) :
-                 finished = True
+            if ((cWidth / 2.0) > (sizeAB[0] / 2.0)
+                    or (cWidth / 2.0) > (sizeAB[1] / 2.0)):
+                finished = True
 
-            t = self.__createPocketTracks(
-                cPoint,
-                sizeAB,
-                toolDia,
-                feeds,
-                cWidth
-            )
+            t = self.__createPocketTracks(cPoint, sizeAB, toolDia, feeds,
+                                          cWidth)
 
             pocketMillTracks.append(t)
             x += 1
@@ -390,7 +478,8 @@ class PocketRectangle(GeometricalFrame):
                 # commands
                 spaces2 = spaces.ljust(2)
                 # set new depth
-                gc += CR + spaces2 + "(-- next depth z {0:08.3f} --){1}".format(z,CR)
+                gc += CR + spaces2 + "(-- next depth z {0:08.3f} --){1}".format(
+                    z, CR)
                 for cmd in t:
                     #
                     # combine all parameter to one command
@@ -401,7 +490,7 @@ class PocketRectangle(GeometricalFrame):
                     regFloat = r"{\d:\d+\.\d+f}"
                     for p in range(len(cmd)):
                         if isinstance(cmd[p], basestring):
-                            x = re.findall(regFloat,cmd[p], re.UNICODE)
+                            x = re.findall(regFloat, cmd[p], re.UNICODE)
                             if (len(x) != 0):
                                 #print "RegFloat found"
                                 gc += cmd[p].format(float(z))
@@ -418,17 +507,13 @@ class PocketRectangle(GeometricalFrame):
             pass
 
         gc += "(-- END DEPTH loop --)" + CR
-        gc += self.getGCode_Homeing(
-            cPoint[0],
-            cPoint[1],
-            zPos["safetyZ"],
-            feeds["XYG0"]
-        )
+        gc += self.getGCode_Homeing(cPoint[0], cPoint[1], zPos["safetyZ"],
+                                    feeds["XYG0"])
         gc += self.getGCode_Postamble()
         gc += CR
-        return  gc
+        return gc
 
-    def __createPocketTracks(self, cPoint, sizeAB, toolDia, feeds, offset=0.0 ):
+    def __createPocketTracks(self, cPoint, sizeAB, toolDia, feeds, offset=0.0):
         '''
         This method create for a track all needed GCode parameters and save
         them in a list. This list is used (afterwards) to create the real
@@ -446,12 +531,11 @@ class PocketRectangle(GeometricalFrame):
         h0 = sizeAB[0] - offset
         hcc = sizeAB[0] - offset - toolDia  # inner cutter compensation height
 
-        x = cPoint[0] - offset - (wcc / 2.0) # set x to lower left corner
-        y = cPoint[1] - offset - (hcc / 2.0) # set y to lower left corner
+        x = cPoint[0] - offset - (wcc / 2.0)  # set x to lower left corner
+        y = cPoint[1] - offset - (hcc / 2.0)  # set y to lower left corner
 
         print "cPb {} cPa {} x {} y {} offset {} w0 {} h0 {} wcc {} hcc {} ".format(
-            cPoint[1], cPoint[0], x, y, offset, w0, h0, wcc, hcc
-        )
+            cPoint[1], cPoint[0], x, y, offset, w0, h0, wcc, hcc)
         #x += r # add cutter compensation
         #y += r # add cutter compensation
 
@@ -459,16 +543,62 @@ class PocketRectangle(GeometricalFrame):
         seq = [
             #start
             # start left down
-            ("G01", "X", x + offset, "Y", y + offset, "F", feeds["XYGn"], ),
+            (
+                "G01",
+                "X",
+                x + offset,
+                "Y",
+                y + offset,
+                "F",
+                feeds["XYGn"],
+            ),
             # G01 Zxxx Fyyy
-            ("G01", "Z", "{0:08.3f}", "F", feeds["ZGn"], ),
+            (
+                "G01",
+                "Z",
+                "{0:08.3f}",
+                "F",
+                feeds["ZGn"],
+            ),
             # left up
-            ("G01", "X", x + offset, "Y", y + hcc + offset, "F", feeds["XYGn"], ),
+            (
+                "G01",
+                "X",
+                x + offset,
+                "Y",
+                y + hcc + offset,
+                "F",
+                feeds["XYGn"],
+            ),
             # right up
-            ("G01", "X", x +  wcc + offset, "Y", y + offset + hcc, "F", feeds["XYGn"], ),
+            (
+                "G01",
+                "X",
+                x + wcc + offset,
+                "Y",
+                y + offset + hcc,
+                "F",
+                feeds["XYGn"],
+            ),
             # left down
-            ("G01", "X", x +  wcc + offset, "Y", y + offset, "F", feeds["XYGn"], ),
+            (
+                "G01",
+                "X",
+                x + wcc + offset,
+                "Y",
+                y + offset,
+                "F",
+                feeds["XYGn"],
+            ),
             # go back to start position
-            ("G01", "X", x + offset, "Y", y + offset, "F", feeds["XYGn"], ),
+            (
+                "G01",
+                "X",
+                x + offset,
+                "Y",
+                y + offset,
+                "F",
+                feeds["XYGn"],
+            ),
         ]
         return seq

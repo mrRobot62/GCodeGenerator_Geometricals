@@ -35,7 +35,7 @@ class SurfaceCircle(GeometricalFrame):
         path = "./"
         self.__imageNames = [
             # left down
-#            "./img/surface/spiral_circle_001.png"
+            #            "./img/surface/spiral_circle_001.png"
             path + "img/surface/spiral_circle_001.png"
         ]
 
@@ -50,9 +50,9 @@ class SurfaceCircle(GeometricalFrame):
         p = self.__imageNames[i]
         self.img = PIL.Image.open(p)
         self.photo = PIL.ImageTk.PhotoImage(self.img)
-        Label(self.frmImage, image=self.photo).grid(
-            row=0, column=0, sticky=W+E+N+S, columnspan=2
-        )
+        Label(
+            self.frmImage, image=self.photo).grid(
+                row=0, column=0, sticky=W + E + N + S, columnspan=2)
 
     #-------------------------------------------------------------
     # her you should insert your own widgets which are important
@@ -68,40 +68,68 @@ class SurfaceCircle(GeometricalFrame):
         self.__CC.set(choices[0])
         self._changeImage(self.__CC.get())
         # new in V012.5 --
-        self.setMaterialDict(self.selectedMaterial.get())       
+        self.setMaterialDict(self.selectedMaterial.get())
         #-----------------
-        Label(self.frmButtonsIndividualContent, text='Coordinate Center').grid(row=row, column=0, sticky=W)
-        OptionMenu(self.frmButtonsIndividualContent,
-            self.__CC, *choices, command=self._changeImage).grid(
-            row=row, column=1)
-
+        Label(
+            self.frmButtonsIndividualContent, text='Coordinate Center').grid(
+                row=row, column=0, sticky=W)
+        OptionMenu(
+            self.frmButtonsIndividualContent,
+            self.__CC,
+            *choices,
+            command=self._changeImage).grid(
+                row=row, column=1)
 
         #row += 1
         self.__unit = StringVar()
         self.__unit.set("G21")
-        Label(self.frmButtonsIndividualContent, text='Unit').grid(row=row, column=2, sticky=W)
-        ttk.Radiobutton(self.frmButtonsIndividualContent, text="mm", variable=self.__unit,
-                    value="G21").grid(row=row, column=3, sticky=W)
-        ttk.Radiobutton(self.frmButtonsIndividualContent, text="inch", variable=self.__unit,
-                    value="G20").grid(row=row, column=4, sticky=W)
+        Label(
+            self.frmButtonsIndividualContent, text='Unit').grid(
+                row=row, column=2, sticky=W)
+        ttk.Radiobutton(
+            self.frmButtonsIndividualContent,
+            text="mm",
+            variable=self.__unit,
+            value="G21").grid(
+                row=row, column=3, sticky=W)
+        ttk.Radiobutton(
+            self.frmButtonsIndividualContent,
+            text="inch",
+            variable=self.__unit,
+            value="G20").grid(
+                row=row, column=4, sticky=W)
 
         row += 1
         self.__dir = StringVar()
         self.__dir.set("G02")
-        Label(self.frmButtonsIndividualContent, text='Contour direction').grid(
-            row=row, column=0, sticky=W)
-        ttk.Radiobutton(self.frmButtonsIndividualContent, text="CW (G02)", variable=self.__dir,
-                    value="G02").grid(row=row, column=1, sticky=W)
-        ttk.Radiobutton(self.frmButtonsIndividualContent, text="CCW (G03)", variable=self.__dir,
-                    value="G03").grid(row=row, column=2, sticky=W)
+        Label(
+            self.frmButtonsIndividualContent, text='Contour direction').grid(
+                row=row, column=0, sticky=W)
+        ttk.Radiobutton(
+            self.frmButtonsIndividualContent,
+            text="CW (G02)",
+            variable=self.__dir,
+            value="G02").grid(
+                row=row, column=1, sticky=W)
+        ttk.Radiobutton(
+            self.frmButtonsIndividualContent,
+            text="CCW (G03)",
+            variable=self.__dir,
+            value="G03").grid(
+                row=row, column=2, sticky=W)
 
         td = self.dicSelectedMaterial["Tool dia"]
-        print ("ToolDia: " + str(td))
-        self.tooldia = StringVar(value = str(td))
-        Label(self.frmButtonsIndividualContent, text="Tool diameter").grid(
-            row=row, column=0, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=False,
-            textvariable=self.tooldia).grid(row=row, column=1, sticky=W)
+        print("ToolDia: " + str(td))
+        self.tooldia = StringVar(value=str(td))
+        Label(
+            self.frmButtonsIndividualContent, text="Tool diameter").grid(
+                row=row, column=0, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=10,
+            mandatory=False,
+            textvariable=self.tooldia).grid(
+                row=row, column=1, sticky=W)
 
         # #row += 1
         # self.__radius = StringVar(value="10.0")
@@ -113,103 +141,169 @@ class SurfaceCircle(GeometricalFrame):
         row += 1
         self.__centerX = StringVar(value="0.0")
         self.__centerY = StringVar(value="0.0")
-        Label(self.frmButtonsIndividualContent, text='Center X').grid(row=row, column=0, sticky=W)
-        Label(self.frmButtonsIndividualContent, text='Center Y').grid(row=row, column=2, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=True,
-            textvariable=self.__centerX).grid(row=row, column=1, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=10, mandatory=True,
-            textvariable=self.__centerY).grid(row=row, column=3, sticky=W)
+        Label(
+            self.frmButtonsIndividualContent, text='Center X').grid(
+                row=row, column=0, sticky=W)
+        Label(
+            self.frmButtonsIndividualContent, text='Center Y').grid(
+                row=row, column=2, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=10,
+            mandatory=True,
+            textvariable=self.__centerX).grid(
+                row=row, column=1, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=10,
+            mandatory=True,
+            textvariable=self.__centerY).grid(
+                row=row, column=3, sticky=W)
 
         row += 1
         self.__radius = StringVar(value="50.0")
-        Label(self.frmButtonsIndividualContent, text="work piece radius").grid(
-            row=row, column=0, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5,
+        Label(
+            self.frmButtonsIndividualContent, text="work piece radius").grid(
+                row=row, column=0, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=5,
             textvariable=self.__radius).grid(
-            row=row, column=1, sticky=W)
+                row=row, column=1, sticky=W)
 
         #
         # stepover from row to row
         #row += 1
         self.__stepover = StringVar(value="50")
-        Label(self.frmButtonsIndividualContent, text="Stepover tooldia %").grid(
-            row=row, column=2, sticky=W)
-        w7 = FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.__stepover, mandatory=False)
-        w7.grid(
-            row=row, column=3, sticky=W)
-        ToolTip(w7,text=
-        '''This percentage is the overlap from row to row based on tool diameter. Normally the value should be between 30-90%''')
+        Label(
+            self.frmButtonsIndividualContent, text="Stepover tooldia %").grid(
+                row=row, column=2, sticky=W)
+        w7 = FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=5,
+            textvariable=self.__stepover,
+            mandatory=False)
+        w7.grid(row=row, column=3, sticky=W)
+        ToolTip(
+            w7,
+            text=
+            '''This percentage is the overlap from row to row based on tool diameter. Normally the value should be between 30-90%'''
+        )
 
         self.__overshot = StringVar(value="110")
-        Label(self.frmButtonsIndividualContent, text="Overshot %").grid(
-            row=row, column=4, sticky=W)
-        w7a = FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.__overshot, mandatory=False)
-        w7a.grid(
-            row=row, column=5, sticky=W)
-        ToolTip(w7a,
-        text='''This percentage is an overshot for used tool on work piece edges. Normally the value should be between 0-150%. Values >= 100 move tool completely outside from work piece''')
-
+        Label(
+            self.frmButtonsIndividualContent, text="Overshot %").grid(
+                row=row, column=4, sticky=W)
+        w7a = FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=5,
+            textvariable=self.__overshot,
+            mandatory=False)
+        w7a.grid(row=row, column=5, sticky=W)
+        ToolTip(
+            w7a,
+            text=
+            '''This percentage is an overshot for used tool on work piece edges. Normally the value should be between 0-150%. Values >= 100 move tool completely outside from work piece'''
+        )
 
         row += 1
         self.__depthtotal = StringVar(value="-1.0")
         self.__depthstep = StringVar(value="-0.2")
-        Label(self.frmButtonsIndividualContent, text="Total depth").grid(row=row, column=0, sticky=W)
-        Label(self.frmButtonsIndividualContent, text="depth cutting per step").grid(
-            row=row, column=2, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.__depthtotal, mandatory=True).grid(
-            row=row, column=1, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.__depthstep, mandatory=True).grid(
-            row=row, column=3, sticky=W)
+        Label(
+            self.frmButtonsIndividualContent, text="Total depth").grid(
+                row=row, column=0, sticky=W)
+        Label(
+            self.frmButtonsIndividualContent,
+            text="depth cutting per step").grid(
+                row=row, column=2, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=5,
+            textvariable=self.__depthtotal,
+            mandatory=True).grid(
+                row=row, column=1, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=5,
+            textvariable=self.__depthstep,
+            mandatory=True).grid(
+                row=row, column=3, sticky=W)
 
         row += 1
-        self.__speed_XY_G00 = StringVar(value="200.0")
-        self.__speed_Z_G00 = StringVar(value="200.0")
-        Label(self.frmButtonsIndividualContent, text="Feed (G00 X/Y)").grid(row=row, column=0, sticky=W)
-        Label(self.frmButtonsIndividualContent, text="Feed (G00 Z)").grid(row=row, column=2, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.__speed_XY_G00, mandatory=False).grid(
-            row=row, column=1, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.__speed_Z_G00, mandatory=False).grid(row=row, column=3, sticky=W)
+        self.__speed_XY_G00 = StringVar(value=self._standardGCodeSeq[
+            "TRAVEL_SPEEDXYZ"][0])
+        self.__speed_Z_G00 = StringVar(value=self._standardGCodeSeq[
+            "TRAVEL_SPEEDXYZ"][2])
+        Label(
+            self.frmButtonsIndividualContent, text="Feed (G00 X/Y)").grid(
+                row=row, column=0, sticky=W)
+        Label(
+            self.frmButtonsIndividualContent, text="Feed (G00 Z)").grid(
+                row=row, column=2, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=5,
+            textvariable=self.__speed_XY_G00,
+            mandatory=False).grid(
+                row=row, column=1, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=5,
+            textvariable=self.__speed_Z_G00,
+            mandatory=False).grid(
+                row=row, column=3, sticky=W)
 
         row += 1
         self.speed_XY_G02G03 = StringVar(value="80.0")
         self.speed_Z_G01 = StringVar(value="50.0")
-        Label(self.frmButtonsIndividualContent, text="Feed (G01 X/Y)").grid(row=row, column=0, sticky=W)
-        Label(self.frmButtonsIndividualContent, text="Feed (G01 Z)").grid(row=row, column=2, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.speed_XY_G02G03, mandatory=False).grid(
-            row=row, column=1, sticky=W)
-        FloatEntry(self.frmButtonsIndividualContent, width=5,
-            textvariable=self.speed_Z_G01, mandatory=False).grid(
-            row=row, column=3, sticky=W)
+        Label(
+            self.frmButtonsIndividualContent, text="Feed (G01 X/Y)").grid(
+                row=row, column=0, sticky=W)
+        Label(
+            self.frmButtonsIndividualContent, text="Feed (G01 Z)").grid(
+                row=row, column=2, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=5,
+            textvariable=self.speed_XY_G02G03,
+            mandatory=False).grid(
+                row=row, column=1, sticky=W)
+        FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=5,
+            textvariable=self.speed_Z_G01,
+            mandatory=False).grid(
+                row=row, column=3, sticky=W)
 
         row += 1
-        self.__start_Z = StringVar(value="3.0")
-        Label(self.frmButtonsIndividualContent, text="Start Z").grid(
-            row=row, column=0, sticky=W)
-        w98 = FloatEntry(self.frmButtonsIndividualContent, width=10,
-            textvariable=self.__start_Z, mandatory=False)
-        w98.grid(
-            row=row, column=1, sticky=W)
-        ToolTip(w98, text="move the z-axis briefly over the surface to this value")
+        self.__start_Z = StringVar(value=self._standardGCodeSeq["ZAXIS"][0])
+        Label(
+            self.frmButtonsIndividualContent, text="Start Z").grid(
+                row=row, column=0, sticky=W)
+        w98 = FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=10,
+            textvariable=self.__start_Z,
+            mandatory=False)
+        w98.grid(row=row, column=1, sticky=W)
+        ToolTip(
+            w98, text="move the z-axis briefly over the surface to this value")
 
         #row += 1
-        self.__safety_Z = StringVar(value="10.0")
-        Label(self.frmButtonsIndividualContent, text="Safety Z").grid(
-            row=row, column=2, sticky=W)
-        w99 = FloatEntry(self.frmButtonsIndividualContent, width=10,
-            textvariable=self.__safety_Z, mandatory=False)
-        w99.grid(
-            row=row, column=3, sticky=W)
+        self.__safety_Z = StringVar(value=self._standardGCodeSeq["ZAXIS"][1])
+        Label(
+            self.frmButtonsIndividualContent, text="Safety Z").grid(
+                row=row, column=2, sticky=W)
+        w99 = FloatEntry(
+            self.frmButtonsIndividualContent,
+            width=10,
+            textvariable=self.__safety_Z,
+            mandatory=False)
+        w99.grid(row=row, column=3, sticky=W)
         ToolTip(w99, text="move Z to this value if finished")
 
         #-----------------------------------------------------
-        self.upateMaterialFields(self.selectedMaterial.get())            
+        self.upateMaterialFields(self.selectedMaterial.get())
         self.frmButtonsIndividualContent.pack(expand=True, fill=BOTH)
         pass
 
@@ -217,7 +311,7 @@ class SurfaceCircle(GeometricalFrame):
         '''
         this class is used to validate necessary user input fields
         '''
-        print ("userInputValidation")
+        print("userInputValidation")
         radius = float(self.__radius.get())
         toolDia = float(self.tooldia.get())
         # based on bugfix #13
@@ -225,64 +319,75 @@ class SurfaceCircle(GeometricalFrame):
         overshot = float(self.__overshot.get())
 
         if (radius <= 0.0):
-            self.MessageBox(state="ERROR",
+            self.MessageBox(
+                state="ERROR",
                 title="ERROR",
                 text="outer radius should be greater 0.0")
             return False
 
         if (radius <= toolDia):
-            self.MessageBox(state="ERROR",
+            self.MessageBox(
+                state="ERROR",
                 title="ERROR",
                 text="radius can't be less than tool diameter")
             return False
 
         if (toolDia <= 0.0 or toolDia > radius):
-            self.MessageBox(state="ERROR",
+            self.MessageBox(
+                state="ERROR",
                 title="ERROR",
-                text="Tool diamater should be greater than 0.0 and less than radius")
+                text=
+                "Tool diamater should be greater than 0.0 and less than radius"
+            )
             return False
 
         # based on bugfix #13
         if (stepover < 30 or stepover > 90):
-            self.MessageBox(state="ERROR",
+            self.MessageBox(
+                state="ERROR",
                 title="ERROR",
                 text="Stepover should be in range 30-90%")
             return False
 
         # based on bugfix #13
         if (overshot < 0.0 or overshot > 150.0):
-            self.MessageBox(state="ERROR",
+            self.MessageBox(
+                state="ERROR",
                 title="ERROR",
                 text="Overshot should be in range 0-150%")
             return False
 
         if (overshot < 0.0):
-            self.MessageBox(state="ERROR",
+            self.MessageBox(
+                state="ERROR",
                 title="ERROR",
                 text="overshot should be greater or equal 0.0")
             return True
 
-
-        if (abs(float(self.__depthtotal.get())) < abs(float(self.__depthstep.get()))):
-            self.MessageBox(state="ERROR",
+        if (abs(float(self.__depthtotal.get())) < abs(
+                float(self.__depthstep.get()))):
+            self.MessageBox(
+                state="ERROR",
                 title="ERROR",
                 text="Total depth should be deeper or equal depth step")
             return False
 
-        if (float(self.__start_Z.get()) <= 0.0 or float(self.__safety_Z.get())<= 0.0):
-            self.MessageBox(state="ERROR",
+        if (float(self.__start_Z.get()) <= 0.0
+                or float(self.__safety_Z.get()) <= 0.0):
+            self.MessageBox(
+                state="ERROR",
                 title="ERROR",
                 text="Z parameter values should be greater than 0.0")
             return False
 
         if (float(self.tooldia.get()) <= 0.0):
-            self.MessageBox(state="ERROR",
+            self.MessageBox(
+                state="ERROR",
                 title="ERROR",
                 text="Tooldiamter should greater than 0.0")
             return False
 
         return True
-
 
     #-------------------------------------------------------------
     # here you generate your GCode.
@@ -295,8 +400,7 @@ class SurfaceCircle(GeometricalFrame):
         recalculate it to inner contour and start with milling on outer line
         of this contour until we touch outer line contour
         '''
-        cPoint = (float(self.__centerX.get()),
-                  float(self.__centerY.get()))
+        cPoint = (float(self.__centerX.get()), float(self.__centerY.get()))
         cPointOrig = cPoint
         radius = float(self.__radius.get())
 
@@ -306,8 +410,8 @@ class SurfaceCircle(GeometricalFrame):
         overshot = float(self.__overshot.get())
 
         zPos = {
-            "safetyZ" : float(self.__safety_Z.get()),
-            "startZ" : float(self.__start_Z.get())
+            "safetyZ": float(self.__safety_Z.get()),
+            "startZ": float(self.__start_Z.get())
         }
 
         depth = (
@@ -318,10 +422,10 @@ class SurfaceCircle(GeometricalFrame):
         dir = self.__dir.get()
 
         feeds = {
-            "XYG0" : float(self.__speed_XY_G00.get()),
-            "XYGn" : float(self.speed_XY_G02G03.get()),
-            "ZG0" : float(self.__speed_Z_G00.get()),
-            "ZGn" : float(self.speed_Z_G01.get())
+            "XYG0": float(self.__speed_XY_G00.get()),
+            "XYGn": float(self.speed_XY_G02G03.get()),
+            "ZG0": float(self.__speed_Z_G00.get()),
+            "ZGn": float(self.speed_Z_G01.get())
         }
         gc = ""
         gc += self.getGCode_Preamble()
@@ -329,8 +433,8 @@ class SurfaceCircle(GeometricalFrame):
         gc += self.__unit.get() + CR
         # set Z axis
         gc += CR + "(set Z saftey position)" + CR
-        gc += "G00 Z{0:08.3f} F{1:05.1f} {2}".format(
-            zPos["safetyZ"], feeds["ZG0"],CR)
+        gc += "G00 Z{0:08.3f} F{1:05.1f} {2}".format(zPos["safetyZ"],
+                                                     feeds["ZG0"], CR)
 
         #
         # even which center point user choosed, we start on
@@ -339,15 +443,12 @@ class SurfaceCircle(GeometricalFrame):
         # set start postion X/Y
         gc += CR + "(set center position)" + CR
         gc += "G00 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
-            cPoint[0],
-            cPoint[1],
-            feeds["XYG0"],
-            CR)
+            cPoint[0], cPoint[1], feeds["XYG0"], CR)
         #
         # generate as many shape steps are needed until depthtotal is reached
         # cut an Arc
         step = float(self.__depthstep.get())
-#        depth = float(self.__depthtotal.get())
+        #        depth = float(self.__depthtotal.get())
         z = step
         loop = ""
         gc += CR + "(------- start shape -------------)" + CR
@@ -375,46 +476,49 @@ class SurfaceCircle(GeometricalFrame):
 
         numberOfDepthSteps, restDepth = self.getDepthSteps(depth[0], depth[1])
 
-
-        print ("cPointX {}, r {}, depthSteps {}, restDepth {}, stepover {}, overshot {}".format(
-            cPoint[0], radius, numberOfDepthSteps, restDepth, overshot,
-            overshot))
+        print(
+            "cPointX {}, r {}, depthSteps {}, restDepth {}, stepover {}, overshot {}"
+            .format(cPoint[0], radius, numberOfDepthSteps, restDepth, overshot,
+                    overshot))
         #
         # depth control
         i = 1
-        for d in range (numberOfDepthSteps):
+        for d in range(numberOfDepthSteps):
             #
             # bugfix: #9, move Z-Axis to startZ Position, than move to Center
             # start with shape
             gc += CR + "(move Z-axis to start postion near surface)" + CR
             gc += "G00 Z{0:08.3f} F{1:05.1f} {2}".format(
-                zPos["startZ"],
-                feeds["ZG0"],
-                CR)
+                zPos["startZ"], feeds["ZG0"], CR)
 
             #
             # please notice: Z-Axis is positioned by a relative G91 code
-            gc += self.__getGCodeOnTrack(cPoint, feeds, dir,
-                        i, z, radius, toolDia, stepover,
-                        overshot)
+            gc += self.__getGCodeOnTrack(cPoint, feeds, dir, i, z, radius,
+                                         toolDia, stepover, overshot)
             i += 1
             pass
         #
         # last depth position
         gc += self.__getGCodeOnTrack(cPoint, feeds, dir,
-                    numberOfDepthSteps+1, restDepth,
-                    radius, toolDia, stepover, overshot)
+                                     numberOfDepthSteps + 1, restDepth, radius,
+                                     toolDia, stepover, overshot)
         gc += "(-- END --)" + CR
         gc += self.getGCode_Homeing(
-            x=cPoint[0],
-            y=cPoint[1],
-            z=zPos["safetyZ"])
+            x=cPoint[0], y=cPoint[1], z=zPos["safetyZ"])
         gc += self.getGCode_Postamble()
         gc += CR
-        return  gc
+        return gc
 
-    def __getGCodeOnTrack(self, cPoint, feeds, dir, dSteps, z,
-        radius, toolDia, stepover=80, overshot=0.0):
+    def __getGCodeOnTrack(self,
+                          cPoint,
+                          feeds,
+                          dir,
+                          dSteps,
+                          z,
+                          radius,
+                          toolDia,
+                          stepover=80,
+                          overshot=0.0):
         '''
         create a gcode sequence for a plane spiral based on given parameters.
         Parameters:
@@ -431,12 +535,12 @@ class SurfaceCircle(GeometricalFrame):
         '''
         indent = "".ljust(2)
         gc = "(-- Step #{0:03d} Z{1:08.3f} --) {2}".format(
-             dSteps, (z*dSteps), CR)
+            dSteps, (z * dSteps), CR)
         #
         # calculate stepover and overshot from percentage
         s = round(toolDia - (float(toolDia * stepover) / 100), 1)
         if overshot >= 100:
-            o = round((float(toolDia  * overshot) / 100), 1) - (toolDia / 2.0)
+            o = round((float(toolDia * overshot) / 100), 1) - (toolDia / 2.0)
         else:
             o = round((float(toolDia * overshot) / 100), 1) - (toolDia / 2.0)
 
@@ -444,44 +548,38 @@ class SurfaceCircle(GeometricalFrame):
         x = cPoint[0]
         y = cPoint[1]
         gc += indent + "G01 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}".format(
-            x,y,feeds["XYGn"], CR
-        )
+            x, y, feeds["XYGn"], CR)
         if dSteps <= 1:
             gc += indent + "G01 Z{0:08.3f} F{1:05.1f} (relative position){2}".format(
-                z,feeds["ZGn"], CR
-            )
+                z, feeds["ZGn"], CR)
         else:
             gc += indent + "G01 G91 Z{0:08.3f} F{1:05.1f} (relative position){2}".format(
-                z,feeds["ZGn"], CR
-            )
-        orientation = 1     # G02 (CW)
-        if dir == "G03":    # G03 (CCW)
+                z, feeds["ZGn"], CR)
+        orientation = 1  # G02 (CW)
+        if dir == "G03":  # G03 (CCW)
             orientation = -1
         x0 = x
         so = i0 = 0.0
         #
         # set start position for first arc
         gc += indent + "G01 G90 X{0:08.3f} F{1:05.1f} (absolute position) {2}".format(
-            (x0 + so * -1), feeds["XYGn"], CR
-        )
+            (x0 + so * -1), feeds["XYGn"], CR)
         for w in range(windings):
             loop = ""
-            x0 = (s * orientation) * (w+1)
-            i0 = (s * orientation) * (w+1)
+            x0 = (s * orientation) * (w + 1)
+            i0 = (s * orientation) * (w + 1)
             #
             # 1. arc (half circle)
             loop += indent + dir + " X{0:08.3f} I{1:08.3f} {2}".format(
-                x0, i0, CR
-            )
-            x0 = x + ((s * orientation) * (w+1)) + (s * orientation)
-            i0 = ((0.5 * s) + ((w+1) * s)) * orientation
+                x0, i0, CR)
+            x0 = x + ((s * orientation) * (w + 1)) + (s * orientation)
+            i0 = ((0.5 * s) + ((w + 1) * s)) * orientation
             #
             # 2. arc radius is half stepover bigger
             loop += indent + dir + " X{0:08.3f} I{1:08.3f} {2}".format(
-                x0 * -1 , i0 * -1, CR
-            )
+                x0 * -1, i0 * -1, CR)
 
-            print (loop)
+            print(loop)
             gc += loop
             pass
         #

@@ -22,14 +22,16 @@ CR = '\n'
 #
 
 ttkStyle = ttk.Style()
-ttkStyle.map("C.TButton",
-    foreground=[('pressed','blue'),('active','blue')],
-    background=[('pressed', '!disabled', 'black'), ('active','white')]
-)
-ttkStyle.map("C.Tttk.Radiobutton",
-    foreground=[('pressed','green'),('active','red')],
-    background=[('pressed', '!disabled', 'black'), ('active','white')]
-)
+ttkStyle.map(
+    "C.TButton",
+    foreground=[('pressed', 'blue'), ('active', 'blue')],
+    background=[('pressed', '!disabled', 'black'), ('active', 'white')])
+ttkStyle.map(
+    "C.Tttk.Radiobutton",
+    foreground=[('pressed', 'green'), ('active', 'red')],
+    background=[('pressed', '!disabled', 'black'), ('active', 'white')])
+
+
 class GeometricalFrame(Frame):
     def __init__(self, app, master, frame, title, winGeometry="900x750"):
         Frame.__init__(self)
@@ -41,21 +43,29 @@ class GeometricalFrame(Frame):
         self.app.master.title(title)
         self.dicMaterials = {}
         self.dicSelectedMaterial = {}
-        self.frmButtonsIndividualContent = Frame(self.parentFrame,
+        self.dicSystemConfig = {}
+        self.frmButtonsIndividualContent = Frame(
+            self.parentFrame,
             highlightbackground="darkgray",
             highlightcolor="darkgray",
             highlightthickness=1)
         # format [notuse/use (0/1), GCODE, ....]
         self._standardGCodeSeq = {
-            "HOMEING" : ["G00 Z{0:08.3f} F{1:05.1f} {2}","G00 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}"],
-            "SPINDLE_CW" : ["M3 S{0:08.4f} {1}"],
-            "SPINDLE_CCW" : ["M4 S{0:08.4f} {1}"],
-            "TOOL" : ["T{0:03d} {1}M6 {1}"],
-            "PREAMBLE" : ["G90 G64 G17 G40 G49 {0}"],
-            "POSTAMBLE" : ["G00 Z10 F100 M2 {0}"]
-         }
+            "HOMEING": [
+                "G00 Z{0:08.3f} F{1:05.1f} {2}",
+                "G00 X{0:08.3f} Y{1:08.3f} F{2:05.1f} {3}"
+            ],
+            "SPINDLE_CW": ["M3 S{0:08.4f} {1}"],
+            "SPINDLE_CCW": ["M4 S{0:08.4f} {1}"],
+            "TOOL": ["T{0:03d} {1}M6 {1}"],
+            "PREAMBLE": ["G90 G64 G17 G40 G49 {0}"],
+            "POSTAMBLE": ["G00 Z10 F100 M2 {0}"],
+            "ZAXIS": [3.0, 10.0],
+            "TRAVEL_SPEEDXYZ": ["500", "500", "400"],  #[X,Y,Z]
+        }
+        self.__loadSystemConfig()
         self.__loadMillingParameterFile()
-
+        self.updateDefaultFields()
 
     def destroy(self):
         self.frmImage.destroy()
@@ -64,7 +74,10 @@ class GeometricalFrame(Frame):
         self.frmButtons.destroy()
         pass
 
-    def show(self, showImage=True, showStandardContent=True, showStandartButton=True):
+    def show(self,
+             showImage=True,
+             showStandardContent=True,
+             showStandartButton=True):
         print "Show"
         #
         if showImage:
@@ -82,47 +95,69 @@ class GeometricalFrame(Frame):
 
     def __frmImage(self):
         print "__frmImage"
-        self.frmImage = Frame(self.parentFrame,
+        self.frmImage = Frame(
+            self.parentFrame,
             highlightbackground="darkgray",
             highlightcolor="darkgray",
             highlightthickness=1)
-        self.frmImage.grid(row=0,column=0, rowspan=5)
+        self.frmImage.grid(row=0, column=0, rowspan=5)
         self.frmImage.pack(expand=True)
+        pass
+
+    def __loadSystemConfig(self):
+        print("load system json config file")
+        with open("config.json", "r") as read_file:
+            self.dicSystemConfig = json.load(read_file)
+
+    def updateDefaultFields(self):
+        if bool(self.dicSystemConfig):
+            self._standardGCodeSeq["PREAMBLE"][0] = self.dicSystemConfig[
+                "Preamble"]
+            self._standardGCodeSeq["POSTAMBLE"][0] = self.dicSystemConfig[
+                "Postamble"]
+            self._standardGCodeSeq["ZAXIS"][0] = self.dicSystemConfig["StartZ"]
+            self._standardGCodeSeq["ZAXIS"][1] = self.dicSystemConfig[
+                "SafetyZ"]
+            self._standardGCodeSeq["TRAVEL_SPEEDXYZ"] = self.dicSystemConfig[
+                "TravelSpeedXYZ"]
+        else:
+            print("no system config file available")
         pass
 
     def __loadMillingParameterFile(self):
         '''
         load json file and save content into self.__millingparameters
-       
+
         '''
-        print ("load JSON Milling parameter file....")
+        print("load JSON Milling parameter file....")
         with open("millingparameters.json", "r") as read_file:
-            self.dicMaterials = json.load(read_file)       
+            self.dicMaterials = json.load(read_file)
 
     def setMaterialDict(self, value):
-        self.dicSelectedMaterial = self.getMaterialData(value);  
-        
-        
+        self.dicSelectedMaterial = self.getMaterialData(value)
+
     def upateMaterialFields(self, value):
-        self.setMaterialDict(value) 
-        print (self.dicSelectedMaterial)
+        self.setMaterialDict(value)
+        print(self.dicSelectedMaterial)
         if "ToolID" in self.dicSelectedMaterial:
             self.currentToolID.set(self.dicSelectedMaterial["ToolID"])
             self.currentSpindleRPM.set(self.dicSelectedMaterial["Spindel-RPM"])
             self.tooldia.set(self.dicSelectedMaterial["Tool dia"])
-            self.speed_XY_G02G03.set(self.dicSelectedMaterial["Feed rate mm/min"])
-            self.speed_Z_G01.set(self.dicSelectedMaterial["Infeed rate mm/min"])
-            
-            
+            self.speed_XY_G02G03.set(
+                self.dicSelectedMaterial["Feed rate mm/min"])
+            self.speed_Z_G01.set(
+                self.dicSelectedMaterial["Infeed rate mm/min"])
+
     def getOptionMenuMillingData(self):
         '''
         create a sorted array of all defined materials
         Name of material: (Category) material => Plastic,Polystorol; Wood,beech plywood; ...
         '''
         data = []
-        for (k,v) in self.dicMaterials.items():
+        for (k, v) in self.dicMaterials.items():
             for list in self.dicMaterials[k]:
-                s = "{0},{1}, Tool({2}mm)".format(k, list["Material"], list["Tool dia"])
+                s = "{0},{1}, Tool({2}mm)".format(k, list["Material"],
+                                                  list["Tool dia"])
                 data.append(s)
         return sorted(data)
 
@@ -134,8 +169,8 @@ class GeometricalFrame(Frame):
     def getMaterialDataDict(self, category, material):
         '''
         Return a dictionary for this category and material.
-        Is used to prefill entry widges like speed, tool dia, ... 
- 
+        Is used to prefill entry widges like speed, tool dia, ...
+
         Example:
         "Material" : "PMMA 4 mm (Plexiglas)",
         "Tool" : "Single cutter",
@@ -146,16 +181,20 @@ class GeometricalFrame(Frame):
         "Infeed rate" : 0.4,
         "Spindel-RPM" : 20000,
         "Info" : "Einschneid Fraeser"
-       
+
         '''
         for cat in self.dicMaterials[category]:
-            if cat["Material"] == material: 
+            if cat["Material"] == material:
                 return cat
         return {}
 
-    def __frmStandardContent(self, showPreamble=True, showPostamble=True, showSpindleAndTool=True):
+    def __frmStandardContent(self,
+                             showPreamble=True,
+                             showPostamble=True,
+                             showSpindleAndTool=True):
         print "__frmStandardContent"
-        self.frmStandardContent = Frame(self.parentFrame,
+        self.frmStandardContent = Frame(
+            self.parentFrame,
             highlightbackground="darkgray",
             highlightcolor="darkgray",
             highlightthickness=1)
@@ -164,20 +203,30 @@ class GeometricalFrame(Frame):
             self._preamble = StringVar()
             txt = self._standardGCodeSeq["PREAMBLE"][0].format(CR)
             self._preamble.set(txt)
-            Label(self.frmStandardContent, text="PreGCode").grid(row=row, column=0, sticky=W)
-            FloatEntry(self.frmStandardContent, width=70, mandatory=False,
+            Label(
+                self.frmStandardContent, text="PreGCode").grid(
+                    row=row, column=0, sticky=W)
+            FloatEntry(
+                self.frmStandardContent,
+                width=70,
+                mandatory=False,
                 textvariable=self._preamble).grid(
-                row=row, column=1, columnspan=6, sticky=W)
+                    row=row, column=1, columnspan=6, sticky=W)
 
         if showPostamble:
             row += 1
             self._postamble = StringVar()
             txt = self._standardGCodeSeq["POSTAMBLE"][0].format(CR)
             self._postamble.set(txt)
-            Label(self.frmStandardContent, text="PostGCode").grid(row=row, column=0, sticky=W)
-            FloatEntry(self.frmStandardContent, width=70, mandatory=False,
+            Label(
+                self.frmStandardContent, text="PostGCode").grid(
+                    row=row, column=0, sticky=W)
+            FloatEntry(
+                self.frmStandardContent,
+                width=70,
+                mandatory=False,
                 textvariable=self._postamble).grid(
-                row=row, column=1, columnspan=6, sticky=W)
+                    row=row, column=1, columnspan=6, sticky=W)
 
         # bugfix / requirement #10
         if showSpindleAndTool:
@@ -187,32 +236,44 @@ class GeometricalFrame(Frame):
             self.selectedMaterial = StringVar()
             self.selectedMaterial.set(choices[0])
             matWidth = len(max(choices, key=len))
-            Label(self.frmStandardContent, text='Material').grid(row=row, column=0, sticky=W)
-            self.material = ttk.OptionMenu(self.frmStandardContent,
-                                        self.selectedMaterial, *choices,
-                                        command=self.upateMaterialFields)
+            Label(
+                self.frmStandardContent, text='Material').grid(
+                    row=row, column=0, sticky=W)
+            self.material = ttk.OptionMenu(
+                self.frmStandardContent,
+                self.selectedMaterial,
+                *choices,
+                command=self.upateMaterialFields)
             self.material.config(width=matWidth)
             self.material.grid(row=row, column=1, columnspan=2, sticky=W)
-
 
             #-----------------------------------------------
             self.currentSpindleRPM = StringVar(value="")
             self.currentToolID = StringVar(value="")
             self._spindleCCW = StringVar(value="CW")
-            Label(self.frmStandardContent, text="ToolID").grid(
-                row=row, column=3, sticky=W)
-            IntEntry(self.frmStandardContent, width=10, mandatory=False,
-                textvariable=self.currentToolID).grid(row=row, column=4, sticky=W)
-            Label(self.frmStandardContent, text="Spindle Speed").grid(
-                row=row, column=5, sticky=W)
-            IntEntry(self.frmStandardContent, width=10, mandatory=False,
-                textvariable=self.currentSpindleRPM).grid(row=row, column=6, sticky=W)
+            Label(
+                self.frmStandardContent, text="ToolID").grid(
+                    row=row, column=3, sticky=W)
+            IntEntry(
+                self.frmStandardContent,
+                width=10,
+                mandatory=False,
+                textvariable=self.currentToolID).grid(
+                    row=row, column=4, sticky=W)
+            Label(
+                self.frmStandardContent, text="Spindle Speed").grid(
+                    row=row, column=5, sticky=W)
+            IntEntry(
+                self.frmStandardContent,
+                width=10,
+                mandatory=False,
+                textvariable=self.currentSpindleRPM).grid(
+                    row=row, column=6, sticky=W)
             # workaround MacOS, Mohjave with TKinter-Buttons
             #ttk.Checkbutton(self.frmStandardContent, text="Spindle CCW",
             #    var=self._spindleCCW, onvalue="CCW", offvalue="CW").grid(
             #        row=row, column=6, sticky=W
             #    )
-
 
         self.frmStandardContent.pack(expand=True, fill=BOTH)
         pass
@@ -223,35 +284,48 @@ class GeometricalFrame(Frame):
 
     def __buttonBox(self):
         print "__buttonBox"
-        self.frmButtons = Frame(self.parentFrame,
+        self.frmButtons = Frame(
+            self.parentFrame,
             highlightbackground="darkgray",
             highlightcolor="darkgray",
             highlightthickness=1)
 
-        # bugfix 25.02.2019, change from "To AXIS" to "To Console" 
-        self.btnAxis = ttk.Button(self.frmButtons, text="To Console", width=10,
-            command=self.copyConsole, state=DISABLED, style="C.TButton")
-        self.btnAxis.grid(
-                row=0, column=0
-            )
+        # bugfix 25.02.2019, change from "To AXIS" to "To Console"
+        self.btnAxis = ttk.Button(
+            self.frmButtons,
+            text="To Console",
+            width=10,
+            command=self.copyConsole,
+            state=DISABLED,
+            style="C.TButton")
+        self.btnAxis.grid(row=0, column=0)
 
-        self.btnClip = ttk.Button(self.frmButtons, text="To Clipboard", width=10,
-            command=self.copyClipboard, state=DISABLED, style="C.TButton")
-        self.btnClip.grid(
-                row=0, column=1
-            )
+        self.btnClip = ttk.Button(
+            self.frmButtons,
+            text="To Clipboard",
+            width=10,
+            command=self.copyClipboard,
+            state=DISABLED,
+            style="C.TButton")
+        self.btnClip.grid(row=0, column=1)
 
-        self.btnSave = ttk.Button(self.frmButtons, text="To File", width=10,
-            command=self.saveFile, state=DISABLED, style="C.TButton")
-        self.btnSave.grid(
-                row=0, column=2
-            )
+        self.btnSave = ttk.Button(
+            self.frmButtons,
+            text="To File",
+            width=10,
+            command=self.saveFile,
+            state=DISABLED,
+            style="C.TButton")
+        self.btnSave.grid(row=0, column=2)
 
-        self.btnGCode = ttk.Button(self.frmButtons, text="gen. GCode", width=10,
-            command=self.showGCode, state=NORMAL, style="C.TButton")
-        self.btnGCode.grid(
-                row=0, column=3
-            )
+        self.btnGCode = ttk.Button(
+            self.frmButtons,
+            text="gen. GCode",
+            width=10,
+            command=self.showGCode,
+            state=NORMAL,
+            style="C.TButton")
+        self.btnGCode.grid(row=0, column=3)
 
         #self.btnGCode = ttk.Button(self.frmButtons, text="Material", width=10,
         #    command=self.showMaterial, state=DISABLED, style="C.TButton")
@@ -259,12 +333,14 @@ class GeometricalFrame(Frame):
         #        row=0, column=4
         #    )
 
-
-        self.btnCancel = ttk.Button(self.frmButtons, text="Cancel", width=10,
-            command=self.cancel, state=NORMAL, style="C.TButton")
-        self.btnCancel.grid(
-                row=0, column=4
-            )
+        self.btnCancel = ttk.Button(
+            self.frmButtons,
+            text="Cancel",
+            width=10,
+            command=self.cancel,
+            state=NORMAL,
+            style="C.TButton")
+        self.btnCancel.grid(row=0, column=4)
 
         self.frmButtons.pack(expand=True, fill=BOTH)
 
@@ -274,12 +350,8 @@ class GeometricalFrame(Frame):
 
     def getGCode_Homeing(self, x=0, y=0, z=10, fxy=100, fz=100):
         gc = "(HOMEING)" + CR
-        gc += self._standardGCodeSeq["HOMEING"][0].format(
-            z,fz,CR
-        )
-        gc += self._standardGCodeSeq["HOMEING"][1].format(
-            x,y,fxy,CR
-        )
+        gc += self._standardGCodeSeq["HOMEING"][0].format(z, fz, CR)
+        gc += self._standardGCodeSeq["HOMEING"][1].format(x, y, fxy, CR)
         return gc
 
     def getGCode_SpindleAndTool(self, additional=""):
@@ -291,9 +363,9 @@ class GeometricalFrame(Frame):
                 t = 0
 
             msg = "{0} {1:5.2f}mm".format(self.dicSelectedMaterial["Tool"],
-                                        self.dicSelectedMaterial["Tool dia"])
+                                          self.dicSelectedMaterial["Tool dia"])
             temp += "(MSG, change tool to {0} {1}".format(msg, CR)
-            temp += "T{0:03d} M6 {1}".format(t,CR)
+            temp += "T{0:03d} M6 {1}".format(t, CR)
         temp += "(Spindel control)" + CR
         #------- Spindle control ---------
         if self.currentSpindleRPM.get() != "":
@@ -302,9 +374,9 @@ class GeometricalFrame(Frame):
             if s < 0:
                 s = 0
             if sdir == "CW":
-                temp += "M3 S{0:04d} {1}".format(s,CR)
+                temp += "M3 S{0:04d} {1}".format(s, CR)
             else:
-                temp += "M4 S{0:04d} {1}".format(s,CR)
+                temp += "M4 S{0:04d} {1}".format(s, CR)
             if s == 0:
                 temp += "M5" + CR
         if additional != "":
@@ -334,8 +406,8 @@ class GeometricalFrame(Frame):
             temp += additional + CR
         return temp
 
-
-    def getGCodeCutterComp(self, compensation = "G40", toolDia = 0.0, x=0.0, y=0.0):
+    def getGCodeCutterComp(self, compensation="G40", toolDia=0.0, x=0.0,
+                           y=0.0):
         '''
         return a GCode for given cutter compensation
 
@@ -367,15 +439,17 @@ class GeometricalFrame(Frame):
             if toolDia == 0.0:
                 gc += "G41 {1}".format(CR)
             else:
-                gc += "G41.1 D{0:05.2f} X{2:08.3f} Y{3:08.3f}{1}".format(toolDia, CR, x,y)
+                gc += "G41.1 D{0:05.2f} X{2:08.3f} Y{3:08.3f}{1}".format(
+                    toolDia, CR, x, y)
                 #gc += "G41.1 D{0:05.2f}{1}".format(toolDia, CR)
         elif (compensation == "G42"):
             if toolDia == 0.0:
                 gc += "G42 {1}".format(CR)
             else:
-                gc += "G42.1 D{0:05.2f} X{2:08.3f} Y{3:08.3f}{1}".format(toolDia, CR, x,y)
+                gc += "G42.1 D{0:05.2f} X{2:08.3f} Y{3:08.3f}{1}".format(
+                    toolDia, CR, x, y)
                 #gc += "G42.1 D{0:05.2f}{1}".format(toolDia, CR)
-        else : # G40
+        else:  # G40
             gc += "G40 {0}".format(CR)
         return gc
 
@@ -393,22 +467,22 @@ class GeometricalFrame(Frame):
         if gc is None:
             return None
         fname = tkFileDialog.asksaveasfilename(
-            initialdir = "./",
-            title = "Save file",
-            defaultextension = "*.ngc",
-            filetypes = (("Axis ","*.ngc"),("Gcode ","*.gcode"),("all files","*.*"))
-            )
+            initialdir="./",
+            title="Save file",
+            defaultextension="*.ngc",
+            filetypes=(("Axis ", "*.ngc"), ("Gcode ", "*.gcode"), ("all files",
+                                                                   "*.*")))
         if (fname == None):
             # cancle button
             return None
-        print ("Save gcode to '{}'".format(fname))
-        f = open(fname,"w")
+        print("Save gcode to '{}'".format(fname))
+        f = open(fname, "w")
         f.write(gc)
         f.close()
         pass
 
     def copyConsole(self, event=None):
-        print ("---------------- copyConsole -----------------")
+        print("---------------- copyConsole -----------------")
         gc = self.getGCode()
         if gc is None:
             return None
@@ -424,14 +498,13 @@ class GeometricalFrame(Frame):
         d.update(gc)
         pass
 
-    
     def showMaterial(self, event=None):
         data = {}
         d = EntryGridDialog(self.app, title="MaterialParameters")
         d.init(data)
         d.update(data)
-        pass 
-    
+        pass
+
     def setBtnStates(self, state):
         self.btnClip.config(state=state)
         self.btnSave.config(state=state)
@@ -451,19 +524,22 @@ class GeometricalFrame(Frame):
             toolID = -1
 
         if pre == "":
-            self.MessageBox(state="WARN",
+            self.MessageBox(
+                state="WARN",
                 title="Warn",
                 text="Are you shure? There is no preamble gcode available")
             return False
 
         if post == "":
-            self.MessageBox(state="WARN",
+            self.MessageBox(
+                state="WARN",
                 title="Warn",
                 text="Are you shure? There is no postamble gcode available")
             return False
 
         if (spindle < -1 or toolID < -1):
-            self.MessageBox(state="INFO",
+            self.MessageBox(
+                state="INFO",
                 title="INFO",
                 text="You set no tool id and/or spindel control")
             return True
@@ -488,8 +564,8 @@ class GeometricalFrame(Frame):
         if self.userInputValidation() == False:
             return None
         gc = "%"
-#
-# removed because some trouble with GCode-Interpreters (BK-13.12.2018)
+        #
+        # removed because some trouble with GCode-Interpreters (BK-13.12.2018)
         gc += '''
 ; (--------------------------)
 ; (          __              )
@@ -516,7 +592,7 @@ class GeometricalFrame(Frame):
         self.master.quit()
         pass
 
-    def MessageBox(self, state="INFO", title = "", text=""):
+    def MessageBox(self, state="INFO", title="", text=""):
         if state == "INFO":
             tkMessageBox.showinfo(title, text)
         elif state == "WARN":
@@ -533,9 +609,10 @@ class GeometricalFrame(Frame):
             1. Value = numberOfWindings
             2. Value = rest depth
         '''
-        r = round((total % step),3)
-        w = int(abs(total/step))
+        r = round((total % step), 3)
+        w = int(abs(total / step))
         return w, r
+
 
 class ToolTip:
     '''
@@ -568,7 +645,8 @@ class ToolTip:
     TODO: themes styles support
     '''
 
-    def __init__(self, widget,
+    def __init__(self,
+                 widget,
                  bg='#FFFFEA',
                  pad=(5, 3, 5, 3),
                  text='widget info',
@@ -607,8 +685,10 @@ class ToolTip:
             self.widget.after_cancel(id_)
 
     def show(self):
-        def tip_pos_calculator(widget, label,
-                               tip_delta=(10, 5), pad=(5, 3, 5, 3)):
+        def tip_pos_calculator(widget,
+                               label,
+                               tip_delta=(10, 5),
+                               pad=(5, 3, 5, 3)):
 
             w = widget
 
@@ -662,20 +742,17 @@ class ToolTip:
         # Leaves only the label and removes the app window
         self.tw.wm_overrideredirect(True)
 
-        win = Frame(self.tw,
-                       background=bg,
-                       borderwidth=0)
-        label = Label(win,
-                          text=self.text,
-                          justify=LEFT,
-                          background=bg,
-                          relief=SOLID,
-                          borderwidth=0,
-                          wraplength=self.wraplength)
+        win = Frame(self.tw, background=bg, borderwidth=0)
+        label = Label(
+            win,
+            text=self.text,
+            justify=LEFT,
+            background=bg,
+            relief=SOLID,
+            borderwidth=0,
+            wraplength=self.wraplength)
 
-        label.grid(padx=(pad[0], pad[2]),
-                   pady=(pad[1], pad[3]),
-                   sticky=NSEW)
+        label.grid(padx=(pad[0], pad[2]), pady=(pad[1], pad[3]), sticky=NSEW)
         win.grid()
 
         x, y = tip_pos_calculator(widget, label)

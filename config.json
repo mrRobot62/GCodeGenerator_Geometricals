@@ -19,5 +19,11 @@
         "Y" : 200,
         "Z" : 100,
         "Spindel" : 10000
-    }
+    },
+    "DeepthPerStep" : 1.0,
+    "StartZ" : 3.0,
+    "SafetyZ" : 20.0,
+    "Preamble" : "G90 G64 G17 G40 G49",
+    "Postamble" : "G00 Z10 F100 M2",
+    "TravelSpeedXYZ" : ["600","600","400"]
 }
