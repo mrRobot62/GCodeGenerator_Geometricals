@@ -12,13 +12,167 @@
                   "Info" : "Einschneid Fraeser"
                 },
                 {
-                  "Material" : "PMMA (Plexiglas)",
+                  "Material" : "Polystyrol",
                   "Tool" : "Single cutter",
                   "ToolID" : 12,
+                  "Tool dia" : 0.5,
+                  "Feed rate mm/sec" : 4,
+                  "Feed rate mm/min" : 240,
+                  "Infeed rate mm/min" : 30.0,
+                  "Spindel-RPM" : 7500,
+                  "Info" : "Einschneid Fraeser"
+                },
+                {
+                  "Material" : "Polystyrol",
+                  "Tool" : "Single cutter",
+                  "ToolID" : 13,
+                  "Tool dia" : 0.6,
+                  "Feed rate mm/sec" : 5,
+                  "Feed rate mm/min" : 300,
+                  "Infeed rate mm/min" : 30.0,
+                  "Spindel-RPM" : 8000,
+                  "Info" : "Einschneid Fraeser"
+                },
+                {
+                  "Material" : "Polystyrol",
+                  "Tool" : "Single cutter",
+                  "ToolID" : 14,
+                  "Tool dia" : 0.7,
+                  "Feed rate mm/sec" : 10,
+                  "Feed rate mm/min" : 600,
+                  "Infeed rate mm/min" : 60.0,
+                  "Spindel-RPM" : 8000,
+                  "Info" : "Einschneid Fraeser"
+                },
+                {
+                  "Material" : "Polystyrol",
+                  "Tool" : "Single cutter",
+                  "ToolID" : 15,
+                  "Tool dia" : 1.0,
+                  "Feed rate mm/sec" : 5,
+                  "Feed rate mm/min" : 300,
+                  "Infeed rate mm/min" : 30.0,
+                  "Spindel-RPM" : 8000,
+                  "Info" : "Einschneid Fraeser"
+                },
+                {
+                  "Material" : "PMMA (Acrylglas GS)",
+                  "Tool" : "Single cutter",
+                  "ToolID" : 16,
+                  "Tool dia" : 2.0,
+                  "Feed rate mm/sec" : 25,
+                  "Feed rate mm/min" : 1500,
+                  "Infeed rate mm/min" : 30.0,
+                  "Spindel-RPM" : 9000,
+                  "Info" : "Einschneid Fraeser"
+                },
+                {
+                  "Material" : "PMMA 4mm (Plexiglas)",
+                  "Tool" : "Single cutter",
+                  "ToolID" : 17,
                   "Tool dia" : 2.0,
                   "Feed rate mm/sec" : 25,
                   "Feed rate mm/min" : 1500,
                   "Infeed rate mm/min" : 25.0,
+                  "Spindel-RPM" : 20000,
+                  "Info" : "Einschneid Fraeser"
+                },
+                {
+                  "Material" : "PMMA 15mm (Plexiglas)",
+                  "Tool" : "VHM Fishtail",
+                  "ToolID" : 18,
+                  "Tool dia" : 3.0,
+                  "Feed rate mm/sec" : 10,
+                  "Feed rate mm/min" : 600,
+                  "Infeed rate mm/min" : 30.0,
+                  "Spindel-RPM" : 15000,
+                  "Info" : "VHM Fisch, Sonderlänge Sorotec"
+                },
+                {
+                  "Material" : "Polycarbonat-/ Polystyrolglas",
+                  "Tool" : "Single cutter",
+                  "ToolID" : 19,
+                  "Tool dia" : 2.0,
+                  "Feed rate mm/sec" : 15,
+                  "Feed rate mm/min" : 900,
+                  "Infeed rate mm/min" : 25.0,
+                  "Spindel-RPM" : 9000,
+                  "Info" : "Einschneid Fraeser"
+                },
+                {
+                  "Material" : "Acrylstein (HI-MACS / Corian)",
+                  "Tool" : "Single/Dual cutter",
+                  "ToolID" : 20,
+                  "Tool dia" : 2.0,
+                  "Feed rate mm/sec" : 5,
+                  "Feed rate mm/min" : 300,
+                  "Infeed rate mm/min" : 30.0,
+                  "Spindel-RPM" : 20000,
+                  "Info" : "Ein-/Zweischneid Fraeser"
+                },
+                {
+                  "Material" : "PVC-Hartschaum (Forex)",
+                  "Tool" : "Single cutter",
+                  "ToolID" : 21,
+                  "Tool dia" : 1.0,
+                  "Feed rate mm/sec" : 15,
+                  "Feed rate mm/min" : 900,
+                  "Infeed rate mm/min" : 30.0,
+                  "Spindel-RPM" : 9000,
+                  "Info" : "Einschneid Fraeser"
+                },
+                {
+                  "Material" : "PE",
+                  "Tool" : "Single cutter",
+                  "ToolID" : 22,
+                  "Tool dia" : 2.0,
+                  "Feed rate mm/sec" : 10,
+                  "Feed rate mm/min" : 600,
+                  "Infeed rate mm/min" : 60.0,
+                  "Spindel-RPM" : 13000,
+                  "Info" : "Einschneid Fraeser"
+                },
+                {
+                  "Material" : "HPL",
+                  "Tool" : "Spiral toothed Fishtail",
+                  "ToolID" : 23,
+                  "Tool dia" : 2.0,
+                  "Feed rate mm/sec" : 7,
+                  "Feed rate mm/min" : 420,
+                  "Infeed rate mm/min" : 120.0,
+                  "Spindel-RPM" : 20000,
+                  "Info" : "Spiralverzahnt Fischschwanz"
+                },
+                {
+                  "Material" : "Aludibond",
+                  "Tool" : "Dual cutter",
+                  "ToolID" : 24,
+                  "Tool dia" : 2.0,
+                  "Feed rate mm/sec" : 5,
+                  "Feed rate mm/min" : 300,
+                  "Infeed rate mm/min" : 300.0,
+                  "Spindel-RPM" : 20000,
+                  "Info" : "Zweischneid Fraeser"
+                },
+                {
+                  "Material" : "Linoleum",
+                  "Tool" : "Single cutter",
+                  "ToolID" : 25,
+                  "Tool dia" : 2.0,
+                  "Feed rate mm/sec" : 8,
+                  "Feed rate mm/min" : 480,
+                  "Infeed rate mm/min" : 90.0,
+                  "Spindel-RPM" : 10000,
+                  "Info" : "Gravierstichel/Einschneider"
+                },
+                {
+                  "Material" : "Gummi (FITON/FKM)",
+                  "Tool" : "Single cutter",
+                  "ToolID" : 26,
+                  "Tool dia" : 2.0,
+                  "Feed rate mm/sec" : 3,
+                  "Feed rate mm/min" : 180,
+                  "Infeed rate mm/min" : 120.0,
                   "Spindel-RPM" : 20000,
                   "Info" : "Einschneid Fraeser"
                 }
