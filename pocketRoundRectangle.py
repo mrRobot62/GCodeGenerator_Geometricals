@@ -303,7 +303,7 @@ class PocketRoundRectangle(GeometricalFrame):
                 row=row, column=3, sticky=W)
 
         #-----------------------------------------------------
-        self.upateMaterialFields(self.selectedMaterial.get())
+        self.upateMaterialFields(self.material.current())
         self.frmButtonsIndividualContent.pack(expand=True, fill=BOTH)
         pass
 

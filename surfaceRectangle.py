@@ -303,7 +303,7 @@ class SurfaceRectangle(GeometricalFrame):
         ToolTip(w99, text="move Z to this value if finished")
 
         #-----------------------------------------------------
-        self.upateMaterialFields(self.selectedMaterial.get())
+        self.upateMaterialFields(self.material.current())
         self.frmButtonsIndividualContent.pack(expand=True, fill=BOTH)
         pass
 

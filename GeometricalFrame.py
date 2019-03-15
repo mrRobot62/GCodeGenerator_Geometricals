@@ -41,15 +41,17 @@ class GeometricalFrame(Frame):
         self.master = master
         self.master.geometry(winGeometry)
         self.app.master.title(title)
-        self.dicMaterials = {}
-        self.dicSelectedMaterial = {}
-        self.dicSystemConfig = {}
+        self.dicMaterials = {}  # complete material json list
+        self.dicSelectedMaterial = {}  # current selected material
+        self.dicSystemConfig = {}  # loaded system configuration parameters
         self.frmButtonsIndividualContent = Frame(
             self.parentFrame,
             highlightbackground="darkgray",
             highlightcolor="darkgray",
             highlightthickness=1)
         # format [notuse/use (0/1), GCODE, ....]
+        #
+        # deprecated in future
         self._standardGCodeSeq = {
             "HOMEING": [
                 "G00 Z{0:08.3f} F{1:05.1f} {2}",
@@ -110,6 +112,9 @@ class GeometricalFrame(Frame):
             self.dicSystemConfig = json.load(read_file)
 
     def updateDefaultFields(self):
+        '''
+        set default values from config file
+        '''
         if bool(self.dicSystemConfig):
             self._standardGCodeSeq["PREAMBLE"][0] = self.dicSystemConfig[
                 "Preamble"]
@@ -132,12 +137,46 @@ class GeometricalFrame(Frame):
         print("load JSON Milling parameter file....")
         with open("millingparameters.json", "r") as read_file:
             self.dicMaterials = json.load(read_file)
+        #
+        # insert an unique id for every materials
+        uid = 0
+        for (cat,v) in self.dicMaterials.items():
+            for mat in self.dicMaterials[cat]:
+                mat['uid'] = uid
+                uid += 1
+        #print("--------------------------")
+        #print(self.dicMaterials)
+        #print("--------------------------")
 
     def setMaterialDict(self, value):
+        '''
+        set internal material dict (dicSelectedMaterial).
+        'value' is a string representing the text inside material combobox
+        '''
         self.dicSelectedMaterial = self.getMaterialData(value)
 
+    def getMaterialData(self, value):
+        '''
+        split the combobox string into "Main-Key (e.g. Metal)" and Sub-Key "Material" (e.g. Alu)
+        Return the compete substring dict "
+        '''
+
+        sp = value.split(',')
+        # [0] Major Key (e.g Plastic)
+        # [1] Material (e.g. Polystorol)
+        # [2] Tool
+        # [3] ToolDia
+        # [4] uid (e.g. 11) => id is a "hidden" field, generated during loading json file
+        return self.getMaterialDataDict(sp[0], sp[1], sp[4])                                                
+
     def upateMaterialFields(self, value):
-        self.setMaterialDict(value)
+        print("def upateMaterialFields(self, value): {}".format(value))
+        value = self.material.current()
+        mat = self.getOptionMenuMillingData()[value]
+        print(">>Current: {}, {}".format(value, mat))
+
+        self.setMaterialDict(mat)
+
         print(self.dicSelectedMaterial)
         if "ToolID" in self.dicSelectedMaterial:
             self.currentToolID.set(self.dicSelectedMaterial["ToolID"])
@@ -156,17 +195,12 @@ class GeometricalFrame(Frame):
         data = []
         for (k, v) in self.dicMaterials.items():
             for list in self.dicMaterials[k]:
-                s = "{0},{1}, Tool({2}mm)".format(k, list["Material"],
-                                                  list["Tool dia"])
+                s = "{0},{1},({2}mm,{3}mm), {4}".format(k, list["Material"],
+                                                      list["Tool"], list["Tool dia"],list["uid"])
                 data.append(s)
         return sorted(data)
 
-    def getMaterialData(self, optionmenustring):
-        sp = optionmenustring.split(',')
-        #print (sp)
-        return self.getMaterialDataDict(sp[0], sp[1])
-
-    def getMaterialDataDict(self, category, material):
+    def getMaterialDataDict(self, category, material, uid):
         '''
         Return a dictionary for this category and material.
         Is used to prefill entry widges like speed, tool dia, ...
@@ -180,12 +214,16 @@ class GeometricalFrame(Frame):
         "Feed rate 2" : 1500,
         "Infeed rate" : 0.4,
         "Spindel-RPM" : 20000,
-        "Info" : "Einschneid Fraeser"
+        "Info" : "Einschneid Fraeser",
+        "uid" : 18
 
         '''
         for cat in self.dicMaterials[category]:
+            print(cat)
             if cat["Material"] == material:
-                return cat
+                if str(cat["uid"]) == uid.strip():
+                    print("found (({}) {},{})").format(uid, cat, material)
+                    return cat
         return {}
 
     def __frmStandardContent(self,
@@ -235,15 +273,18 @@ class GeometricalFrame(Frame):
             choices = self.getOptionMenuMillingData()
             self.selectedMaterial = StringVar()
             self.selectedMaterial.set(choices[0])
-            matWidth = len(max(choices, key=len))
+            matWidth = len(max(choices, key=len)) - 20
             Label(
                 self.frmStandardContent, text='Material').grid(
                     row=row, column=0, sticky=W)
-            self.material = ttk.OptionMenu(
+            self.material = ttk.Combobox(
                 self.frmStandardContent,
-                self.selectedMaterial,
-                *choices,
-                command=self.upateMaterialFields)
+                textvariable=self.selectedMaterial,
+                values=choices)
+            self.material.configure(width=matWidth)
+            print(">>Current: {}".format(self.material.current()))
+            self.material.bind("<<ComboboxSelected>>",
+                               self.upateMaterialFields)
             self.material.config(width=matWidth)
             self.material.grid(row=row, column=1, columnspan=2, sticky=W)
 

@@ -312,7 +312,7 @@ class ContourArc(GeometricalFrame):
             mandatory=False).grid(
                 row=row, column=1, sticky=W)
 
-        self.upateMaterialFields(self.selectedMaterial.get())
+        self.upateMaterialFields(self.material.current())
         self.frmButtonsIndividualContent.pack(expand=True, fill=BOTH)
         pass
 

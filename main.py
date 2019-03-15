@@ -1,5 +1,4 @@
 #!/usr/local/bin/python
-
 """
     Simple geometrical G-Code Generator
     Version 0.1
@@ -62,8 +61,6 @@ from millingParameters import *
 #from toolTable import *
 IN_AXIS = os.environ.has_key("py    ")
 CR = '\n'
-
-
 '''
     Geometrical Main-Application
 
@@ -97,9 +94,10 @@ CR = '\n'
                bug-fixes cutter compensation
                bug-fixes window size
                bug-fixes Mac Mojave, using ttk.<widgets> instead of TKinter
-
+    0.12.5-rc2 Bugfix #20, Material list changed to combobox with unique ID for entries
 '''
 VERSION = " (0.12.5-rc1)"
+
 
 class GCodeGenerator(Frame):
     def __init__(self, master=None, title=""):
@@ -130,15 +128,20 @@ class GCodeGenerator(Frame):
 
         #--------- Insert contour shapes here ---------------------#
         # Contour - Arc
-        self.ContourMenu.add_command(label="Circle or Arc", command=self.DialogContourArc)
+        self.ContourMenu.add_command(
+            label="Circle or Arc", command=self.DialogContourArc)
         # Contour - Arc
-        self.ContourMenu.add_command(label="Rectangle", command=self.DialogContourRec)
+        self.ContourMenu.add_command(
+            label="Rectangle", command=self.DialogContourRec)
         # Contour - Arc
-        self.ContourMenu.add_command(label="Rounded rectangle", command=self.DialogContourRoundedRec)
+        self.ContourMenu.add_command(
+            label="Rounded rectangle", command=self.DialogContourRoundedRec)
         # Contour - Holes
-        self.ContourMenu.add_command(label="Holes on circle", command=self.DialogContourHoles)
+        self.ContourMenu.add_command(
+            label="Holes on circle", command=self.DialogContourHoles)
         # Contour - Holes on a grid
-        self.ContourMenu.add_command(label="Holes on grid", command=self.DialogContourHolesGrid)
+        self.ContourMenu.add_command(
+            label="Holes on grid", command=self.DialogContourHolesGrid)
 
         #------------------------------------------------------#
 
@@ -147,17 +150,23 @@ class GCodeGenerator(Frame):
         self.FileMenu.add_cascade(label="Drilling", menu=self.DrillingMenu)
         #--------- Insert drilling shapes here ---------------------#
 
-        self.DrillingMenu.add_command(label="Drill holes", command=self.DrillHoles)
-        self.DrillingMenu.add_command(label="Drill holes grid", command=self.DrillHolesGrid)
-         #------------------------------------------------------#
+        self.DrillingMenu.add_command(
+            label="Drill holes", command=self.DrillHoles)
+        self.DrillingMenu.add_command(
+            label="Drill holes grid", command=self.DrillHolesGrid)
+        #------------------------------------------------------#
 
         # sub menu Pocketing
         self.PocketingMenu = Menu(self.FileMenu)
         self.FileMenu.add_cascade(label="Pocketing", menu=self.PocketingMenu)
         #--------- Insert pocketing shapes here ---------------------#
-        self.PocketingMenu.add_command(label="Mill a circle pocket", command=self.PocketCircle)
-        self.PocketingMenu.add_command(label="Mill a round rect pocket", command=self.PocketRoundRectangle)
-        self.PocketingMenu.add_command(label="Mill a rectangle pocket", command=self.PocketRectangle)
+        self.PocketingMenu.add_command(
+            label="Mill a circle pocket", command=self.PocketCircle)
+        self.PocketingMenu.add_command(
+            label="Mill a round rect pocket",
+            command=self.PocketRoundRectangle)
+        self.PocketingMenu.add_command(
+            label="Mill a rectangle pocket", command=self.PocketRectangle)
 
         #------------------------------------------------------#
 
@@ -165,8 +174,10 @@ class GCodeGenerator(Frame):
         self.SurfaceMenu = Menu(self.FileMenu)
         self.FileMenu.add_cascade(label="Surface", menu=self.SurfaceMenu)
         #--------- Insert engraving shapes here ---------------------#
-        self.SurfaceMenu.add_command(label="surface milling Rectangle", command=self.SurfaceRectangle)
-        self.SurfaceMenu.add_command(label="surface milling Circle", command=self.SurfaceCircle)
+        self.SurfaceMenu.add_command(
+            label="surface milling Rectangle", command=self.SurfaceRectangle)
+        self.SurfaceMenu.add_command(
+            label="surface milling Circle", command=self.SurfaceCircle)
 
         #------------------------------------------------------#
         # sub menu Engraving
@@ -185,6 +196,7 @@ class GCodeGenerator(Frame):
     #     pass
 
 #------ Menu callbacks ----------------
+
     def DialogContourArc(self):
         on_closing()
         self.master.deiconify()
@@ -205,15 +217,16 @@ class GCodeGenerator(Frame):
         self.myApp.show()
         pass
 
-
     def MillingParam(self):
         on_closing()
         self.master.deiconify()
         print "Milling Parameters"
         title = "Milling Parameters" + VERSION
-        self.myApp = MillingParameters(self.app, self.master, self.frame, title)
+        self.myApp = MillingParameters(self.app, self.master, self.frame,
+                                       title)
         self.myApp.init()
-        self.myApp.show(showImage=False,
+        self.myApp.show(
+            showImage=False,
             showStandardContent=False,
             showStandartButton=False)
         pass
@@ -223,7 +236,8 @@ class GCodeGenerator(Frame):
         self.master.deiconify()
         print "DialogContourRoundedRec"
         title = "Contour Rounded Rectangle" + VERSION
-        self.myApp = DialogContourRoundedRec(self.app, self.master, self.frame, title)
+        self.myApp = DialogContourRoundedRec(self.app, self.master, self.frame,
+                                             title)
         self.myApp.init()
         self.myApp.show()
         pass
@@ -243,7 +257,8 @@ class GCodeGenerator(Frame):
         self.master.deiconify()
         print "DialogContourHolesGrid"
         title = "Mill holes on a grid" + VERSION
-        self.myApp = ContourMillHolesGrid(self.app, self.master, self.frame, title)
+        self.myApp = ContourMillHolesGrid(self.app, self.master, self.frame,
+                                          title)
         self.myApp.init()
         self.myApp.show()
         pass
@@ -253,7 +268,8 @@ class GCodeGenerator(Frame):
         self.master.deiconify()
         print "PocketRoundRectangle"
         title = "Mill round rectangle pocket" + VERSION
-        self.myApp = PocketRoundRectangle(self.app, self.master, self.frame, title)
+        self.myApp = PocketRoundRectangle(self.app, self.master, self.frame,
+                                          title)
         self.myApp.init()
         self.myApp.show()
         pass
@@ -318,16 +334,18 @@ class GCodeGenerator(Frame):
         self.myApp.show()
         pass
 
+
 #--------- Menu callbacks ---------------------#
 
 
 def on_closing():
     try:
-        print ("close current window")
+        print("close current window")
         app.myApp.destroy()
         app.master.withdraw()
     except:
-        print ("nothing to close")
+        print("nothing to close")
+
 
 #------------------------------------------------------#
 
